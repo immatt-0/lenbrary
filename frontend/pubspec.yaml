@@ -1,0 +1,22 @@
+name: lenbrary_app
+description: A simple library management app for students and teachers
+version: 1.0.0+1
+
+environment:
+  sdk: ">=2.17.0 <3.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  http: ^0.13.5
+  shared_preferences: ^2.0.15
+  provider: ^6.0.3
+  cupertino_icons: ^1.0.5
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^2.0.1
+
+flutter:
+  uses-material-design: true 

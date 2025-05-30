@@ -1,0 +1,23 @@
+# Core Django and REST framework
+Django==5.0.2
+djangorestframework==3.14.0
+djangorestframework-simplejwt==5.3.1
+
+# API and Security
+django-cors-headers==4.3.1
+python-dotenv==1.0.1
+
+# Database
+psycopg2-binary==2.9.9  # For PostgreSQL support
+
+# Media and Static Files
+Pillow==10.2.0  # For image processing
+whitenoise==6.6.0  # For serving static files
+
+# Development Tools
+django-debug-toolbar==4.3.0  # For development debugging
+black==24.2.0  # For code formatting
+flake8==7.0.0  # For code linting
+
+# Production
+gunicorn==21.2.0  # For production deployment 

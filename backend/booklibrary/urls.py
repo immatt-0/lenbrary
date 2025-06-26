@@ -1,5 +1,6 @@
 from django.urls import path
 from . import views
+from .views import list_exam_models, create_exam_model, delete_exam_model
 
 urlpatterns = [
     path('books', views.books, name='books'),
@@ -33,4 +34,9 @@ urlpatterns = [
     # Notification endpoints
     path('notifications', views.get_notifications, name='get_notifications'),
     path('mark-notification-read/<int:notification_id>', views.mark_notification_read, name='mark_notification_read'),
+
+    # Exam model API endpoints
+    path('exam-models/', list_exam_models, name='list_exam_models'),
+    path('exam-models/create/', create_exam_model, name='create_exam_model'),
+    path('exam-models/<int:pk>/delete/', delete_exam_model, name='delete_exam_model'),
 ]

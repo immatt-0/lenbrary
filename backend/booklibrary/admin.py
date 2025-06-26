@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Book, Student, BookBorrowing
+from .models import Book, Student, BookBorrowing, ExamModel
 
 @admin.register(Book)
 class BookAdmin(admin.ModelAdmin):
@@ -32,3 +32,5 @@ class BookBorrowingAdmin(admin.ModelAdmin):
     
     get_student.short_description = 'Student'
     get_book.short_description = 'Book'
+
+admin.site.register(ExamModel)

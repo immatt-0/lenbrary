@@ -18,10 +18,10 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import authenticate
 
-from .models import Book, Student, BookBorrowing, Message, Notification
+from .models import Book, Student, BookBorrowing, Message, Notification, ExamModel
 from .serializers import (
     BookSerializer, StudentSerializer, BookBorrowingSerializer,
-    RegistrationSerializer, UserSerializer
+    RegistrationSerializer, UserSerializer, ExamModelSerializer
 )
 
 # Email validation pattern for @nlenau.ro domain
@@ -1042,3 +1042,33 @@ def create_user_notification(user, notification_type, message, book=None, borrow
         borrowing=borrowing,
         for_librarians=False
     )
+
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def list_exam_models(request):
+    """List all exam models"""
+    exam_models = ExamModel.objects.all().order_by('-created_at')
+    serializer = ExamModelSerializer(exam_models, many=True, context={'request': request})
+    return Response(serializer.data)
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+@parser_classes([MultiPartParser, FormParser])
+def create_exam_model(request):
+    """Create a new exam model (admin only)"""
+    serializer = ExamModelSerializer(data=request.data, context={'request': request})
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['DELETE'])
+@permission_classes([IsAuthenticated])
+def delete_exam_model(request, pk):
+    """Delete an exam model (admin only)"""
+    try:
+        exam_model = ExamModel.objects.get(pk=pk)
+    except ExamModel.DoesNotExist:
+        return Response({'error': 'Exam model not found'}, status=status.HTTP_404_NOT_FOUND)
+    exam_model.delete()
+    return Response({'success': True})

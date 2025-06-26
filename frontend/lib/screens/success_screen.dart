@@ -175,7 +175,26 @@ class _SuccessScreenState extends State<SuccessScreen> {
   Widget _buildUserView(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Biblioteca'),
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              Icons.menu_book_rounded,
+              size: 32,
+              color: Theme.of(context).colorScheme.primary,
+            ),
+            const SizedBox(width: 8),
+            const Text(
+              'Lenbrary',
+              style: TextStyle(
+                fontSize: 24.0,
+                fontWeight: FontWeight.w700,
+                letterSpacing: -0.5,
+              ),
+            ),
+          ],
+        ),
         automaticallyImplyLeading: false,
         actions: [
           _buildAppBarActions(),
@@ -292,7 +311,26 @@ class _SuccessScreenState extends State<SuccessScreen> {
   Widget _buildLibrarianView(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Biblioteca'),
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              Icons.menu_book_rounded,
+              size: 32,
+              color: Theme.of(context).colorScheme.primary,
+            ),
+            const SizedBox(width: 8),
+            const Text(
+              'Lenbrary',
+              style: TextStyle(
+                fontSize: 24.0,
+                fontWeight: FontWeight.w700,
+                letterSpacing: -0.5,
+              ),
+            ),
+          ],
+        ),
         automaticallyImplyLeading: false,
         actions: [
           _buildAppBarActions(),
@@ -446,6 +484,12 @@ class _SuccessScreenState extends State<SuccessScreen> {
                     const SizedBox(height: 32.0),
 
                     // Exam Models Admin Button
+                    Text(
+                      'Modele de examene',
+                      style: Theme.of(context).textTheme.titleLarge,
+                    ),
+                    const SizedBox(height: 16.0),
+
                     SizedBox(
                       width: 400,
                       child: _buildMenuButton(

@@ -1,7 +1,9 @@
 import 'dart:convert';
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 class ApiService {
   // Status translations for Romanian values
@@ -28,6 +30,11 @@ class ApiService {
   static const String registerEndpoint = '/book-library/register';
   static const String loginEndpoint = '/api/token/';
   static const String refreshTokenEndpoint = '/api/token/refresh/';
+
+  // Exam Model Endpoints
+  static const String examModelsEndpoint = '/book-library/exam-models/';
+  static const String createExamModelEndpoint = '/book-library/exam-models/create/';
+  static String deleteExamModelEndpoint(int id) => '/book-library/exam-models/$id/delete/';
 
   // Register a new user
   static Future<Map<String, dynamic>> register({
@@ -811,5 +818,68 @@ class ApiService {
       queryParams: {'q': query},
     );
     return response;
+  }
+
+  // Fetch all exam models
+  static Future<List<dynamic>> fetchExamModels() async {
+    final response = await http.get(Uri.parse('$baseUrl$examModelsEndpoint'));
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body);
+    } else {
+      throw Exception('Failed to load exam models: \\${response.body}');
+    }
+  }
+
+  // Add a new exam model (with PDF upload)
+  static Future<Map<String, dynamic>> addExamModel({
+    required String name,
+    required String type,
+    required String category,
+    String? pdfFilePath,
+    Uint8List? pdfFileBytes,
+    String? pdfFileName,
+  }) async {
+    final token = await getAccessToken();
+    if (token == null) {
+      throw Exception('Not authenticated');
+    }
+    var request = http.MultipartRequest('POST', Uri.parse('$baseUrl$createExamModelEndpoint'));
+    request.headers['Authorization'] = 'Bearer $token';
+    request.fields['name'] = name;
+    request.fields['type'] = type;
+    request.fields['category'] = category;
+    if (kIsWeb) {
+      if (pdfFileBytes == null || pdfFileName == null) {
+        throw Exception('PDF file bytes and name are required for web upload');
+      }
+      request.files.add(http.MultipartFile.fromBytes('pdf_file', pdfFileBytes, filename: pdfFileName));
+    } else {
+      if (pdfFilePath == null) {
+        throw Exception('PDF file path is required for non-web upload');
+      }
+      request.files.add(await http.MultipartFile.fromPath('pdf_file', pdfFilePath));
+    }
+    final streamedResponse = await request.send();
+    final response = await http.Response.fromStream(streamedResponse);
+    if (response.statusCode == 201) {
+      return jsonDecode(response.body);
+    } else {
+      throw Exception('Failed to add exam model: \\${response.body}');
+    }
+  }
+
+  // Delete an exam model
+  static Future<void> deleteExamModel(int id) async {
+    final token = await getAccessToken();
+    if (token == null) {
+      throw Exception('Not authenticated');
+    }
+    final response = await http.delete(
+      Uri.parse('$baseUrl${deleteExamModelEndpoint(id)}'),
+      headers: {'Authorization': 'Bearer $token'},
+    );
+    if (response.statusCode != 200) {
+      throw Exception('Failed to delete exam model: \\${response.body}');
+    }
   }
 }

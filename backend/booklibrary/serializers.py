@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
-from .models import Book, Student, BookBorrowing, Message
+from .models import Book, Student, BookBorrowing, Message, ExamModel
 import re
 
 # Email validation pattern for nlenau.ro domain
@@ -127,8 +127,10 @@ class RegistrationSerializer(serializers.Serializer):
     
     def validate_student_class(self, value):
         """Validate that student_class is one of the allowed values"""
-        if value and value not in ["IX", "X", "XI", "XII"]:
-            raise serializers.ValidationError("Student class must be one of: IX, X, XI, XII")
+        from .models import Student
+        valid_classes = [c[0] for c in Student.CLASS_CHOICES]
+        if value and value not in valid_classes:
+            raise serializers.ValidationError(f"Student class must be one of: {', '.join(valid_classes)}")
         return value
     
     def create(self, validated_data):
@@ -164,3 +166,8 @@ class RegistrationSerializer(serializers.Serializer):
             user.save()
         
         return user
+
+class ExamModelSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ExamModel
+        fields = ['id', 'name', 'type', 'category', 'pdf_file', 'created_at']

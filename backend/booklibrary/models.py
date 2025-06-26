@@ -165,3 +165,21 @@ class Notification(models.Model):
     def __str__(self):
         target = self.user.username if self.user else "Librarians"
         return f"{self.notification_type} for {target} at {self.timestamp}"
+
+class ExamModel(models.Model):
+    EXAM_TYPE_CHOICES = [
+        ('EN', 'Evaluare Națională'),
+        ('BAC', 'Bacalaureat'),
+    ]
+    CATEGORY_CHOICES = [
+        ('Matematica', 'Matematică'),
+        ('Romana', 'Română'),
+    ]
+    name = models.CharField(max_length=255)
+    type = models.CharField(max_length=3, choices=EXAM_TYPE_CHOICES)
+    category = models.CharField(max_length=20, choices=CATEGORY_CHOICES)
+    pdf_file = models.FileField(upload_to='exam_models/')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.name} ({self.get_type_display()}) - {self.get_category_display()}"

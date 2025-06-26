@@ -11,6 +11,8 @@ import 'screens/search_books_screen.dart';
 import 'screens/my_requests_screen.dart';
 import 'screens/messages_screen.dart';
 import 'screens/notifications_screen.dart';
+import 'screens/exam_models_screen.dart';
+import 'screens/exam_models_admin_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -109,7 +111,7 @@ class MyApp extends StatelessWidget {
           ),
         ),
         // Modern card theme
-        cardTheme: CardThemeData(
+        cardTheme: CardTheme(
           elevation: 0,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(24),
@@ -144,6 +146,8 @@ class MyApp extends StatelessWidget {
         '/my-requests': (context) => const MyRequestsScreen(),
         '/notifications': (context) => const NotificationsScreen(),
         '/messages': (context) => const MessagesScreen(),
+        '/exam-models': (context) => const ExamModelsScreen(),
+        '/admin-exam-models': (context) => const ExamModelsAdminScreen(),
       },
     );
   }

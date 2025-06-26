@@ -265,6 +265,20 @@ class _SuccessScreenState extends State<SuccessScreen> {
                         },
                       ),
                     ),
+                    const SizedBox(height: 16.0),
+
+                    // Exam Models Button
+                    SizedBox(
+                      width: 400,
+                      child: _buildMenuButton(
+                        icon: Icons.description_rounded,
+                        title: 'Modele de examene',
+                        description: 'Găsește modele de examene pentru studiu',
+                        onTap: () {
+                          Navigator.pushNamed(context, '/exam-models');
+                        },
+                      ),
+                    ),
                   ],
                 ),
               ],
@@ -426,6 +440,20 @@ class _SuccessScreenState extends State<SuccessScreen> {
                             'Vizualizează istoricul împrumuturilor finalizate',
                         onTap: () {
                           Navigator.pushNamed(context, '/loan-history');
+                        },
+                      ),
+                    ),
+                    const SizedBox(height: 32.0),
+
+                    // Exam Models Admin Button
+                    SizedBox(
+                      width: 400,
+                      child: _buildMenuButton(
+                        icon: Icons.description_outlined,
+                        title: 'Modele de examene',
+                        description: 'Adaugă sau gestionează modele de examene',
+                        onTap: () {
+                          Navigator.pushNamed(context, '/admin-exam-models');
                         },
                       ),
                     ),

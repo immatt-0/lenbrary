@@ -17,8 +17,9 @@ class ApiService {
 
   // Base URL of your Django backend - update this for your testing environment
   // For emulators:
-  static const String baseUrl = 'http://10.0.2.2:8000';      // Android emulator
-  // static const String baseUrl = 'http://localhost:8000'; // Windows/Web/iOS simulator
+  // static const String baseUrl = 'http://10.0.2.2:8000';      // Android emulator
+  static const String baseUrl =
+      'http://localhost:8000'; // Windows/Web/iOS simulator
 
   // For physical devices, use your computer's actual IP address:
   // static const String baseUrl = 'http://192.168.1.100:8000'; // Replace with your actual IP

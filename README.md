@@ -70,15 +70,15 @@ The system comes with pre-configured users:
 
 1. **Librarian**
    - Email: librarian@nlenau.ro
-   - Password: Librarian123
+   - Password: Librarian1!
 
 2. **Teacher**
    - Email: teacher@nlenau.ro
-   - Password: Teacher123
+   - Password: Teacher1!
 
 3. **Student**
    - Email: student@nlenau.ro
-   - Password: Student123
+   - Password: Student1!
 
 ## Features
 

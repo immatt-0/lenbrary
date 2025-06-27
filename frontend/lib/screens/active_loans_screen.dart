@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../services/api_service.dart';
 import 'dart:convert';
+import 'extension_requests_screen.dart';
 
 class ActiveLoansScreen extends StatefulWidget {
   const ActiveLoansScreen({Key? key}) : super(key: key);
@@ -14,11 +15,24 @@ class _ActiveLoansScreenState extends State<ActiveLoansScreen> {
   List<dynamic> _activeLoans = [];
   String? _errorMessage;
   bool _processingAction = false;
+  bool _isLibrarian = false;
 
   @override
   void initState() {
     super.initState();
+    _loadUserInfo();
     _loadActiveLoans();
+  }
+
+  Future<void> _loadUserInfo() async {
+    try {
+      final userInfo = await ApiService.getUserInfo();
+      setState(() {
+        _isLibrarian = userInfo['is_librarian'] ?? false;
+      });
+    } catch (e) {
+      // Optionally handle error
+    }
   }
 
   Future<void> _loadActiveLoans() async {
@@ -43,102 +57,6 @@ class _ActiveLoansScreenState extends State<ActiveLoansScreen> {
     }
   }
 
-  Future<void> _showExtensionDialog(int loanId, int currentDuration) async {
-    int selectedDuration = currentDuration; // Default to current duration
-
-    final result = await showDialog<int>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Selectează durata extinderii'),
-        content: StatefulBuilder(
-          builder: (context, setState) {
-            return Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                RadioListTile<int>(
-                  title: const Text('1 Săptămână'),
-                  value: 7,
-                  groupValue: selectedDuration,
-                  onChanged: (value) => setState(() => selectedDuration = value!),
-                ),
-                RadioListTile<int>(
-                  title: const Text('2 Săptămâni'),
-                  value: 14,
-                  groupValue: selectedDuration,
-                  onChanged: (value) => setState(() => selectedDuration = value!),
-                ),
-                RadioListTile<int>(
-                  title: const Text('1 Lună'),
-                  value: 30,
-                  groupValue: selectedDuration,
-                  onChanged: (value) => setState(() => selectedDuration = value!),
-                ),
-                RadioListTile<int>(
-                  title: const Text('2 Luni'),
-                  value: 60,
-                  groupValue: selectedDuration,
-                  onChanged: (value) => setState(() => selectedDuration = value!),
-                ),
-              ],
-            );
-          },
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Anulează'),
-          ),
-          ElevatedButton(
-            onPressed: () => Navigator.of(context).pop(selectedDuration),
-            child: const Text('Confirmă'),
-          ),
-        ],
-      ),
-    );
-
-    if (result != null) {
-      await _requestExtension(loanId, result);
-    }
-  }
-
-  Future<void> _requestExtension(int loanId, int requestedDays) async {
-    setState(() {
-      _processingAction = true;
-    });
-
-    try {
-      await ApiService.requestLoanExtension(
-        borrowingId: loanId,
-        requestedDays: requestedDays,
-      );
-
-      if (!mounted) return;
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Cerere de extindere înregistrată cu succes!'),
-          backgroundColor: Colors.green,
-        ),
-      );
-      await _loadActiveLoans(); // Reload the list
-    } catch (e) {
-      if (!mounted) return;
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Eroare la solicitarea extinderii: ${e.toString()}'),
-          backgroundColor: Colors.red,
-        ),
-      );
-    } finally {
-      if (mounted) {
-        setState(() {
-          _processingAction = false;
-        });
-      }
-    }
-  }
-
   Future<void> _returnBook(String loanId) async {
     setState(() {
       _processingAction = true;
@@ -146,28 +64,15 @@ class _ActiveLoansScreenState extends State<ActiveLoansScreen> {
 
     try {
       await ApiService.librarianReturnBook(int.parse(loanId));
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Cartea a fost returnată cu succes!'),
-          backgroundColor: Colors.green,
-        ),
-      );
       await _loadActiveLoans();
     } catch (e) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Eroare: ${e.toString()}'),
-          backgroundColor: Colors.red,
-        ),
-      );
+      setState(() {
+        _errorMessage = e.toString();
+      });
     } finally {
-      if (mounted) {
-        setState(() {
-          _processingAction = false;
-        });
-      }
+      setState(() {
+        _processingAction = false;
+      });
     }
   }
 
@@ -180,10 +85,36 @@ class _ActiveLoansScreenState extends State<ActiveLoansScreen> {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_rounded),
           onPressed: () {
-            Navigator.pop(context);
+            Navigator.pushReplacementNamed(context, '/success');
           },
           tooltip: 'Înapoi',
         ),
+        actions: [
+          if (_isLibrarian)
+            Padding(
+              padding: const EdgeInsets.only(right: 8.0),
+              child: ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const ExtensionRequestsScreen(),
+                    ),
+                  );
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Theme.of(context).colorScheme.primary,
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  elevation: 0,
+                ),
+                child: const Text('Cereri de extindere'),
+              ),
+            ),
+        ],
       ),
       body: Container(
         decoration: BoxDecoration(
@@ -521,49 +452,18 @@ class _ActiveLoansScreenState extends State<ActiveLoansScreen> {
                                         mainAxisAlignment:
                                             MainAxisAlignment.end,
                                         children: [
-                                          if (student['user']['is_student'] == true || student['user']['is_teacher'] == true)
-                                            Padding(
-                                              padding: const EdgeInsets.only(right: 8.0),
-                                              child: ElevatedButton.icon(
-                                                onPressed: _processingAction
-                                                    ? null
-                                                    : () => _showExtensionDialog(
-                                                        loan['id'],
-                                                        loan['loan_duration_days'] ?? 14),
-                                                icon: const Icon(Icons.update_rounded),
-                                                label: const Text('Solicită extindere'),
-                                                style: ElevatedButton.styleFrom(
-                                                  padding:
-                                                      const EdgeInsets.symmetric(
-                                                    horizontal: 16,
-                                                    vertical: 8,
-                                                  ),
-                                                  shape: RoundedRectangleBorder(
-                                                    borderRadius:
-                                                        BorderRadius.circular(8),
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
                                           ElevatedButton.icon(
-                                            onPressed: _processingAction
-                                                ? null
-                                                : () => _returnBook(
-                                                    loan['id'].toString()),
-                                            icon: const Icon(Icons
-                                                .assignment_return_rounded),
-                                            label:
-                                                const Text('Returnează cartea'),
+                                            onPressed: _processingAction ? null : () => _returnBook(loan['id'].toString()),
+                                            icon: const Icon(Icons.assignment_return_rounded),
+                                            label: const Text('Carte Returnată'),
                                             style: ElevatedButton.styleFrom(
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                horizontal: 16,
-                                                vertical: 8,
-                                              ),
+                                              backgroundColor: Theme.of(context).colorScheme.primary,
+                                              foregroundColor: Colors.white,
+                                              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                                               shape: RoundedRectangleBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(8),
+                                                borderRadius: BorderRadius.circular(8),
                                               ),
+                                              elevation: 0,
                                             ),
                                           ),
                                         ],

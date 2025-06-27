@@ -457,31 +457,31 @@ def email_token_obtain(request):
     else:
         email = email_or_username
     
-    # Try to find user by email first
+    # Try to find user by email first (case-insensitive)
     try:
-        user = User.objects.get(email=email)
+        user = User.objects.get(email__iexact=email)
     except User.DoesNotExist:
         # If not found by email but email was provided, try to extract username from email
-        if is_email and email.endswith('@nlenau.ro'):
+        if is_email and email.lower().endswith('@nlenau.ro'):
             # Extract username part (everything before @)
             username_part = email.split('@')[0]
             
-            # Try to find user with that exact username
+            # Try to find user with that exact username (case-insensitive)
             try:
-                user = User.objects.get(username=username_part)
+                user = User.objects.get(username__iexact=username_part)
             except User.DoesNotExist:
-                # Try to find by original input as username
+                # Try to find by original input as username (case-insensitive)
                 try:
-                    user = User.objects.get(username=email_or_username)
+                    user = User.objects.get(username__iexact=email_or_username)
                 except User.DoesNotExist:
                     return Response(
                         {'detail': 'Nu a fost găsit niciun cont activ cu datele furnizate.'},
                         status=status.HTTP_401_UNAUTHORIZED
                     )
         else:
-            # Try direct username lookup
+            # Try direct username lookup (case-insensitive)
             try:
-                user = User.objects.get(username=email_or_username)
+                user = User.objects.get(username__iexact=email_or_username)
             except User.DoesNotExist:
                 return Response(
                     {'detail': 'Nu a fost găsit niciun cont activ cu datele furnizate.'},
@@ -489,13 +489,21 @@ def email_token_obtain(request):
                 )
     
     # Authenticate with username and password
-    user = authenticate(username=user.username, password=password)
+    user_auth = authenticate(username=user.username, password=password)
     
-    if user is None:
-        return Response(
-            {'detail': 'Nu a fost găsit niciun cont activ cu datele furnizate.'},
-            status=status.HTTP_401_UNAUTHORIZED
-        )
+    if user_auth is None:
+        # If the user exists but the password is wrong, show specific message
+        if user is not None:
+            return Response(
+                {'detail': 'Parola este incorecta'},
+                status=status.HTTP_401_UNAUTHORIZED
+            )
+        else:
+            return Response(
+                {'detail': 'Nu a fost găsit niciun cont activ cu datele furnizate.'},
+                status=status.HTTP_401_UNAUTHORIZED
+            )
+    user = user_auth
 
     # Check if email is verified
     try:
@@ -684,7 +692,7 @@ def request_loan_extension(request, borrowing_id):
         return Response({'error': 'requested_days is required'}, status=status.HTTP_400_BAD_REQUEST)
     
     # Update borrowing with student message
-    borrowing.student_message = message
+    borrowing.student_message = f"Cerere extindere: {requested_days} zile. Mesaj: {message}"
     borrowing.save()
     
     # Create a message for the librarians

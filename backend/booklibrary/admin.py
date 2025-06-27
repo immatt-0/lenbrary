@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Book, Student, BookBorrowing, ExamModel
+from .models import Book, Student, BookBorrowing, ExamModel, EmailVerification
 
 @admin.register(Book)
 class BookAdmin(admin.ModelAdmin):
@@ -34,3 +34,8 @@ class BookBorrowingAdmin(admin.ModelAdmin):
     get_book.short_description = 'Book'
 
 admin.site.register(ExamModel)
+
+@admin.register(EmailVerification)
+class EmailVerificationAdmin(admin.ModelAdmin):
+    list_display = ('user', 'is_verified', 'created_at')
+    search_fields = ('user__email',)

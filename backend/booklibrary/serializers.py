@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
-from .models import Book, Student, BookBorrowing, Message, ExamModel
+from .models import Book, Student, BookBorrowing, Message, ExamModel, EmailVerification
 import re
 
 # Email validation pattern for nlenau.ro domain
@@ -171,3 +171,9 @@ class ExamModelSerializer(serializers.ModelSerializer):
     class Meta:
         model = ExamModel
         fields = ['id', 'name', 'type', 'category', 'pdf_file', 'created_at']
+
+class EmailVerificationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = EmailVerification
+        fields = ['user', 'token', 'is_verified', 'created_at']
+        read_only_fields = ['user', 'token', 'is_verified', 'created_at']

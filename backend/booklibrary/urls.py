@@ -39,4 +39,8 @@ urlpatterns = [
     path('exam-models/', list_exam_models, name='list_exam_models'),
     path('exam-models/create/', create_exam_model, name='create_exam_model'),
     path('exam-models/<int:pk>/delete/', delete_exam_model, name='delete_exam_model'),
+
+    # Email verification endpoints
+    path('send-verification-email', views.send_verification_email, name='send_verification_email'),
+    path('verify-email', views.verify_email, name='verify_email'),
 ]

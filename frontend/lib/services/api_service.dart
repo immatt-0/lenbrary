@@ -102,7 +102,9 @@ class ApiService {
 
       return data;
     } else {
-      throw Exception('Failed to login: ${response.body}');
+      // Decode error as UTF-8 for proper diacritics
+      final decoded = jsonDecode(utf8.decode(response.bodyBytes));
+      throw Exception(decoded['detail'] ?? 'Failed to login');
     }
   }
 
@@ -880,6 +882,24 @@ class ApiService {
     );
     if (response.statusCode != 200) {
       throw Exception('Failed to delete exam model: \\${response.body}');
+    }
+  }
+
+  // Send verification email
+  static Future<void> sendVerificationEmail() async {
+    final token = await getAccessToken();
+    if (token == null) {
+      throw Exception('Not authenticated');
+    }
+    final response = await http.post(
+      Uri.parse('$baseUrl/book-library/send-verification-email'),
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json',
+      },
+    );
+    if (response.statusCode != 200) {
+      throw Exception(jsonDecode(response.body)['detail'] ?? 'Failed to send verification email');
     }
   }
 }

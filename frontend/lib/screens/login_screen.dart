@@ -42,27 +42,8 @@ class _LoginScreenState extends State<LoginScreen> {
         Navigator.pushReplacementNamed(context, '/success');
       } catch (e) {
         setState(() {
-          String errorMsg = e.toString();
-          // Try to extract 'detail' field from error message if it exists
-          if (errorMsg.contains('"detail"')) {
-            try {
-              // Extract content between "detail" and the closing brace
-              final detailStart = errorMsg.indexOf('"detail"');
-              final valueStart = errorMsg.indexOf(':', detailStart) + 1;
-              final valueEnd = errorMsg.indexOf('}', valueStart);
-              if (valueEnd > valueStart) {
-                // Extract and clean up the detail message
-                errorMsg = errorMsg.substring(valueStart, valueEnd).trim();
-                // Remove extra quotes
-                errorMsg = errorMsg.replaceAll('"', '');
-              }
-            } catch (_) {
-              // If anything goes wrong during extraction, fall back to default message
-              errorMsg =
-                  "Nu a fost găsit niciun cont activ cu datele furnizate";
-            }
-          }
-          _errorMessage = errorMsg;
+          // The error message from ApiService.login is already properly decoded
+          _errorMessage = e.toString().replaceFirst('Exception: ', '');
         });
       } finally {
         if (mounted) {

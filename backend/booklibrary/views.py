@@ -9,6 +9,10 @@ from django.utils import timezone
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.models import User, Group
 from django.db import models
+from django.core.mail import send_mail
+from django.urls import reverse
+from django.http import HttpResponse
+import logging
 
 from rest_framework.decorators import api_view, parser_classes, permission_classes
 from rest_framework.response import Response
@@ -18,10 +22,10 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import authenticate
 
-from .models import Book, Student, BookBorrowing, Message, Notification, ExamModel
+from .models import Book, Student, BookBorrowing, Message, Notification, ExamModel, EmailVerification
 from .serializers import (
     BookSerializer, StudentSerializer, BookBorrowingSerializer,
-    RegistrationSerializer, UserSerializer, ExamModelSerializer
+    RegistrationSerializer, UserSerializer, ExamModelSerializer, EmailVerificationSerializer
 )
 
 # Email validation pattern for @nlenau.ro domain
@@ -36,6 +40,27 @@ def register_user(request):
     
     if serializer.is_valid():
         user = serializer.save()
+        
+        # Automatically create EmailVerification and send email
+        if hasattr(user, 'email_verification'):
+            ev = user.email_verification
+            ev.generate_token()
+        else:
+            ev = EmailVerification.objects.create(user=user)
+            ev.generate_token()
+        domain = request.get_host()
+        verify_path = reverse('verify_email')
+        verify_url = f"http://{domain}{verify_path}?token={ev.token}"
+        send_mail(
+            'Verify your email',
+            f'Click the link to verify your email: {verify_url}',
+            'noreply@lenbrary.com',
+            [user.email],
+            fail_silently=False,
+        )
+        # Log the verification email
+        email_logger = logging.getLogger('email_verification_logger')
+        email_logger.info(f"To: {user.email} | Subject: Verify your email | Link: {verify_url}")
         
         # Generate response based on whether user is teacher or student
         is_teacher = request.data.get('is_teacher', False)
@@ -471,7 +496,21 @@ def email_token_obtain(request):
             {'detail': 'Nu a fost găsit niciun cont activ cu datele furnizate.'},
             status=status.HTTP_401_UNAUTHORIZED
         )
-    
+
+    # Check if email is verified
+    try:
+        ev = user.email_verification
+        if not ev.is_verified:
+            return Response(
+                {'detail': 'Contul nu a fost verificat. Vă rugăm să verificați e-mailul pentru a activa contul.'},
+                status=status.HTTP_401_UNAUTHORIZED
+            )
+    except EmailVerification.DoesNotExist:
+        return Response(
+            {'detail': 'Contul nu a fost verificat. Vă rugăm să verificați e-mailul pentru a activa contul.'},
+            status=status.HTTP_401_UNAUTHORIZED
+        )
+
     # Create tokens
     refresh = RefreshToken.for_user(user)
     
@@ -1072,3 +1111,62 @@ def delete_exam_model(request, pk):
         return Response({'error': 'Exam model not found'}, status=status.HTTP_404_NOT_FOUND)
     exam_model.delete()
     return Response({'success': True})
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def send_verification_email(request):
+    user = request.user
+    if hasattr(user, 'email_verification'):
+        ev = user.email_verification
+        if ev.is_verified:
+            return Response({'detail': 'Email already verified.'}, status=status.HTTP_400_BAD_REQUEST)
+        ev.generate_token()
+    else:
+        ev = EmailVerification.objects.create(user=user)
+        ev.generate_token()
+    # Build verification link
+    domain = request.get_host()
+    verify_path = reverse('verify_email')
+    verify_url = f"http://{domain}{verify_path}?token={ev.token}"
+    # Send email
+    send_mail(
+        'Verify your email',
+        f'Click the link to verify your email: {verify_url}',
+        'noreply@lenbrary.com',
+        [user.email],
+        fail_silently=False,
+    )
+    # Log the verification email
+    email_logger = logging.getLogger('email_verification_logger')
+    email_logger.info(f"To: {user.email} | Subject: Verify your email | Link: {verify_url}")
+    return Response({'detail': 'Verification email sent.'})
+
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def verify_email(request):
+    token = request.GET.get('token')
+    if not token:
+        return HttpResponse('Token is required.', status=400, content_type='text/plain')
+    try:
+        ev = EmailVerification.objects.get(token=token)
+    except EmailVerification.DoesNotExist:
+        return HttpResponse('Invalid token.', status=400, content_type='text/plain')
+    if ev.is_verified:
+        html = '''
+        <html><head><meta charset="UTF-8"><title>Email Already Verified</title></head>
+        <body style="margin:0;padding:0;min-height:100vh;background:linear-gradient(135deg,#ffffff 0%,#e3f0ff 100%);display:flex;align-items:center;justify-content:center;">
+        <div style="background:#e6ffe6;color:#218838;padding:32px 40px;border-radius:16px;box-shadow:0 2px 16px #0001;font-size:1.3rem;font-family:sans-serif;max-width:90vw;text-align:center;">
+        Emailul a fost deja verificat.<br>Poți închide această pagină.
+        </div></body></html>
+        '''
+        return HttpResponse(html, content_type='text/html')
+    ev.is_verified = True
+    ev.save()
+    html = '''
+    <html><head><meta charset="UTF-8"><title>Email Verified</title></head>
+    <body style="margin:0;padding:0;min-height:100vh;background:linear-gradient(135deg,#ffffff 0%,#e3f0ff 100%);display:flex;align-items:center;justify-content:center;">
+    <div style="background:#e6ffe6;color:#218838;padding:32px 40px;border-radius:16px;box-shadow:0 2px 16px #0001;font-size:1.3rem;font-family:sans-serif;max-width:90vw;text-align:center;">
+    Emailul a fost verificat cu succes!<br>Poți închide această pagină.
+    </div></body></html>
+    '''
+    return HttpResponse(html, content_type='text/html')

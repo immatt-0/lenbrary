@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
+from django.utils.crypto import get_random_string
 
 class Book(models.Model):
     name = models.CharField(max_length=255)
@@ -183,3 +184,16 @@ class ExamModel(models.Model):
 
     def __str__(self):
         return f"{self.name} ({self.get_type_display()}) - {self.get_category_display()}"
+
+class EmailVerification(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='email_verification')
+    token = models.CharField(max_length=64, unique=True)
+    is_verified = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    def generate_token(self):
+        self.token = get_random_string(48)
+        self.save()
+
+    def __str__(self):
+        return f"{self.user.email} - {'Verified' if self.is_verified else 'Unverified'}"

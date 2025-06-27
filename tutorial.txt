@@ -29,7 +29,7 @@ The unified management script provides several commands for database and user ma
 2. Create Librarian Account:
    python -m scripts.manage create-librarian
    - Creates a new librarian account with admin privileges
-   - Uses default values (username: librarian, password: Library123)
+   - Uses default values (username: librarian, password: Library1!)
    - Option to customize values
 
 ------------------------------------------------------
@@ -80,12 +80,12 @@ After setup, you can log in with:
 
 Librarian (Admin):
 - Username: librarian
-- Password: Librarian123
+- Password: Librarian1!
 - URL: http://localhost:8000/admin
 
 Test Accounts (after running create_test_data.py):
-- Student: student@nlenau.ro / Student123
-- Teacher: teacher@nlenau.ro / Teacher123
+- Student: student@nlenau.ro / Student1!
+- Teacher: teacher@nlenau.ro / Teacher1!
 
 ------------------------------------------------------
 TROUBLESHOOTING

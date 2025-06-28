@@ -149,6 +149,24 @@ class RegistrationSerializer(serializers.Serializer):
         return user
 
 class ExamModelSerializer(serializers.ModelSerializer):
+    def validate_pdf_file(self, value):
+        """Validate that uploaded file is a PDF"""
+        if value:
+            # Check file extension
+            if not value.name.lower().endswith('.pdf'):
+                raise serializers.ValidationError("Only PDF files are allowed.")
+            
+            # Check file size (limit to 10MB)
+            if value.size > 10 * 1024 * 1024:  # 10MB in bytes
+                raise serializers.ValidationError("File size must be less than 10MB.")
+            
+            # Check MIME type if available
+            if hasattr(value, 'content_type') and value.content_type:
+                if value.content_type != 'application/pdf':
+                    raise serializers.ValidationError("Only PDF files are allowed.")
+        
+        return value
+    
     class Meta:
         model = ExamModel
         fields = ['id', 'name', 'type', 'category', 'pdf_file', 'created_at']

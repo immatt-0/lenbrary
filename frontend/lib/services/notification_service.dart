@@ -57,6 +57,18 @@ class NotificationService {
     }
   }
 
+  Future<void> markAllAsRead() async {
+    try {
+      await ApiService.markAllNotificationsRead();
+      // Update local state - mark all notifications as read
+      _notifications = _notifications.map((notification) {
+        return {...notification, 'is_read': true};
+      }).toList();
+    } catch (e) {
+      rethrow;
+    }
+  }
+
   int get unreadCount {
     return _notifications.where((n) => n['is_read'] == false).length;
   }

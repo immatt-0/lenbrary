@@ -138,6 +138,21 @@ def upload_thumbnail(request):
     if not file:
         return Response({'error': 'No file uploaded'}, status=status.HTTP_400_BAD_REQUEST)
 
+    # Validate file type
+    allowed_extensions = ['.jpg', '.jpeg', '.png', '.gif', '.bmp', '.webp']
+    file_extension = os.path.splitext(file.name.lower())[1]
+    
+    if file_extension not in allowed_extensions:
+        return Response({
+            'error': f'Invalid file type. Allowed types: {", ".join(allowed_extensions)}'
+        }, status=status.HTTP_400_BAD_REQUEST)
+    
+    # Validate file size (limit to 5MB)
+    if file.size > 5 * 1024 * 1024:  # 5MB in bytes
+        return Response({
+            'error': 'File size must be less than 5MB'
+        }, status=status.HTTP_400_BAD_REQUEST)
+
     filename = f"{uuid.uuid4().hex}_{file.name}"
     path = os.path.join('thumbnails', filename)
     saved_path = default_storage.save(path, ContentFile(file.read()))
@@ -201,6 +216,10 @@ def request_book(request):
         status='IN_ASTEPTARE',
         loan_duration_days=loan_duration
     )
+    
+    # Set estimated due date (will be updated to actual due date when picked up)
+    borrowing.due_date = timezone.now() + timedelta(days=loan_duration)
+    borrowing.save()
     
     # Create notification for librarians
     create_librarian_notification(
@@ -294,9 +313,12 @@ def user_info(request):
                 'student_class': student.student_class,
                 'school_type': student.school_type,
             })
-    except:
+    except Student.DoesNotExist:
+        # User does not have a student profile
         pass
-        
+    except Exception as e:
+        logging.getLogger('user_info').exception(f"Unexpected error in user_info: {e}")
+    
     return Response(data)
 
 # Librarian views
@@ -1253,3 +1275,19 @@ def cleanup_expired_invitations(request):
     
     expired_count = InvitationCode.objects.filter(expires_at__lt=timezone.now()).delete()[0]
     return Response({'deleted_count': expired_count})
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def mark_all_notifications_read(request):
+    """Mark all notifications as read for the current user"""
+    user = request.user
+    is_librarian = user.groups.filter(name='Librarians').exists()
+    
+    if is_librarian:
+        # Librarians can mark all librarian notifications as read
+        Notification.objects.filter(for_librarians=True, is_read=False).update(is_read=True)
+    else:
+        # Regular users can only mark their own notifications as read
+        Notification.objects.filter(user=user, for_librarians=False, is_read=False).update(is_read=True)
+    
+    return Response({'success': True})

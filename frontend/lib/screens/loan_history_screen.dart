@@ -333,7 +333,7 @@ class _LoanHistoryScreenState extends State<LoanHistoryScreen> {
                                                 ),
                                                 Text(
                                                   borrowDate != null
-                                                      ? '${borrowDate.day}/${borrowDate.month}/${borrowDate.year}'
+                                                      ? borrowDate.toString().split(' ')[0]
                                                       : 'N/A',
                                                   style: Theme.of(context)
                                                       .textTheme
@@ -388,7 +388,7 @@ class _LoanHistoryScreenState extends State<LoanHistoryScreen> {
                                                 ),
                                                 Text(
                                                   returnDate != null
-                                                      ? '${returnDate.day}/${returnDate.month}/${returnDate.year}'
+                                                      ? returnDate.toString().split(' ')[0]
                                                       : 'N/A',
                                                   style: Theme.of(context)
                                                       .textTheme

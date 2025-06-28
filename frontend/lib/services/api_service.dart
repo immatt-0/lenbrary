@@ -461,6 +461,15 @@ class ApiService {
     return true;
   }
 
+  // Mark all notifications as read
+  static Future<bool> markAllNotificationsRead() async {
+    await _makeRequest(
+      'POST',
+      '/book-library/mark-all-notifications-read',
+    );
+    return true;
+  }
+
   // Get all pending book requests (for librarians)
   static Future<List<dynamic>> getPendingRequests() async {
     final token = await getAccessToken();

@@ -49,6 +49,30 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     }
   }
   
+  Future<void> _markAllAsRead() async {
+    try {
+      await _notificationService.markAllAsRead();
+      if (mounted) setState(() {});
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Toate notificările au fost marcate ca citite'),
+            backgroundColor: Colors.green,
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Eroare la marcarea notificărilor ca citite: ${e.toString()}'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
+  
   void _showNotificationDetails(Map<String, dynamic> notification) {
     if (!mounted) return;
     
@@ -134,6 +158,12 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
             icon: const Icon(Icons.refresh),
             onPressed: _loadNotifications,
           ),
+          if (_notificationService.unreadCount > 0)
+            IconButton(
+              icon: const Icon(Icons.mark_email_read),
+              onPressed: _markAllAsRead,
+              tooltip: 'Marchează toate ca citite',
+            ),
         ],
       ),
       body: _notificationService.isLoading

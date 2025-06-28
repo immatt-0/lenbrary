@@ -386,7 +386,7 @@ class _ActiveLoansScreenState extends State<ActiveLoansScreen> {
                                                 ),
                                                 Text(
                                                   pickupDate != null
-                                                      ? '${pickupDate.day}/${pickupDate.month}/${pickupDate.year}'
+                                                      ? pickupDate.toString().split(' ')[0]
                                                       : 'N/A',
                                                   style: Theme.of(context)
                                                       .textTheme
@@ -441,7 +441,7 @@ class _ActiveLoansScreenState extends State<ActiveLoansScreen> {
                                                 ),
                                                 Text(
                                                   dueDate != null
-                                                      ? '${dueDate.day}/${dueDate.month}/${dueDate.year}'
+                                                      ? dueDate.toString().split(' ')[0]
                                                       : 'N/A',
                                                   style: Theme.of(context)
                                                       .textTheme

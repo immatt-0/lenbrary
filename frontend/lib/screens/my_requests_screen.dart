@@ -318,7 +318,7 @@ class _MyRequestsScreenState extends State<MyRequestsScreen> {
                                                           ),
                                                           Text(
                                                             requestDate != null
-                                                                ? '${requestDate.day}/${requestDate.month}/${requestDate.year}'
+                                                                ? requestDate.toString().split(' ')[0]
                                                                 : 'N/A',
                                                             style: Theme.of(
                                                                     context)
@@ -369,7 +369,7 @@ class _MyRequestsScreenState extends State<MyRequestsScreen> {
                                                                 .start,
                                                         children: [
                                                           Text(
-                                                            'Data returnării',
+                                                            _getDueDateLabel(request['status']),
                                                             style: Theme.of(
                                                                     context)
                                                                 .textTheme
@@ -382,7 +382,7 @@ class _MyRequestsScreenState extends State<MyRequestsScreen> {
                                                           ),
                                                           Text(
                                                             dueDate != null
-                                                                ? '${dueDate.day}/${dueDate.month}/${dueDate.year}'
+                                                                ? dueDate.toString().split(' ')[0]
                                                                 : 'N/A',
                                                             style: Theme.of(
                                                                     context)
@@ -397,6 +397,24 @@ class _MyRequestsScreenState extends State<MyRequestsScreen> {
                                                                           0.6),
                                                                 ),
                                                           ),
+                                                          if (dueDate != null && _isEstimatedDueDate(request['status'])) ...[
+                                                            Text(
+                                                              '(se va actualiza la ridicare)',
+                                                              style: Theme.of(
+                                                                      context)
+                                                                  .textTheme
+                                                                  .bodySmall
+                                                                  ?.copyWith(
+                                                                    color: Theme.of(
+                                                                            context)
+                                                                        .colorScheme
+                                                                        .onSurface
+                                                                        .withOpacity(
+                                                                            0.4),
+                                                                    fontStyle: FontStyle.italic,
+                                                                  ),
+                                                            ),
+                                                          ],
                                                         ],
                                                       ),
                                                     ),
@@ -511,6 +529,27 @@ class _MyRequestsScreenState extends State<MyRequestsScreen> {
     }
   }
 
+  String _getDueDateLabel(String status) {
+    switch (status) {
+      case 'IN_ASTEPTARE':
+        return 'Data returnării estimată';
+      case 'APROBAT':
+        return 'Data returnării estimată';
+      case 'GATA_RIDICARE':
+        return 'Data returnării estimată';
+      case 'IMPRUMUTAT':
+        return 'Data returnării';
+      case 'RETURNAT':
+        return 'Data returnării';
+      case 'INTARZIAT':
+        return 'Data returnării';
+      case 'RESPINS':
+        return 'Data returnării';
+      default:
+        return 'Necunoscut';
+    }
+  }
+
   Future<void> _showExtensionDialog(BuildContext context, Map<String, dynamic> request) async {
     int selectedDays = 7; // Default extension period
     final TextEditingController messageController = TextEditingController();
@@ -606,5 +645,9 @@ class _MyRequestsScreenState extends State<MyRequestsScreen> {
         );
       },
     );
+  }
+
+  bool _isEstimatedDueDate(String status) {
+    return status == 'IN_ASTEPTARE' || status == 'APROBAT' || status == 'GATA_RIDICARE';
   }
 }

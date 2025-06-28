@@ -34,6 +34,7 @@ urlpatterns = [
     # Notification endpoints
     path('notifications', views.get_notifications, name='get_notifications'),
     path('mark-notification-read/<int:notification_id>', views.mark_notification_read, name='mark_notification_read'),
+    path('mark-all-notifications-read', views.mark_all_notifications_read, name='mark_all_notifications_read'),
 
     # Exam model API endpoints
     path('exam-models/', list_exam_models, name='list_exam_models'),

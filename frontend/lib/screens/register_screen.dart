@@ -104,7 +104,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               backgroundColor: Colors.green,
             ),
           );
-          Navigator.pop(context);
+          Navigator.pushReplacementNamed(context, '/login');
         }
       } catch (e) {
         setState(() {
@@ -528,7 +528,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             const SizedBox(height: 16.0),
                             TextButton(
                               onPressed: () {
-                                Navigator.pop(context);
+                                Navigator.pushReplacementNamed(context, '/login');
                               },
                               child: const Text('Ai deja un cont? Autentifică-te'),
                             ),

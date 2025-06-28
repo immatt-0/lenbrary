@@ -247,19 +247,15 @@ Create service files for each cleanup command and set up timers to run them hour
 ### Test Credentials
 After setup, you can use these test accounts:
 
-1. **Admin/Superuser**
-   - Email: `admin@nlenau.ro`
-   - Password: `adminpass123`
-
-2. **Librarian**
+1. **Librarian**
    - Email: `librarian@nlenau.ro`
    - Password: `Library1!`
 
-3. **Teacher**
+2. **Teacher**
    - Email: `teacher@nlenau.ro`
    - Password: `Teacher1!`
 
-4. **Student**
+3. **Student**
    - Email: `student@nlenau.ro`
    - Password: `Student1!`
 

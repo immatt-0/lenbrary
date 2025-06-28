@@ -248,8 +248,8 @@ Create service files for each cleanup command and set up timers to run them hour
 After setup, you can use these test accounts:
 
 1. **Librarian**
-   - Email: `librarian@nlenau.ro`
-   - Password: `Library1!`
+   - Email: `library@nlenau.ro`
+   - Password: `Librarian1!`
 
 2. **Teacher**
    - Email: `teacher@nlenau.ro`

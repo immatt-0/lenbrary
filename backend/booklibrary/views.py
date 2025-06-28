@@ -22,15 +22,14 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import authenticate
 
-from .models import Book, Student, BookBorrowing, Message, Notification, ExamModel, EmailVerification
+from .models import Book, Student, BookBorrowing, Message, Notification, ExamModel, EmailVerification, InvitationCode
 from .serializers import (
     BookSerializer, StudentSerializer, BookBorrowingSerializer,
-    RegistrationSerializer, UserSerializer, ExamModelSerializer, EmailVerificationSerializer
+    RegistrationSerializer, UserSerializer, ExamModelSerializer, EmailVerificationSerializer, InvitationCodeSerializer
 )
 
 # Email validation pattern for @nlenau.ro domain
 EMAIL_PATTERN = r'^[a-zA-Z0-9_.+-]+@nlenau\.ro$'
-TEACHER_CODE = "Teacher101"
 
 @api_view(['POST'])
 @permission_classes([AllowAny])
@@ -44,10 +43,9 @@ def register_user(request):
         # Automatically create EmailVerification and send email
         if hasattr(user, 'email_verification'):
             ev = user.email_verification
-            ev.generate_token()
         else:
             ev = EmailVerification.objects.create(user=user)
-            ev.generate_token()
+        
         domain = request.get_host()
         verify_path = reverse('verify_email')
         verify_url = f"http://{domain}{verify_path}?token={ev.token}"
@@ -509,6 +507,14 @@ def email_token_obtain(request):
     try:
         ev = user.email_verification
         if not ev.is_verified:
+            # Check if the verification has expired
+            if ev.is_expired():
+                # Delete the expired unverified account
+                user.delete()
+                return Response(
+                    {'detail': 'Linkul de verificare a expirat (6 ore). Contul a fost șters automat. Poți să te înregistrezi din nou.'},
+                    status=status.HTTP_401_UNAUTHORIZED
+                )
             return Response(
                 {'detail': 'Contul nu a fost verificat. Vă rugăm să verificați e-mailul pentru a activa contul.'},
                 status=status.HTTP_401_UNAUTHORIZED
@@ -1159,6 +1165,18 @@ def verify_email(request):
         ev = EmailVerification.objects.get(token=token)
     except EmailVerification.DoesNotExist:
         return HttpResponse('Invalid token.', status=400, content_type='text/plain')
+    
+    # Check if token has expired
+    if ev.is_expired():
+        html = '''
+        <html><head><meta charset="UTF-8"><title>Token Expired</title></head>
+        <body style="margin:0;padding:0;min-height:100vh;background:linear-gradient(135deg,#ffffff 0%,#e3f0ff 100%);display:flex;align-items:center;justify-content:center;">
+        <div style="background:#ffe6e6;color:#dc3545;padding:32px 40px;border-radius:16px;box-shadow:0 2px 16px #0001;font-size:1.3rem;font-family:sans-serif;max-width:90vw;text-align:center;">
+        Linkul de verificare a expirat (6 ore).<br>Contul tău a fost șters automat.<br>Poți să te înregistrezi din nou.
+        </div></body></html>
+        '''
+        return HttpResponse(html, content_type='text/html')
+    
     if ev.is_verified:
         html = '''
         <html><head><meta charset="UTF-8"><title>Email Already Verified</title></head>
@@ -1178,3 +1196,59 @@ def verify_email(request):
     </div></body></html>
     '''
     return HttpResponse(html, content_type='text/html')
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def create_invitation_code(request):
+    """Create a new invitation code for teacher registration - Admin/Librarian only"""
+    # Check if user is admin or librarian
+    if not (request.user.is_superuser or request.user.groups.filter(name='Librarians').exists()):
+        return Response({'error': 'Unauthorized'}, status=status.HTTP_403_FORBIDDEN)
+    
+    # Create invitation code with 6-hour expiration
+    invitation = InvitationCode.objects.create(
+        created_by=request.user,
+        expires_at=timezone.now() + timedelta(hours=6)
+    )
+    invitation.generate_code()
+    
+    serializer = InvitationCodeSerializer(invitation)
+    return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def list_invitation_codes(request):
+    """List all invitation codes - Admin/Librarian only"""
+    # Check if user is admin or librarian
+    if not (request.user.is_superuser or request.user.groups.filter(name='Librarians').exists()):
+        return Response({'error': 'Unauthorized'}, status=status.HTTP_403_FORBIDDEN)
+    
+    invitations = InvitationCode.objects.all().order_by('-created_at')
+    serializer = InvitationCodeSerializer(invitations, many=True)
+    return Response(serializer.data)
+
+@api_view(['DELETE'])
+@permission_classes([IsAuthenticated])
+def delete_invitation_code(request, code_id):
+    """Delete an invitation code - Admin/Librarian only"""
+    # Check if user is admin or librarian
+    if not (request.user.is_superuser or request.user.groups.filter(name='Librarians').exists()):
+        return Response({'error': 'Unauthorized'}, status=status.HTTP_403_FORBIDDEN)
+    
+    try:
+        invitation = InvitationCode.objects.get(id=code_id)
+        invitation.delete()
+        return Response({'success': True})
+    except InvitationCode.DoesNotExist:
+        return Response({'error': 'Invitation code not found'}, status=status.HTTP_404_NOT_FOUND)
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def cleanup_expired_invitations(request):
+    """Clean up expired invitation codes - Admin/Librarian only"""
+    # Check if user is admin or librarian
+    if not (request.user.is_superuser or request.user.groups.filter(name='Librarians').exists()):
+        return Response({'error': 'Unauthorized'}, status=status.HTTP_403_FORBIDDEN)
+    
+    expired_count = InvitationCode.objects.filter(expires_at__lt=timezone.now()).delete()[0]
+    return Response({'deleted_count': expired_count})

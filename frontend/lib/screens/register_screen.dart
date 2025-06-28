@@ -15,7 +15,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _emailController = TextEditingController();
   final _firstNameController = TextEditingController();
   final _lastNameController = TextEditingController();
-  final _teacherCodeController = TextEditingController();
+  final _invitationCodeController = TextEditingController();
   
   bool _isLoading = false;
   bool _isTeacher = false;
@@ -47,7 +47,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     _emailController.dispose();
     _firstNameController.dispose();
     _lastNameController.dispose();
-    _teacherCodeController.dispose();
+    _invitationCodeController.dispose();
     super.dispose();
   }
 
@@ -86,8 +86,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
           department: department,
           studentClass: formattedClass,
           isTeacher: _isTeacher,
-          teacherCode: _isTeacher && _teacherCodeController.text.isNotEmpty
-              ? _teacherCodeController.text
+          invitationCode: _isTeacher && _invitationCodeController.text.isNotEmpty
+              ? _invitationCodeController.text
               : null,
         );
         
@@ -109,8 +109,27 @@ class _RegisterScreenState extends State<RegisterScreen> {
       } catch (e) {
         setState(() {
           String errorMsg = e.toString();
+          
+          // Try to extract invitation_code error from JSON response
+          if (errorMsg.contains('"invitation_code"')) {
+            try {
+              // Extract content between "invitation_code" and the closing bracket
+              final codeStart = errorMsg.indexOf('"invitation_code"');
+              final valueStart = errorMsg.indexOf('[', codeStart) + 1;
+              final valueEnd = errorMsg.indexOf(']', valueStart);
+              if (valueEnd > valueStart) {
+                // Extract and clean up the error message
+                errorMsg = errorMsg.substring(valueStart, valueEnd).trim();
+                // Remove extra quotes
+                errorMsg = errorMsg.replaceAll('"', '');
+              }
+            } catch (_) {
+              // If anything goes wrong during extraction, fall back to default message
+              errorMsg = "Eroare la înregistrare. Vă rugăm să încercați din nou.";
+            }
+          }
           // Try to extract 'detail' field from error message if it exists
-          if (errorMsg.contains('"detail"')) {
+          else if (errorMsg.contains('"detail"')) {
             try {
               // Extract content between "detail" and the closing brace
               final detailStart = errorMsg.indexOf('"detail"');
@@ -452,14 +471,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             if (_isTeacher) ...[
                               const SizedBox(height: 16.0),
                               TextFormField(
-                                controller: _teacherCodeController,
+                                controller: _invitationCodeController,
                                 decoration: const InputDecoration(
-                                  labelText: 'Cod profesor',
+                                  labelText: 'Cod de invitație',
                                   prefixIcon: Icon(Icons.verified_user_outlined),
                                 ),
                                 validator: (value) {
                                   if (_isTeacher && (value == null || value.isEmpty)) {
-                                    return 'Vă rugăm să introduceți codul de profesor';
+                                    return 'Vă rugăm să introduceți codul de invitație';
                                   }
                                   return null;
                                 },

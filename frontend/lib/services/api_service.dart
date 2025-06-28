@@ -46,7 +46,7 @@ class ApiService {
     String? department,
     String? studentClass,
     bool isTeacher = false,
-    String? teacherCode,
+    String? invitationCode,
     String?
         username, // Optional now - will be generated from email if not provided
   }) async {
@@ -63,14 +63,41 @@ class ApiService {
         if (department != null) 'department': department,
         if (studentClass != null) 'student_class': studentClass,
         'is_teacher': isTeacher,
-        if (isTeacher && teacherCode != null) 'teacher_code': teacherCode,
+        if (isTeacher && invitationCode != null) 'invitation_code': invitationCode,
       }),
     );
 
     if (response.statusCode == 201) {
       return jsonDecode(response.body);
     } else {
-      throw Exception('Failed to register: ${response.body}');
+      // Extract just the error message from the response body
+      try {
+        final errorData = jsonDecode(response.body);
+        if (errorData is Map<String, dynamic>) {
+          // Extract invitation_code error if it exists
+          if (errorData.containsKey('invitation_code')) {
+            final invitationError = errorData['invitation_code'];
+            if (invitationError is List && invitationError.isNotEmpty) {
+              throw invitationError.first.toString();
+            } else if (invitationError is String) {
+              throw invitationError;
+            }
+          }
+          // Extract other field errors
+          for (final entry in errorData.entries) {
+            if (entry.value is List && (entry.value as List).isNotEmpty) {
+              throw (entry.value as List).first.toString();
+            } else if (entry.value is String) {
+              throw entry.value;
+            }
+          }
+        }
+        // Fallback to the raw response if we can't parse it properly
+        throw response.body;
+      } catch (e) {
+        // If parsing fails, throw the original response
+        throw response.body;
+      }
     }
   }
 
@@ -274,7 +301,7 @@ class ApiService {
     if (response.statusCode == 201) {
       return jsonDecode(response.body);
     } else {
-      throw Exception('Failed to add book: ${response.body}');
+      throw Exception(response.body);
     }
   }
 

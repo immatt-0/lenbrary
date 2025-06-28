@@ -1,0 +1,3 @@
+2025-06-28 11:08:03,246 INFO To: teacher@nlenau.ro | Subject: Verify your email | Link: http://localhost:8000/book-library/verify-email?token=K1hjsZ9RQQSaroqxHRSSr1fQWPCWNPXR1bqDoAQaDNrRSHcR
+2025-06-28 11:46:27,766 INFO To: teatae@nlenau.ro | Subject: Verify your email | Link: http://localhost:8000/book-library/verify-email?token=JWIXu9rbQPjrIQOu9lgSVRNwIikmARA1lW1wE7SRaQLMGVDl
+2025-06-28 11:49:17,723 INFO To: teacher1@nlenau.ro | Subject: Verify your email | Link: http://localhost:8000/book-library/verify-email?token=8wx0DhmwSSAXRWtxHebVQxecGW3btyi8wiq0RmrmpRH57xhV

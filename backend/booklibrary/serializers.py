@@ -1,11 +1,17 @@
 from rest_framework import serializers
-from django.contrib.auth.models import User
-from .models import Book, Student, BookBorrowing, Message, ExamModel, EmailVerification
+from django.contrib.auth.models import User, Group
+from .models import Book, Student, BookBorrowing, Message, ExamModel, EmailVerification, InvitationCode
 import re
+import logging
 
 # Email validation pattern for nlenau.ro domain
 EMAIL_PATTERN = r'^[a-zA-Z0-9_.+-]+@nlenau\.ro$'
-TEACHER_CODE = "Teacher101"
+
+class InvitationCodeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = InvitationCode
+        fields = ['id', 'code', 'created_by', 'created_at', 'expires_at']
+        read_only_fields = ['code', 'created_by', 'created_at', 'expires_at']
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -60,7 +66,7 @@ class RegistrationSerializer(serializers.Serializer):
     phone_number = serializers.CharField(max_length=15, required=False, allow_blank=True)
     
     is_teacher = serializers.BooleanField(default=False)
-    teacher_code = serializers.CharField(max_length=50, required=False, allow_blank=True)
+    invitation_code = serializers.CharField(max_length=20, required=False, allow_blank=True)
     
     def validate_email(self, value):
         """Validate that email is from nlenau.ro domain"""
@@ -74,96 +80,61 @@ class RegistrationSerializer(serializers.Serializer):
         return value
     
     def validate(self, data):
-        """Validate data and generate username if not provided"""
-        # Generate username from email if not provided
-        if 'username' not in data or not data['username']:
-            # Extract username from email (part before @)
-            email = data['email']
-            username_part = email.split('@')[0]
-            
-            # Check if this username already exists
-            if User.objects.filter(username=username_part).exists():
-                # Add a timestamp suffix to make it unique
-                import time
-                username = f"{username_part}_{int(time.time())}"
-            else:
-                username = username_part
-                
-            data['username'] = username
-        
-        # Validate teacher code and student data based on school type
+        """Validate invitation code for teachers"""
         is_teacher = data.get('is_teacher', False)
+        invitation_code = data.get('invitation_code', '')
         
         if is_teacher:
-            teacher_code = data.get('teacher_code')
-            if not teacher_code or teacher_code != TEACHER_CODE:
-                raise serializers.ValidationError({'teacher_code': 'Invalid teacher code'})
-        else:
-            # For students, validate school_type, department, and student_class
-            if data.get('school_type') == 'Liceu' and not data.get('department'):
-                raise serializers.ValidationError({'department': 'Department is required for high school students'})
+            if not invitation_code:
+                raise serializers.ValidationError({'invitation_code': 'Invitation code is required for teacher registration'})
             
-            if data.get('school_type') == 'Liceu' and not data.get('student_class'):
-                raise serializers.ValidationError({'student_class': 'Class is required for high school students'})
+            try:
+                invitation = InvitationCode.objects.get(code=invitation_code.upper())
+                if not invitation.is_valid():
+                    raise serializers.ValidationError({'invitation_code': 'Invalid/Expired invitation code'})
+            except InvitationCode.DoesNotExist:
+                raise serializers.ValidationError({'invitation_code': 'Invalid/Expired invitation code'})
         
         return data
     
-    def validate_username(self, value):
-        """Validate that username is unique"""
-        if value and User.objects.filter(username=value).exists():
-            raise serializers.ValidationError("Username already exists")
-        return value
-    
-    def validate_school_type(self, value):
-        """Validate that school_type is one of the allowed values"""
-        if value and value not in ["Generala", "Liceu"]:
-            raise serializers.ValidationError("School type must be either Generala or Liceu")
-    
-    def validate_department(self, value):
-        """Validate that department is one of the allowed values"""
-        if value and value not in ["N", "SW", "STS", "MI", "FILO"]:
-            raise serializers.ValidationError("Department must be one of: N, SW, STS, MI, FILO")
-        return value
-    
-    def validate_student_class(self, value):
-        """Validate that student_class is one of the allowed values"""
-        from .models import Student
-        valid_classes = [c[0] for c in Student.CLASS_CHOICES]
-        if value and value not in valid_classes:
-            raise serializers.ValidationError(f"Student class must be one of: {', '.join(valid_classes)}")
-        return value
-    
     def create(self, validated_data):
-        """Create user and student/teacher profile"""
-        # Remove fields not needed for User model
         is_teacher = validated_data.pop('is_teacher', False)
-        teacher_code = validated_data.pop('teacher_code', None)
-        school_type = validated_data.pop('school_type', None)
-        department = validated_data.pop('department', None)
-        student_class = validated_data.pop('student_class', None)
-        phone_number = validated_data.pop('phone_number', '')
+        invitation_code = validated_data.pop('invitation_code', None)
         
         # Create user
-        user = User.objects.create_user(**validated_data)
+        user = User.objects.create_user(
+            username=validated_data.get('username') or validated_data['email'].split('@')[0],
+            email=validated_data['email'],
+            password=validated_data['password'],
+            first_name=validated_data['first_name'],
+            last_name=validated_data['last_name']
+        )
         
-        if not is_teacher:
-            # Create student profile
-            student_id = f"ST{100000 + user.id}"
-            Student.objects.create(
-                user=user,
-                student_id=student_id,
-                school_type=school_type,
-                department=department,
-                student_class=student_class,
-                phone_number=phone_number
-            )
-        else:
-            # If teacher, add to teacher group and make staff
-            from django.contrib.auth.models import Group
-            teacher_group, _ = Group.objects.get_or_create(name='Teachers')
-            user.groups.add(teacher_group)
+        if is_teacher:
+            # Add to Teachers group and make staff
+            teachers_group, created = Group.objects.get_or_create(name='Teachers')
+            user.groups.add(teachers_group)
             user.is_staff = True
             user.save()
+            
+            # Use and delete invitation code
+            if invitation_code:
+                invitation = InvitationCode.objects.get(code=invitation_code.upper())
+                usage_info = invitation.use_code(user)
+                
+                # Log the invitation code usage
+                logger = logging.getLogger('invitation_code_logger')
+                logger.info(f"Invitation code {usage_info['code']} used by {usage_info['used_by'].email} at {usage_info['used_at']}")
+        else:
+            # Create student profile
+            student = Student.objects.create(
+                user=user,
+                student_id=f"ST{user.id:06d}",
+                school_type=validated_data.get('school_type'),
+                department=validated_data.get('department'),
+                student_class=validated_data.get('student_class'),
+                phone_number=validated_data.get('phone_number')
+            )
         
         return user
 

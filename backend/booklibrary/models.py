@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
 from django.utils.crypto import get_random_string
+from datetime import timedelta
 
 class Book(models.Model):
     name = models.CharField(max_length=255)
@@ -185,15 +186,75 @@ class ExamModel(models.Model):
     def __str__(self):
         return f"{self.name} ({self.get_type_display()}) - {self.get_category_display()}"
 
+class InvitationCode(models.Model):
+    code = models.CharField(max_length=20, unique=True)
+    created_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='created_invitations')
+    created_at = models.DateTimeField(auto_now_add=True)
+    expires_at = models.DateTimeField()
+    
+    def is_expired(self):
+        """Check if the invitation code has expired"""
+        return timezone.now() > self.expires_at
+    
+    def is_valid(self):
+        """Check if the invitation code is valid (not expired)"""
+        return not self.is_expired()
+    
+    def use_code(self, user):
+        """Use the code and then delete it"""
+        if not self.is_valid():
+            raise ValueError("Code is not valid (expired)")
+        
+        # Store the user who used it before deletion (for logging purposes)
+        used_by_user = user
+        
+        # Delete the invitation code
+        self.delete()
+        
+        # Return information about the used code (for logging)
+        return {
+            'code': self.code,
+            'used_by': used_by_user,
+            'used_at': timezone.now()
+        }
+    
+    def generate_code(self):
+        """Generate a unique invitation code"""
+        from django.utils.crypto import get_random_string
+        while True:
+            code = get_random_string(8).upper()  # 8 character uppercase code
+            if not InvitationCode.objects.filter(code=code).exists():
+                self.code = code
+                self.save()
+                break
+    
+    def __str__(self):
+        status = "Expired" if self.is_expired() else "Valid"
+        return f"{self.code} - {status} (created by {self.created_by.username})"
+
 class EmailVerification(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='email_verification')
     token = models.CharField(max_length=64, unique=True)
     is_verified = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     
+    def save(self, *args, **kwargs):
+        if not self.token:
+            self.generate_token()
+        super().save(*args, **kwargs)
+    
     def generate_token(self):
-        self.token = get_random_string(48)
-        self.save()
+        """Generate a unique token, ensuring no duplicates"""
+        while True:
+            token = get_random_string(48)
+            if not EmailVerification.objects.filter(token=token).exists():
+                self.token = token
+                break
+
+    def is_expired(self):
+        """Check if the verification token has expired (6 hours)"""
+        expiration_time = self.created_at + timedelta(hours=6)
+        return timezone.now() > expiration_time
 
     def __str__(self):
         return f"{self.user.email} - {'Verified' if self.is_verified else 'Unverified'}"

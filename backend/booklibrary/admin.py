@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Book, Student, BookBorrowing, ExamModel, EmailVerification
+from .models import Book, Student, BookBorrowing, ExamModel, EmailVerification, InvitationCode
 
 @admin.register(Book)
 class BookAdmin(admin.ModelAdmin):
@@ -9,29 +9,15 @@ class BookAdmin(admin.ModelAdmin):
 
 @admin.register(Student)
 class StudentAdmin(admin.ModelAdmin):
-    list_display = ('student_id', 'get_full_name', 'department', 'phone_number')
-    search_fields = ('user__username', 'user__first_name', 'user__last_name', 'student_id')
-    
-    def get_full_name(self, obj):
-        return obj.user.get_full_name() or obj.user.username
-    get_full_name.short_description = 'Name'
+    list_display = ('user', 'student_id', 'school_type', 'department', 'student_class')
+    search_fields = ('user__email', 'user__first_name', 'user__last_name', 'student_id')
+    list_filter = ('school_type', 'department', 'student_class')
 
 @admin.register(BookBorrowing)
 class BookBorrowingAdmin(admin.ModelAdmin):
-    list_display = ('get_student', 'get_book', 'status', 'request_date', 'due_date', 'return_date', 'fine_amount')
-    list_filter = ('status',)
-    search_fields = ('student__user__username', 'book__name')
-    list_editable = ('status', 'due_date')
-    date_hierarchy = 'request_date'
-    
-    def get_student(self, obj):
-        return f"{obj.student.user.get_full_name() or obj.student.user.username} ({obj.student.student_id})"
-    
-    def get_book(self, obj):
-        return obj.book.name
-    
-    get_student.short_description = 'Student'
-    get_book.short_description = 'Book'
+    list_display = ('student', 'book', 'status', 'request_date', 'due_date')
+    list_filter = ('status', 'request_date')
+    search_fields = ('student__user__email', 'book__name')
 
 admin.site.register(ExamModel)
 
@@ -39,3 +25,15 @@ admin.site.register(ExamModel)
 class EmailVerificationAdmin(admin.ModelAdmin):
     list_display = ('user', 'is_verified', 'created_at')
     search_fields = ('user__email',)
+
+@admin.register(InvitationCode)
+class InvitationCodeAdmin(admin.ModelAdmin):
+    list_display = ('code', 'created_by', 'created_at', 'expires_at', 'is_valid')
+    list_filter = ('created_at', 'expires_at')
+    search_fields = ('code', 'created_by__username')
+    readonly_fields = ('code', 'created_at')
+    
+    def is_valid(self, obj):
+        return obj.is_valid()
+    is_valid.boolean = True
+    is_valid.short_description = 'Valid'

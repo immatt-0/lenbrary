@@ -43,4 +43,10 @@ urlpatterns = [
     # Email verification endpoints
     path('send-verification-email', views.send_verification_email, name='send_verification_email'),
     path('verify-email', views.verify_email, name='verify_email'),
+    
+    # Invitation code endpoints
+    path('invitation-codes/create', views.create_invitation_code, name='create_invitation_code'),
+    path('invitation-codes', views.list_invitation_codes, name='list_invitation_codes'),
+    path('invitation-codes/<int:code_id>/delete', views.delete_invitation_code, name='delete_invitation_code'),
+    path('invitation-codes/cleanup', views.cleanup_expired_invitations, name='cleanup_expired_invitations'),
 ]

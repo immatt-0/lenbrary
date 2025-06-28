@@ -1201,10 +1201,10 @@ def verify_email(request):
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def create_invitation_code(request):
-    """Create a new invitation code for teacher registration - Admin/Librarian only"""
-    # Check if user is admin or librarian
-    if not (request.user.is_superuser or request.user.groups.filter(name='Librarians').exists()):
-        return Response({'error': 'Unauthorized'}, status=status.HTTP_403_FORBIDDEN)
+    """Create a new invitation code for teacher registration - Admin only"""
+    # Check if user is admin (superuser only)
+    if not request.user.is_superuser:
+        return Response({'error': 'Only administrators can create invitation codes'}, status=status.HTTP_403_FORBIDDEN)
     
     # Create invitation code with 6-hour expiration
     invitation = InvitationCode.objects.create(
@@ -1219,10 +1219,10 @@ def create_invitation_code(request):
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def list_invitation_codes(request):
-    """List all invitation codes - Admin/Librarian only"""
-    # Check if user is admin or librarian
-    if not (request.user.is_superuser or request.user.groups.filter(name='Librarians').exists()):
-        return Response({'error': 'Unauthorized'}, status=status.HTTP_403_FORBIDDEN)
+    """List all invitation codes - Admin only"""
+    # Check if user is admin (superuser only)
+    if not request.user.is_superuser:
+        return Response({'error': 'Only administrators can view invitation codes'}, status=status.HTTP_403_FORBIDDEN)
     
     invitations = InvitationCode.objects.all().order_by('-created_at')
     serializer = InvitationCodeSerializer(invitations, many=True)
@@ -1231,10 +1231,10 @@ def list_invitation_codes(request):
 @api_view(['DELETE'])
 @permission_classes([IsAuthenticated])
 def delete_invitation_code(request, code_id):
-    """Delete an invitation code - Admin/Librarian only"""
-    # Check if user is admin or librarian
-    if not (request.user.is_superuser or request.user.groups.filter(name='Librarians').exists()):
-        return Response({'error': 'Unauthorized'}, status=status.HTTP_403_FORBIDDEN)
+    """Delete an invitation code - Admin only"""
+    # Check if user is admin (superuser only)
+    if not request.user.is_superuser:
+        return Response({'error': 'Only administrators can delete invitation codes'}, status=status.HTTP_403_FORBIDDEN)
     
     try:
         invitation = InvitationCode.objects.get(id=code_id)
@@ -1246,10 +1246,10 @@ def delete_invitation_code(request, code_id):
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def cleanup_expired_invitations(request):
-    """Clean up expired invitation codes - Admin/Librarian only"""
-    # Check if user is admin or librarian
-    if not (request.user.is_superuser or request.user.groups.filter(name='Librarians').exists()):
-        return Response({'error': 'Unauthorized'}, status=status.HTTP_403_FORBIDDEN)
+    """Clean up expired invitation codes - Admin only"""
+    # Check if user is admin (superuser only)
+    if not request.user.is_superuser:
+        return Response({'error': 'Only administrators can cleanup invitation codes'}, status=status.HTTP_403_FORBIDDEN)
     
     expired_count = InvitationCode.objects.filter(expires_at__lt=timezone.now()).delete()[0]
     return Response({'deleted_count': expired_count})

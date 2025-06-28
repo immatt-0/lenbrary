@@ -7,7 +7,7 @@ Lenbrary is a comprehensive library management system designed for educational i
 - **Backend**: Django REST API with SQLite database
 - **Frontend**: Cross-platform Flutter application
 - **Authentication**: JWT-based with email verification
-- **User Management**: Role-based access control (Students, Teachers, Librarians)
+- **User Management**: Role-based access control (Students, Teachers, Librarians, Admins)
 
 ## 🚀 Quick Start
 
@@ -83,7 +83,6 @@ Lenbrary is a comprehensive library management system designed for educational i
 - Process book pickups and returns
 - Add/edit/remove books
 - Manage user accounts
-- Create invitation codes for teachers
 - View system statistics
 
 ### Admin Features
@@ -91,6 +90,8 @@ Lenbrary is a comprehensive library management system designed for educational i
 - Full system administration
 - User management
 - Database management
+- **Create invitation codes for teachers**
+- **Manage invitation code system**
 
 ## 🔐 Authentication & Security
 
@@ -108,11 +109,11 @@ Lenbrary is a comprehensive library management system designed for educational i
 ### Invitation Code System
 - **Single-use codes**: Each invitation code can only be used once
 - **6-hour expiration**: Codes automatically expire after 6 hours
-- **Admin control**: Only admins and librarians can create invitation codes
+- **Admin control**: Only administrators (superusers) can create invitation codes
 - **Teacher registration**: Teachers must use valid invitation codes
 
 **How it works:**
-1. Admin/librarian creates invitation code
+1. **Admin creates invitation code** (superuser only)
 2. System generates unique 8-character uppercase code
 3. Teacher uses code during registration
 4. Code is consumed and cannot be reused
@@ -127,7 +128,7 @@ python manage.py view_all_users
 # View all users and automatically delete expired ones
 python manage.py view_all_users --delete-expired
 
-# View all invitation codes
+# View all invitation codes (admin only)
 python manage.py view_invitation_codes
 ```
 
@@ -136,7 +137,7 @@ python manage.py view_invitation_codes
 # Clean up expired email verifications
 python manage.py cleanup_expired_verifications
 
-# Clean up expired invitation codes
+# Clean up expired invitation codes (admin only)
 python manage.py cleanup_expired_invitations
 
 # Clean up unverified accounts
@@ -174,33 +175,47 @@ python manage.py shell
 - `POST /book-library/approve-request/` - Approve borrowing request (librarian only)
 - `POST /book-library/reject-request/` - Reject borrowing request (librarian only)
 
-### Invitation Codes
-- `POST /book-library/invitation-codes/create/` - Create invitation code (admin/librarian only)
-- `GET /book-library/invitation-codes/` - List invitation codes (admin/librarian only)
-- `DELETE /book-library/invitation-codes/{id}/delete/` - Delete invitation code (admin/librarian only)
-- `POST /book-library/invitation-codes/cleanup/` - Clean up expired codes (admin/librarian only)
+### Invitation Codes (Admin Only)
+- `POST /book-library/invitation-codes/create/` - Create invitation code (admin only)
+- `GET /book-library/invitation-codes/` - List invitation codes (admin only)
+- `DELETE /book-library/invitation-codes/{id}/delete/` - Delete invitation code (admin only)
+- `POST /book-library/invitation-codes/cleanup/` - Clean up expired codes (admin only)
 
 ### Messages
 - `GET /book-library/messages/` - Get user messages
 - `POST /book-library/messages/` - Send message
 
-## 🔧 Configuration
+## �� Configuration
 
-### Email Settings
-Configure email settings in `backend/lenbrary_api/settings.py`:
-```python
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'your-smtp-server.com'
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'your-email@domain.com'
-EMAIL_HOST_PASSWORD = 'your-password'
+### Environment Variables for Production
+
+**⚠️ SECURITY WARNING: Always use environment variables for production deployment!**
+
+Set these environment variables for production:
+
+```bash
+# Django Settings
+export DJANGO_SECRET_KEY="your-secure-secret-key-here"
+export DJANGO_DEBUG="False"
+export DJANGO_ALLOWED_HOSTS="yourdomain.com,www.yourdomain.com"
+
+# CORS Settings
+export CORS_ALLOW_ALL_ORIGINS="False"
+
+# Email Settings
+export EMAIL_BACKEND="django.core.mail.backends.smtp.EmailBackend"
+export EMAIL_HOST="your-smtp-server.com"
+export EMAIL_PORT="587"
+export EMAIL_HOST_USER="your-email@domain.com"
+export EMAIL_HOST_PASSWORD="your-email-password"
+export EMAIL_USE_TLS="True"
+export DEFAULT_FROM_EMAIL="noreply@yourdomain.com"
 ```
 
 ### Frontend Configuration
 Update API base URL in `frontend/lib/services/api_service.dart`:
 ```dart
-static const String baseUrl = 'http://your-server-ip:8000';
+static const String baseUrl = 'https://your-production-domain.com';
 ```
 
 ## 🧹 Automated Cleanup
@@ -287,6 +302,7 @@ python manage.py test booklibrary.tests
 - **Expired Code**: "This invitation code has expired"
 - **Used Code**: "This invitation code has already been used"
 - **Missing Code**: "Invitation code is required for teacher registration"
+- **Unauthorized**: "Only administrators can create invitation codes"
 
 ## 📊 Database Models
 
@@ -306,10 +322,42 @@ python manage.py test booklibrary.tests
 
 - **JWT Authentication**: Secure token-based authentication
 - **Email Verification**: Prevents fake accounts
-- **Invitation Codes**: Controlled teacher registration
+- **Invitation Codes**: Controlled teacher registration (admin only)
 - **Role-based Access**: Different permissions for different user types
 - **Automatic Cleanup**: Prevents database bloat from expired data
 - **Input Validation**: Server-side validation for all inputs
+- **Environment Variables**: Secure configuration management
+- **HTTPS Enforcement**: Automatic SSL redirect in production
+- **Security Headers**: XSS protection, content type sniffing prevention
+- **CORS Configuration**: Configurable cross-origin resource sharing
+
+## 🚨 Security Warnings
+
+### Before Deploying to Production
+
+1. **Change Default Secret Key**: Generate a new Django secret key
+2. **Disable Debug Mode**: Set `DJANGO_DEBUG=False`
+3. **Configure Allowed Hosts**: Set `DJANGO_ALLOWED_HOSTS` to your domain
+4. **Use HTTPS**: Configure SSL certificates
+5. **Secure Email Settings**: Use proper SMTP configuration
+6. **Database Security**: Use a production database (PostgreSQL/MySQL)
+7. **Remove Test Credentials**: Delete or change default test accounts
+8. **Configure CORS**: Restrict CORS to your frontend domain
+9. **Regular Updates**: Keep Django and dependencies updated
+10. **Backup Strategy**: Implement regular database backups
+
+### Security Checklist
+
+- [ ] Environment variables configured
+- [ ] Debug mode disabled
+- [ ] HTTPS enabled
+- [ ] Secret key changed
+- [ ] Allowed hosts configured
+- [ ] CORS properly configured
+- [ ] Email settings secure
+- [ ] Test accounts removed/changed
+- [ ] Database backups configured
+- [ ] Security headers enabled
 
 ## 📈 Performance
 
@@ -317,14 +365,6 @@ python manage.py test booklibrary.tests
 - **Caching**: Django's built-in caching system
 - **Cleanup Automation**: Regular cleanup prevents performance degradation
 - **Efficient Queries**: Optimized database queries
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Test thoroughly
-5. Submit a pull request
 
 ## 📄 License
 

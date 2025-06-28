@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../services/api_service.dart';
+import '../services/notification_service.dart';
 
 class ChatScreen extends StatefulWidget {
   const ChatScreen({Key? key}) : super(key: key);
@@ -122,11 +123,9 @@ class _ChatScreenState extends State<ChatScreen> {
     } catch (e) {
       if (!mounted) return;
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Eroare la trimiterea mesajului: ${e.toString()}'),
-          backgroundColor: Colors.red,
-        ),
+      NotificationService.showError(
+        context: context,
+        message: 'Eroare la trimiterea mesajului: \\${e.toString()}',
       );
     }
   }
@@ -161,11 +160,9 @@ class _ChatScreenState extends State<ChatScreen> {
         _isSearching = false;
       });
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Eroare la căutarea utilizatorilor: ${e.toString()}'),
-          backgroundColor: Colors.red,
-        ),
+      NotificationService.showError(
+        context: context,
+        message: 'Eroare la căutarea utilizatorilor: \\${e.toString()}',
       );
     }
   }
@@ -185,11 +182,9 @@ class _ChatScreenState extends State<ChatScreen> {
     } catch (e) {
       if (!mounted) return;
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Eroare la începerea conversației: ${e.toString()}'),
-          backgroundColor: Colors.red,
-        ),
+      NotificationService.showError(
+        context: context,
+        message: 'Eroare la începerea conversației: \\${e.toString()}',
       );
     }
   }

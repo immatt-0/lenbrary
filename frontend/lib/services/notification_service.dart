@@ -108,4 +108,203 @@ class NotificationService {
         return Colors.grey;
     }
   }
+
+  static void showTopNotification({
+    required BuildContext context,
+    required String message,
+    required IconData icon,
+    required Color backgroundColor,
+    Duration duration = const Duration(seconds: 3),
+  }) {
+    final overlay = Overlay.of(context);
+    late OverlayEntry overlayEntry;
+
+    overlayEntry = OverlayEntry(
+      builder: (context) => Positioned(
+        top: MediaQuery.of(context).padding.top + 50,
+        left: 16,
+        right: 16,
+        child: Material(
+          color: Colors.transparent,
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeOutCubic,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+              decoration: BoxDecoration(
+                color: backgroundColor,
+                borderRadius: BorderRadius.circular(20),
+                boxShadow: [
+                  BoxShadow(
+                    color: backgroundColor.withOpacity(0.3),
+                    blurRadius: 12,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
+              ),
+              child: Row(
+                children: [
+                  Icon(
+                    icon,
+                    color: Colors.white,
+                    size: 24,
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Text(
+                      message,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                  IconButton(
+                    onPressed: () {
+                      overlayEntry.remove();
+                    },
+                    icon: const Icon(
+                      Icons.close_rounded,
+                      color: Colors.white,
+                      size: 20,
+                    ),
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+
+    overlay.insert(overlayEntry);
+
+    Future.delayed(duration, () {
+      if (overlayEntry.mounted) {
+        overlayEntry.remove();
+      }
+    });
+  }
+
+  // Convenience methods for common notification types
+  static void showError({
+    required BuildContext context,
+    required String message,
+    Duration duration = const Duration(seconds: 4),
+  }) {
+    showTopNotification(
+      context: context,
+      message: message,
+      icon: Icons.error_outline_rounded,
+      backgroundColor: Theme.of(context).colorScheme.error,
+      duration: duration,
+    );
+  }
+
+  static void showSuccess({
+    required BuildContext context,
+    required String message,
+    Duration duration = const Duration(seconds: 3),
+  }) {
+    showTopNotification(
+      context: context,
+      message: message,
+      icon: Icons.check_circle_rounded,
+      backgroundColor: const Color(0xFF10B981), // Green
+      duration: duration,
+    );
+  }
+
+  static void showWarning({
+    required BuildContext context,
+    required String message,
+    Duration duration = const Duration(seconds: 3),
+  }) {
+    showTopNotification(
+      context: context,
+      message: message,
+      icon: Icons.warning_rounded,
+      backgroundColor: const Color(0xFFF59E0B), // Orange
+      duration: duration,
+    );
+  }
+
+  static void showInfo({
+    required BuildContext context,
+    required String message,
+    Duration duration = const Duration(seconds: 3),
+  }) {
+    showTopNotification(
+      context: context,
+      message: message,
+      icon: Icons.info_rounded,
+      backgroundColor: Theme.of(context).colorScheme.primary,
+      duration: duration,
+    );
+  }
+
+  // Specific notification types for the app
+  static void showFileUploadError({
+    required BuildContext context,
+    required String message,
+  }) {
+    showTopNotification(
+      context: context,
+      message: message,
+      icon: Icons.file_upload_rounded,
+      backgroundColor: Theme.of(context).colorScheme.error,
+    );
+  }
+
+  static void showValidationError({
+    required BuildContext context,
+    required String message,
+  }) {
+    showTopNotification(
+      context: context,
+      message: message,
+      icon: Icons.warning_rounded,
+      backgroundColor: Theme.of(context).colorScheme.error,
+    );
+  }
+
+  static void showNetworkError({
+    required BuildContext context,
+    required String message,
+  }) {
+    showTopNotification(
+      context: context,
+      message: message,
+      icon: Icons.wifi_off_rounded,
+      backgroundColor: Theme.of(context).colorScheme.error,
+      duration: const Duration(seconds: 4),
+    );
+  }
+
+  static void showBookActionSuccess({
+    required BuildContext context,
+    required String message,
+  }) {
+    showTopNotification(
+      context: context,
+      message: message,
+      icon: Icons.book_rounded,
+      backgroundColor: const Color(0xFF10B981), // Green
+    );
+  }
+
+  static void showExamActionSuccess({
+    required BuildContext context,
+    required String message,
+  }) {
+    showTopNotification(
+      context: context,
+      message: message,
+      icon: Icons.quiz_rounded,
+      backgroundColor: const Color(0xFF10B981), // Green
+    );
+  }
 } 

@@ -45,5 +45,9 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<key>NSCameraUsageDescription</key>
+	<string>Această aplicație necesită accesul la cameră pentru a face poze ale cărților.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Această aplicație necesită accesul la galeria de poze pentru a selecta copertile cărților.</string>
 </dict>
 </plist>

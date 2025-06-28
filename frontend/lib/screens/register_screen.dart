@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../services/api_service.dart';
+import '../services/notification_service.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({Key? key}) : super(key: key);
@@ -98,11 +99,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
           // Optionally log or handle error, but continue to login
         }
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Înregistrare reușită! Verifică inboxul pentru a-ți activa contul.'),
-              backgroundColor: Colors.green,
-            ),
+          NotificationService.showSuccess(
+            context: context,
+            message: 'Înregistrare reușită! Verifică inboxul pentru a-ți activa contul.',
           );
           Navigator.pushReplacementNamed(context, '/login');
         }

@@ -620,16 +620,18 @@ def librarian_return_book(request, borrowing_id):
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def update_book_stock(request, book_id):
-    """Update book inventory and stock - For librarians only"""
+    """Update book stock and inventory - For librarians only"""
     # Check if user is a librarian
     if not request.user.groups.filter(name='Librarians').exists():
         return Response({'error': 'Unauthorized'}, status=status.HTTP_403_FORBIDDEN)
     
     book = get_object_or_404(Book, id=book_id)
     
-    # Get the new stock value
     new_stock = request.data.get('stock')
     new_inventory = request.data.get('inventory')
+    
+    if new_stock is None and new_inventory is None:
+        return Response({'error': 'Either stock or inventory is required'}, status=status.HTTP_400_BAD_REQUEST)
     
     old_stock = book.stock
     old_inventory = book.inventory
@@ -640,8 +642,8 @@ def update_book_stock(request, book_id):
             if new_stock < 0:
                 return Response({'error': 'Stock cannot be negative'}, status=status.HTTP_400_BAD_REQUEST)
             book.stock = new_stock
-        except ValueError:
-            return Response({'error': 'Stock must be a number'}, status=status.HTTP_400_BAD_REQUEST)
+        except (ValueError, TypeError):
+            return Response({'error': 'Invalid stock value'}, status=status.HTTP_400_BAD_REQUEST)
     
     if new_inventory is not None:
         try:
@@ -649,28 +651,64 @@ def update_book_stock(request, book_id):
             if new_inventory < 0:
                 return Response({'error': 'Inventory cannot be negative'}, status=status.HTTP_400_BAD_REQUEST)
             book.inventory = new_inventory
-        except ValueError:
-            return Response({'error': 'Inventory must be a number'}, status=status.HTTP_400_BAD_REQUEST)
+        except (ValueError, TypeError):
+            return Response({'error': 'Invalid inventory value'}, status=status.HTTP_400_BAD_REQUEST)
     
     book.save()
     
-    # Create notification if stock or inventory changed
-    if old_stock != book.stock or old_inventory != book.inventory:
-        changes = []
-        if old_stock != book.stock:
-            changes.append(f"stoc: {old_stock} → {book.stock}")
-        if old_inventory != book.inventory:
-            changes.append(f"inventar: {old_inventory} → {book.inventory}")
-            
-        create_librarian_notification(
-            notification_type='stock_updated',
-            message=f"Cartea '{book.name}' a fost actualizată ({', '.join(changes)})",
-            book=book,
-            created_by=request.user
-        )
+    # Create notification for librarians
+    changes = []
+    if old_stock != book.stock:
+        changes.append(f"stoc: {old_stock} → {book.stock}")
+    if old_inventory != book.inventory:
+        changes.append(f"inventar: {old_inventory} → {book.inventory}")
+    
+    create_librarian_notification(
+        notification_type='stock_updated',
+        message=f"Cartea '{book.name}' a fost actualizată ({', '.join(changes)})",
+        book=book,
+        created_by=request.user
+    )
     
     serializer = BookSerializer(book)
     return Response(serializer.data)
+
+@api_view(['DELETE'])
+@permission_classes([IsAuthenticated])
+def delete_book(request, book_id):
+    """Delete a book - For librarians only"""
+    # Check if user is a librarian
+    if not request.user.groups.filter(name='Librarians').exists():
+        return Response({'error': 'Unauthorized'}, status=status.HTTP_403_FORBIDDEN)
+    
+    book = get_object_or_404(Book, id=book_id)
+    
+    # Check if the book has any active loans
+    active_loans = BookBorrowing.objects.filter(
+        book=book,
+        status__in=['IN_ASTEPTARE', 'APROBAT', 'GATA_RIDICARE', 'IMPRUMUTAT']
+    ).count()
+    
+    if active_loans > 0:
+        return Response({
+            'error': f'Cannot delete book. There are {active_loans} active loans for this book.'
+        }, status=status.HTTP_400_BAD_REQUEST)
+    
+    # Store book info for notification before deletion
+    book_name = book.name
+    book_author = book.author
+    
+    # Delete the book
+    book.delete()
+    
+    # Create notification for librarians
+    create_librarian_notification(
+        notification_type='book_deleted',
+        message=f"Cartea '{book_name}' de {book_author} a fost ștearsă",
+        created_by=request.user
+    )
+    
+    return Response({'success': True, 'message': 'Book deleted successfully'})
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
@@ -710,6 +748,13 @@ def request_loan_extension(request, borrowing_id):
     if borrowing.status != 'IMPRUMUTAT':
         return Response(
             {'error': f'Cannot request extension for book with status: {borrowing.status}'},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+    
+    # Check if the loan has already been extended
+    if borrowing.has_been_extended:
+        return Response(
+            {'error': 'This loan has already been extended once and cannot be extended again'},
             status=status.HTTP_400_BAD_REQUEST
         )
     
@@ -995,6 +1040,8 @@ def approve_extension(request, borrowing_id):
     
     # Clear the student message since the request is handled
     borrowing.student_message = ''
+    # Mark that this loan has been extended
+    borrowing.has_been_extended = True
     borrowing.save()
     
     # Add librarian message if provided

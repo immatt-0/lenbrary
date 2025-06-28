@@ -48,7 +48,7 @@ class BookBorrowingSerializer(serializers.ModelSerializer):
         model = BookBorrowing
         fields = ['id', 'book', 'student', 'book_id', 'request_date', 'approved_date',
                  'pickup_date', 'borrow_date', 'due_date', 'return_date', 'status', 
-                 'fine_amount', 'loan_duration_days', 'student_message']
+                 'fine_amount', 'loan_duration_days', 'student_message', 'has_been_extended']
         read_only_fields = ['request_date', 'approved_date', 'pickup_date', 'fine_amount']
 
 class MessageSerializer(serializers.ModelSerializer):

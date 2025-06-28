@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 import './add_exam_model_screen.dart';
 import '../services/api_service.dart';
+import '../services/notification_service.dart';
 
 class ExamModel {
   String name;
@@ -17,7 +19,8 @@ class ExamModelsAdminScreen extends StatefulWidget {
   State<ExamModelsAdminScreen> createState() => _ExamModelsAdminScreenState();
 }
 
-class _ExamModelsAdminScreenState extends State<ExamModelsAdminScreen> {
+class _ExamModelsAdminScreenState extends State<ExamModelsAdminScreen>
+    with TickerProviderStateMixin {
   List<dynamic> _models = [];
   bool _isLoading = true;
   String? _selectedType; // 'EN' or 'BAC'
@@ -25,10 +28,70 @@ class _ExamModelsAdminScreenState extends State<ExamModelsAdminScreen> {
   String _searchQuery = '';
   final TextEditingController _searchController = TextEditingController();
 
+  // Animation controllers
+  late AnimationController _fadeController;
+  late AnimationController _slideController;
+  late AnimationController _scaleController;
+  late Animation<double> _fadeAnimation;
+  late Animation<Offset> _slideAnimation;
+  late Animation<double> _scaleAnimation;
+
   @override
   void initState() {
     super.initState();
     _fetchExamModels();
+    
+    // Initialize animations
+    _fadeController = AnimationController(
+      duration: const Duration(milliseconds: 800),
+      vsync: this,
+    );
+    _slideController = AnimationController(
+      duration: const Duration(milliseconds: 600),
+      vsync: this,
+    );
+    _scaleController = AnimationController(
+      duration: const Duration(milliseconds: 500),
+      vsync: this,
+    );
+    
+    _fadeAnimation = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(
+      parent: _fadeController,
+      curve: Curves.easeInOut,
+    ));
+    
+    _slideAnimation = Tween<Offset>(
+      begin: const Offset(0, 0.3),
+      end: Offset.zero,
+    ).animate(CurvedAnimation(
+      parent: _slideController,
+      curve: Curves.easeOutCubic,
+    ));
+    
+    _scaleAnimation = Tween<double>(
+      begin: 0.9,
+      end: 1.0,
+    ).animate(CurvedAnimation(
+      parent: _scaleController,
+      curve: Curves.elasticOut,
+    ));
+    
+    // Start animations
+    _fadeController.forward();
+    _slideController.forward();
+    _scaleController.forward();
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    _fadeController.dispose();
+    _slideController.dispose();
+    _scaleController.dispose();
+    super.dispose();
   }
 
   List<dynamic> get _filteredModels {
@@ -52,8 +115,9 @@ class _ExamModelsAdminScreenState extends State<ExamModelsAdminScreen> {
     } catch (e) {
       setState(() => _isLoading = false);
       print('Error fetching models: ' + e.toString());
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Eroare la încărcarea modelelor: $e')),
+      NotificationService.showError(
+        context: context,
+        message: 'Eroare la încărcarea modelelor: $e',
       );
     }
   }
@@ -75,8 +139,9 @@ class _ExamModelsAdminScreenState extends State<ExamModelsAdminScreen> {
       await ApiService.deleteExamModel(id);
       await _fetchExamModels();
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Eroare la ștergere: $e')),
+      NotificationService.showError(
+        context: context,
+        message: 'Eroare la ștergere: $e',
       );
     }
   }
@@ -85,141 +150,801 @@ class _ExamModelsAdminScreenState extends State<ExamModelsAdminScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              Icons.menu_book_rounded,
-              size: 32,
-              color: Theme.of(context).colorScheme.primary,
+        elevation: 0,
+        backgroundColor: Colors.transparent,
+        title: FadeTransition(
+          opacity: _fadeAnimation,
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      Theme.of(context).colorScheme.primary,
+                      Theme.of(context).colorScheme.primary.withOpacity(0.8),
+                    ],
+                  ),
+                  borderRadius: BorderRadius.circular(10),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
+                      blurRadius: 8,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child: Icon(
+                  Icons.description_rounded,
+                  color: Colors.white,
+                  size: 24,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Text(
+                'Modele de examene',
+                style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: -0.5,
+                ),
+              ),
+            ],
+          ),
+        ),
+        automaticallyImplyLeading: false,
+        leading: FadeTransition(
+          opacity: _fadeAnimation,
+          child: Container(
+            margin: const EdgeInsets.only(left: 8),
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(10),
             ),
-            const SizedBox(width: 8),
-            const Text(
-              'Lenbrary',
-              style: TextStyle(
-                fontSize: 24.0,
-                fontWeight: FontWeight.w700,
-                letterSpacing: -0.5,
+            child: IconButton(
+              icon: Icon(
+                Icons.arrow_back_rounded,
+                color: Theme.of(context).colorScheme.primary,
+              ),
+              onPressed: () => Navigator.pop(context),
+              tooltip: 'Înapoi',
+            ),
+          ),
+        ),
+        actions: [
+          FadeTransition(
+            opacity: _fadeAnimation,
+            child: Container(
+              margin: const EdgeInsets.only(right: 8),
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: IconButton(
+                icon: Icon(
+                  Icons.refresh_rounded,
+                  color: Theme.of(context).colorScheme.primary,
+                ),
+                onPressed: _fetchExamModels,
+                tooltip: 'Reîmprospătează',
               ),
             ),
-          ],
-        ),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () {
-            Navigator.pushReplacementNamed(context, '/success');
-          },
-        ),
-        centerTitle: true,
+          ),
+        ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(24.0),
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              Theme.of(context).colorScheme.primary.withOpacity(0.08),
+              Theme.of(context).colorScheme.background,
+              Theme.of(context).colorScheme.primary.withOpacity(0.03),
+            ],
+            stops: const [0.0, 0.5, 1.0],
+          ),
+        ),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            const Text(
-              'Modele de examene',
-              style: TextStyle(
-                fontSize: 28,
-                fontWeight: FontWeight.bold,
-              ),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 24),
-            TextField(
-              controller: _searchController,
-              decoration: const InputDecoration(
-                labelText: 'Caută după nume',
-                border: OutlineInputBorder(),
-                prefixIcon: Icon(Icons.search),
-              ),
-              onChanged: (value) => setState(() => _searchQuery = value),
-            ),
-            const SizedBox(height: 16),
-            Row(
-              children: [
-                Expanded(
-                  child: DropdownButtonFormField<String>(
-                    value: _selectedType,
-                    decoration: const InputDecoration(
-                      labelText: 'Tip examen',
-                      border: OutlineInputBorder(),
-                    ),
-                    items: const [
-                      DropdownMenuItem(value: null, child: Text('Toate tipurile')),
-                      DropdownMenuItem(value: 'EN', child: Text('Evaluare Națională')),
-                      DropdownMenuItem(value: 'BAC', child: Text('Bacalaureat')),
-                    ],
-                    onChanged: (value) => setState(() => _selectedType = value),
-                  ),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: DropdownButtonFormField<String>(
-                    value: _selectedCategory,
-                    decoration: const InputDecoration(
-                      labelText: 'Materia',
-                      border: OutlineInputBorder(),
-                    ),
-                    items: const [
-                      DropdownMenuItem(value: null, child: Text('Toate materiile')),
-                      DropdownMenuItem(value: 'Matematica', child: Text('Matematică')),
-                      DropdownMenuItem(value: 'Romana', child: Text('Română')),
-                    ],
-                    onChanged: (value) => setState(() => _selectedCategory = value),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 24),
-            ElevatedButton(
-              onPressed: _addExamModel,
-              child: const Text('Adaugă model de examen'),
-            ),
-            const SizedBox(height: 24),
-            const Text(
-              'Aici poți adăuga modele de examene pentru studenți!',
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 32),
-            Expanded(
-              child: _isLoading
-                  ? const Center(child: CircularProgressIndicator())
-                  : _filteredModels.isEmpty
-                      ? const Center(
-                          child: Text(
-                            'Nu există modele de examene adăugate.',
-                            textAlign: TextAlign.center,
+            // Search and Filters Section
+            FadeTransition(
+              opacity: _fadeAnimation,
+              child: SlideTransition(
+                position: _slideAnimation,
+                child: Container(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    children: [
+                      // Search Bar
+                      Container(
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [
+                              Colors.white,
+                              Colors.grey[50]!,
+                            ],
                           ),
-                        )
-                      : ListView.builder(
-                          itemCount: _filteredModels.length,
-                          itemBuilder: (context, index) {
-                            final model = _filteredModels[index];
-                            return Card(
-                              margin: const EdgeInsets.symmetric(vertical: 8),
-                              child: ListTile(
-                                leading: Icon(model['type'] == 'EN'
-                                    ? Icons.school
-                                    : Icons.workspace_premium),
-                                title: Text(model['name'] ?? ''),
-                                subtitle: Text(
-                                  '${model['type'] == 'EN' ? 'Evaluare Națională' : 'Bacalaureat'} • '
-                                  '${model['category'] == 'Matematica' ? 'Matematică' : 'Română'}',
+                          borderRadius: BorderRadius.circular(20),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.08),
+                              blurRadius: 12,
+                              offset: const Offset(0, 4),
+                            ),
+                          ],
+                          border: Border.all(
+                            color: Theme.of(context).colorScheme.primary.withOpacity(0.2),
+                            width: 1.5,
+                          ),
+                        ),
+                        child: TextField(
+                          controller: _searchController,
+                          decoration: InputDecoration(
+                            hintText: '🔍 Caută modele de examene...',
+                            hintStyle: TextStyle(
+                              color: Theme.of(context).colorScheme.primary.withOpacity(0.6),
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500,
+                            ),
+                            prefixIcon: Container(
+                              margin: const EdgeInsets.all(8),
+                              padding: const EdgeInsets.all(10),
+                              decoration: BoxDecoration(
+                                color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Icon(
+                                Icons.search_rounded,
+                                color: Theme.of(context).colorScheme.primary,
+                                size: 24,
+                              ),
+                            ),
+                            suffixIcon: _searchQuery.isNotEmpty
+                                ? AnimatedContainer(
+                                    duration: const Duration(milliseconds: 200),
+                                    child: Container(
+                                      margin: const EdgeInsets.all(8),
+                                      decoration: BoxDecoration(
+                                        color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                                        borderRadius: BorderRadius.circular(10),
+                                      ),
+                                      child: IconButton(
+                                        icon: Icon(
+                                          Icons.clear_rounded,
+                                          color: Theme.of(context).colorScheme.primary,
+                                        ),
+                                        onPressed: () {
+                                          _searchController.clear();
+                                          setState(() => _searchQuery = '');
+                                        },
+                                      ),
+                                    ),
+                                  )
+                                : null,
+                            border: InputBorder.none,
+                            contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 20,
+                              vertical: 18,
+                            ),
+                          ),
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500,
+                            color: Theme.of(context).colorScheme.onSurface,
+                          ),
+                          onChanged: (value) => setState(() => _searchQuery = value),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      // Filters Row
+                      Row(
+                        children: [
+                          Flexible(
+                            flex: 1,
+                            child: Container(
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                  colors: [
+                                    Colors.white,
+                                    Colors.grey[50]!,
+                                  ],
                                 ),
-                                trailing: IconButton(
-                                  icon: const Icon(Icons.delete),
-                                  onPressed: () => _deleteModel(model['id']),
+                                borderRadius: BorderRadius.circular(16),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(0.05),
+                                    blurRadius: 8,
+                                    offset: const Offset(0, 2),
+                                  ),
+                                ],
+                                border: Border.all(
+                                  color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
                                 ),
                               ),
-                            );
-                          },
+                              child: DropdownButtonFormField<String>(
+                                value: _selectedType,
+                                isExpanded: true,
+                                decoration: InputDecoration(
+                                  labelText: 'Tip examen',
+                                  labelStyle: TextStyle(
+                                    color: Theme.of(context).colorScheme.primary,
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: 13,
+                                  ),
+                                  border: InputBorder.none,
+                                  contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                                  prefixIcon: Container(
+                                    margin: const EdgeInsets.all(6),
+                                    padding: const EdgeInsets.all(6),
+                                    decoration: BoxDecoration(
+                                      color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                                      borderRadius: BorderRadius.circular(6),
+                                    ),
+                                    child: Icon(
+                                      Icons.category_rounded,
+                                      color: Theme.of(context).colorScheme.primary,
+                                      size: 16,
+                                    ),
+                                  ),
+                                ),
+                                items: [
+                                  const DropdownMenuItem(value: null, child: Text('Toate tipurile', style: TextStyle(fontSize: 14))),
+                                  DropdownMenuItem(
+                                    value: 'EN',
+                                    child: Tooltip(
+                                      message: 'Evaluare Națională',
+                                      child: Row(
+                                        children: [
+                                          Icon(Icons.school_rounded, color: _getTypeColor('EN'), size: 16),
+                                          const SizedBox(width: 6),
+                                          const Text('EN', style: TextStyle(fontSize: 14)),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                  DropdownMenuItem(
+                                    value: 'BAC',
+                                    child: Tooltip(
+                                      message: 'Bacalaureat',
+                                      child: Row(
+                                        children: [
+                                          Icon(Icons.workspace_premium_rounded, color: _getTypeColor('BAC'), size: 16),
+                                          const SizedBox(width: 6),
+                                          const Text('BAC', style: TextStyle(fontSize: 14)),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                                onChanged: (value) => setState(() => _selectedType = value),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          Flexible(
+                            flex: 1,
+                            child: Container(
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                  colors: [
+                                    Colors.white,
+                                    Colors.grey[50]!,
+                                  ],
+                                ),
+                                borderRadius: BorderRadius.circular(16),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(0.05),
+                                    blurRadius: 8,
+                                    offset: const Offset(0, 2),
+                                  ),
+                                ],
+                                border: Border.all(
+                                  color: Theme.of(context).colorScheme.secondary.withOpacity(0.1),
+                                ),
+                              ),
+                              child: DropdownButtonFormField<String>(
+                                value: _selectedCategory,
+                                isExpanded: true,
+                                decoration: InputDecoration(
+                                  labelText: 'Materia',
+                                  labelStyle: TextStyle(
+                                    color: Theme.of(context).colorScheme.secondary,
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: 13,
+                                  ),
+                                  border: InputBorder.none,
+                                  contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                                  prefixIcon: Container(
+                                    margin: const EdgeInsets.all(6),
+                                    padding: const EdgeInsets.all(6),
+                                    decoration: BoxDecoration(
+                                      color: Theme.of(context).colorScheme.secondary.withOpacity(0.1),
+                                      borderRadius: BorderRadius.circular(6),
+                                    ),
+                                    child: Icon(
+                                      Icons.subject_rounded,
+                                      color: Theme.of(context).colorScheme.secondary,
+                                      size: 16,
+                                    ),
+                                  ),
+                                ),
+                                items: [
+                                  const DropdownMenuItem(value: null, child: Text('Toate materiile', style: TextStyle(fontSize: 14))),
+                                  DropdownMenuItem(
+                                    value: 'Matematica',
+                                    child: Row(
+                                      children: [
+                                        Icon(Icons.functions_rounded, color: _getCategoryColor('Matematica'), size: 16),
+                                        const SizedBox(width: 6),
+                                        const Text('Matematică', style: TextStyle(fontSize: 14)),
+                                      ],
+                                    ),
+                                  ),
+                                  DropdownMenuItem(
+                                    value: 'Romana',
+                                    child: Row(
+                                      children: [
+                                        Icon(Icons.menu_book_rounded, color: _getCategoryColor('Romana'), size: 16),
+                                        const SizedBox(width: 6),
+                                        const Text('Română', style: TextStyle(fontSize: 14)),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                                onChanged: (value) => setState(() => _selectedCategory = value),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 16),
+                      // Add Button
+                      Container(
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [
+                              Theme.of(context).colorScheme.primary,
+                              Theme.of(context).colorScheme.primary.withOpacity(0.8),
+                            ],
+                          ),
+                          borderRadius: BorderRadius.circular(16),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
+                              blurRadius: 8,
+                              offset: const Offset(0, 2),
+                            ),
+                          ],
+                        ),
+                        child: ElevatedButton.icon(
+                          onPressed: _addExamModel,
+                          icon: const Icon(Icons.add_rounded, color: Colors.white),
+                          label: const Text(
+                            'Adaugă model de examen',
+                            style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
+                          ),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.transparent,
+                            foregroundColor: Colors.white,
+                            elevation: 0,
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 32,
+                              vertical: 16,
+                            ),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            // Content Section
+            Expanded(
+              child: _isLoading
+                  ? Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          TweenAnimationBuilder<double>(
+                            duration: const Duration(milliseconds: 1000),
+                            tween: Tween(begin: 0.0, end: 1.0),
+                            builder: (context, value, child) {
+                              return Transform.scale(
+                                scale: value,
+                                child: Container(
+                                  padding: const EdgeInsets.all(20),
+                                  decoration: BoxDecoration(
+                                    color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: CircularProgressIndicator(
+                                    valueColor: AlwaysStoppedAnimation<Color>(
+                                      Theme.of(context).colorScheme.primary,
+                                    ),
+                                    strokeWidth: 3,
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                          const SizedBox(height: 24),
+                          Text(
+                            'Se încarcă modelele...',
+                            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                              color: Theme.of(context).colorScheme.primary,
+                            ),
+                          ),
+                        ],
+                      ),
+                    )
+                  : _filteredModels.isEmpty
+                      ? Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              TweenAnimationBuilder<double>(
+                                duration: const Duration(milliseconds: 800),
+                                tween: Tween(begin: 0.0, end: 1.0),
+                                builder: (context, value, child) {
+                                  return Transform.scale(
+                                    scale: value,
+                                    child: Container(
+                                      padding: const EdgeInsets.all(24),
+                                      decoration: BoxDecoration(
+                                        color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                                        shape: BoxShape.circle,
+                                      ),
+                                      child: Icon(
+                                        Icons.quiz_outlined,
+                                        size: 56,
+                                        color: Theme.of(context).colorScheme.primary,
+                                      ),
+                                    ),
+                                  );
+                                },
+                              ),
+                              const SizedBox(height: 24),
+                              Text(
+                                'Nu există modele de examene',
+                                style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                                  color: Theme.of(context).colorScheme.primary.withOpacity(0.7),
+                                  fontWeight: FontWeight.w600,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                              const SizedBox(height: 16),
+                              Text(
+                                'Adaugă primul model de examen',
+                                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                  color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                            ],
+                          ),
+                        )
+                      : FadeTransition(
+                          opacity: _fadeAnimation,
+                          child: SlideTransition(
+                            position: _slideAnimation,
+                            child: ListView.builder(
+                              padding: const EdgeInsets.all(16),
+                              itemCount: _filteredModels.length,
+                              itemBuilder: (context, index) {
+                                final model = _filteredModels[index];
+                                return TweenAnimationBuilder<double>(
+                                  duration: Duration(milliseconds: 400 + (index * 100)),
+                                  tween: Tween(begin: 0.0, end: 1.0),
+                                  builder: (context, value, child) {
+                                    return Transform.translate(
+                                      offset: Offset(0, 20 * (1 - value)),
+                                      child: Opacity(
+                                        opacity: value,
+                                        child: _buildModelCard(model, index),
+                                      ),
+                                    );
+                                  },
+                                );
+                              },
+                            ),
+                          ),
                         ),
             ),
           ],
         ),
       ),
     );
+  }
+
+  Widget _buildModelCard(dynamic model, int index) {
+    final pdfUrl = model['pdf_file'] != null
+        ? (model['pdf_file'].toString().startsWith('http')
+            ? model['pdf_file']
+            : ApiService.baseUrl + model['pdf_file'])
+        : null;
+    final typeColor = _getTypeColor(model['type']);
+    final categoryColor = _getCategoryColor(model['category']);
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 16),
+      child: Card(
+        elevation: 8,
+        shadowColor: Colors.black.withOpacity(0.1),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                Colors.white,
+                Colors.grey[50]!,
+              ],
+            ),
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Header with icons and title
+                Row(
+                  children: [
+                    // Type Icon
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [
+                            typeColor,
+                            typeColor.withOpacity(0.8),
+                          ],
+                        ),
+                        borderRadius: BorderRadius.circular(12),
+                        boxShadow: [
+                          BoxShadow(
+                            color: typeColor.withOpacity(0.3),
+                            blurRadius: 8,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      child: Icon(
+                        _getTypeIcon(model['type']),
+                        color: Colors.white,
+                        size: 24,
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    // Category Icon
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [
+                            categoryColor,
+                            categoryColor.withOpacity(0.8),
+                          ],
+                        ),
+                        borderRadius: BorderRadius.circular(12),
+                        boxShadow: [
+                          BoxShadow(
+                            color: categoryColor.withOpacity(0.3),
+                            blurRadius: 8,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      child: Icon(
+                        _getCategoryIcon(model['category']),
+                        color: Colors.white,
+                        size: 24,
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    // Title and Info
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            model['name'] ?? 'Model fără nume',
+                            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: Theme.of(context).colorScheme.onSurface,
+                              fontSize: 18,
+                            ),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          const SizedBox(height: 8),
+                          Wrap(
+                            spacing: 8,
+                            runSpacing: 4,
+                            children: [
+                              Tooltip(
+                                message: model['type'] == 'EN' ? 'Evaluare Națională' : 'Bacalaureat',
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                  decoration: BoxDecoration(
+                                    color: typeColor.withOpacity(0.1),
+                                    borderRadius: BorderRadius.circular(12),
+                                    border: Border.all(
+                                      color: typeColor.withOpacity(0.3),
+                                    ),
+                                  ),
+                                  child: Text(
+                                    model['type'] == 'EN' ? 'EN' : 'BAC',
+                                    style: TextStyle(
+                                      color: typeColor,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                decoration: BoxDecoration(
+                                  color: categoryColor.withOpacity(0.1),
+                                  borderRadius: BorderRadius.circular(12),
+                                  border: Border.all(
+                                    color: categoryColor.withOpacity(0.3),
+                                  ),
+                                ),
+                                child: Text(
+                                  model['category'] == 'Matematica' ? 'Matematică' : 'Română',
+                                  style: TextStyle(
+                                    color: categoryColor,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 12,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                    // Action Buttons
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        // PDF Button
+                        if (pdfUrl != null)
+                          Container(
+                            margin: const EdgeInsets.only(right: 8),
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                colors: [
+                                  Theme.of(context).colorScheme.primary,
+                                  Theme.of(context).colorScheme.secondary,
+                                ],
+                              ),
+                              borderRadius: BorderRadius.circular(12),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
+                                  blurRadius: 8,
+                                  offset: const Offset(0, 2),
+                                ),
+                              ],
+                            ),
+                            child: IconButton(
+                              icon: const Icon(
+                                Icons.picture_as_pdf_rounded,
+                                color: Colors.white,
+                                size: 24,
+                              ),
+                              onPressed: () => _openPdf(pdfUrl),
+                              tooltip: 'Deschide PDF',
+                            ),
+                          ),
+                        // Delete Button
+                        Container(
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              colors: [
+                                Theme.of(context).colorScheme.error,
+                                Theme.of(context).colorScheme.error.withOpacity(0.8),
+                              ],
+                            ),
+                            borderRadius: BorderRadius.circular(12),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Theme.of(context).colorScheme.error.withOpacity(0.3),
+                                blurRadius: 8,
+                                offset: const Offset(0, 2),
+                              ),
+                            ],
+                          ),
+                          child: IconButton(
+                            icon: const Icon(
+                              Icons.delete_rounded,
+                              color: Colors.white,
+                              size: 24,
+                            ),
+                            onPressed: () => _deleteModel(model['id']),
+                            tooltip: 'Șterge model',
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Color _getTypeColor(String type) {
+    switch (type) {
+      case 'EN':
+        return const Color(0xFF10B981); // Green
+      case 'BAC':
+        return const Color(0xFFF59E0B); // Orange
+      default:
+        return Theme.of(context).colorScheme.tertiary; // Lighter Blue
+    }
+  }
+
+  Color _getCategoryColor(String category) {
+    switch (category) {
+      case 'Matematica':
+        return const Color(0xFF3B82F6); // Blue
+      case 'Romana':
+        return const Color(0xFFEF4444); // Red
+      default:
+        return Theme.of(context).colorScheme.tertiary;
+    }
+  }
+
+  IconData _getTypeIcon(String type) {
+    switch (type) {
+      case 'EN':
+        return Icons.school_rounded;
+      case 'BAC':
+        return Icons.workspace_premium_rounded;
+      default:
+        return Icons.quiz_rounded;
+    }
+  }
+
+  IconData _getCategoryIcon(String category) {
+    switch (category) {
+      case 'Matematica':
+        return Icons.functions_rounded;
+      case 'Romana':
+        return Icons.menu_book_rounded;
+      default:
+        return Icons.subject_rounded;
+    }
+  }
+
+  Future<void> _openPdf(String url) async {
+    try {
+      if (await canLaunch(url)) {
+        await launch(url);
+      } else {
+        NotificationService.showWarning(
+          context: context,
+          message: 'Nu s-a putut deschide PDF-ul.',
+        );
+      }
+    } catch (e) {
+      NotificationService.showWarning(
+        context: context,
+        message: 'Eroare la deschiderea PDF: ${e.toString()}',
+      );
+    }
   }
 }

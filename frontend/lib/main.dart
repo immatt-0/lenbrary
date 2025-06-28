@@ -29,13 +29,20 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         useMaterial3: true,
         colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(0xFF2196F3), // Modern blue as base
+          seedColor: const Color(0xFF2196F3), // Blue as base
           brightness: Brightness.light,
-          primary: const Color(0xFF2196F3),
-          secondary: const Color(0xFF64B5F6),
-          tertiary: const Color(0xFF90CAF9),
+          primary: const Color(0xFF2196F3), // Blue
+          secondary: const Color(0xFF64B5F6), // Light Blue
+          tertiary: const Color(0xFF90CAF9), // Lighter Blue
           surface: Colors.white,
           background: const Color(0xFFF8FAFC),
+          // Add more vibrant colors
+          error: const Color(0xFFEF4444), // Red
+          onPrimary: Colors.white,
+          onSecondary: Colors.white,
+          onTertiary: Colors.white,
+          onSurface: const Color(0xFF1E293B),
+          onBackground: const Color(0xFF1E293B),
         ),
         // Modern typography
         textTheme: const TextTheme(

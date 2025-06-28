@@ -938,4 +938,27 @@ class ApiService {
       throw Exception(jsonDecode(response.body)['detail'] ?? 'Failed to send verification email');
     }
   }
+
+  // Delete book (librarian)
+  static Future<Map<String, dynamic>> deleteBook({
+    required int bookId,
+  }) async {
+    final token = await getAccessToken();
+    if (token == null) {
+      throw Exception('Not authenticated');
+    }
+
+    final response = await http.delete(
+      Uri.parse('$baseUrl/book-library/delete-book/$bookId'),
+      headers: {
+        'Authorization': 'Bearer $token',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body);
+    } else {
+      throw Exception('Failed to delete book: ${response.body}');
+    }
+  }
 }

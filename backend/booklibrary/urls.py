@@ -20,6 +20,7 @@ urlpatterns = [
     path('mark-pickup/<int:borrowing_id>', views.mark_pickup, name='mark_pickup'),
     path('librarian-return/<int:borrowing_id>', views.librarian_return_book, name='librarian_return_book'),
     path('update-book-stock/<int:book_id>', views.update_book_stock, name='update_book_stock'),
+    path('delete-book/<int:book_id>', views.delete_book, name='delete_book'),
     
     # New messaging endpoints
     path('request-extension/<int:borrowing_id>', views.request_loan_extension, name='request_extension'),

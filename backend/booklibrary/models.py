@@ -20,7 +20,9 @@ class Book(models.Model):
 
     @property
     def available_copies(self):
-        # Available copies is simply the current stock
+        # Available copies is the difference between inventory and stock
+        # Inventory = total copies in library
+        # Stock = copies currently available for borrowing
         return self.stock
 
 class Student(models.Model):
@@ -98,6 +100,7 @@ class BookBorrowing(models.Model):
     fine_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
     loan_duration_days = models.IntegerField(choices=LOAN_DURATION_CHOICES, default=14)  # Default 2 weeks
     student_message = models.TextField(blank=True, null=True)  # Message from student about extension request or other
+    has_been_extended = models.BooleanField(default=False)  # Track if this loan has been extended before
 
     def __str__(self):
         return f"{self.student} - {self.book} ({self.status})"
@@ -135,6 +138,7 @@ class Notification(models.Model):
     NOTIFICATION_TYPES = [
         ('book_added', 'Carte adăugată'),
         ('stock_updated', 'Stoc actualizat'),
+        ('book_deleted', 'Carte ștearsă'),
         ('book_requested', 'Carte solicitată'),
         ('request_approved', 'Cerere aprobată'),
         ('request_rejected', 'Cerere respinsă'),

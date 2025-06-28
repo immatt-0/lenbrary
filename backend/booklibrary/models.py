@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from django.utils import timezone
 from django.utils.crypto import get_random_string
 from datetime import timedelta
+from .utils import get_display_name
 
 class Book(models.Model):
     name = models.CharField(max_length=255)
@@ -54,7 +55,7 @@ class Student(models.Model):
     phone_number = models.CharField(max_length=15, blank=True, null=True)
 
     def __str__(self):
-        return f"{self.user.get_full_name()} ({self.student_id})"
+        return f"{get_display_name(self.user)} ({self.student_id})"
 
 class BookBorrowing(models.Model):
     STATUS_CHOICES = [

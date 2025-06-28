@@ -370,7 +370,7 @@ class _SuccessScreenState extends State<SuccessScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Bun venit, Bibliotecar $_userName!',
+                          'Bun venit, doamna Bibliotecara!',
                           style: Theme.of(context).textTheme.headlineMedium,
                         ),
                         const SizedBox(height: 8.0),

@@ -41,6 +41,14 @@ class _LoanHistoryScreenState extends State<LoanHistoryScreen> {
     }
   }
 
+  String toTitleCase(String text) {
+    if (text.isEmpty) return text;
+    return text.split(' ').map((word) {
+      if (word.isEmpty) return word;
+      return word[0].toUpperCase() + word.substring(1).toLowerCase();
+    }).join(' ');
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -206,7 +214,7 @@ class _LoanHistoryScreenState extends State<LoanHistoryScreen> {
                                                   CrossAxisAlignment.start,
                                               children: [
                                                 Text(
-                                                  '${student['user']['first_name']} ${student['user']['last_name']}',
+                                                  toTitleCase(student['user']['display_name'] ?? '${student['user']['first_name']} ${student['user']['last_name']}'),
                                                   style: Theme.of(context)
                                                       .textTheme
                                                       .titleMedium

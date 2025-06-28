@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User, Group
 from .models import Book, Student, BookBorrowing, Message, ExamModel, EmailVerification, InvitationCode
+from .utils import get_display_name
 import re
 import logging
 
@@ -14,9 +15,14 @@ class InvitationCodeSerializer(serializers.ModelSerializer):
         read_only_fields = ['code', 'created_by', 'created_at', 'expires_at']
 
 class UserSerializer(serializers.ModelSerializer):
+    display_name = serializers.SerializerMethodField()
+    
     class Meta:
         model = User
-        fields = ['id', 'username', 'email', 'first_name', 'last_name']
+        fields = ['id', 'username', 'email', 'first_name', 'last_name', 'display_name']
+    
+    def get_display_name(self, obj):
+        return get_display_name(obj)
 
 class BookSerializer(serializers.ModelSerializer):
     available_copies = serializers.IntegerField(read_only=True)
@@ -101,13 +107,17 @@ class RegistrationSerializer(serializers.Serializer):
         is_teacher = validated_data.pop('is_teacher', False)
         invitation_code = validated_data.pop('invitation_code', None)
         
+        # Capitalize names before creating user
+        first_name = validated_data.get('first_name', '').strip()
+        last_name = validated_data.get('last_name', '').strip()
+        
         # Create user
         user = User.objects.create_user(
             username=validated_data.get('username') or validated_data['email'].split('@')[0],
             email=validated_data['email'],
             password=validated_data['password'],
-            first_name=validated_data['first_name'],
-            last_name=validated_data['last_name']
+            first_name=first_name.title(),
+            last_name=last_name.title()
         )
         
         if is_teacher:

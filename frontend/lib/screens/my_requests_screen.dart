@@ -148,8 +148,9 @@ class _MyRequestsScreenState extends State<MyRequestsScreen> {
                               ? DateTime.parse(request['request_date'])
                                   .toLocal()
                               : null;
-                          final dueDate = requestDate?.add(Duration(
-                              days: request['loan_duration_days'] ?? 14));
+                          final dueDate = request['due_date'] != null
+                              ? DateTime.parse(request['due_date']).toLocal()
+                              : null;
 
                           return Center(
                             child: ConstrainedBox(
@@ -585,7 +586,7 @@ class _MyRequestsScreenState extends State<MyRequestsScreen> {
                         backgroundColor: Colors.green,
                       ),
                     );
-                    _loadRequests(); // Refresh the list
+                    await _loadRequests(); // Refresh the list
                   }
                 } catch (e) {
                   if (mounted) {

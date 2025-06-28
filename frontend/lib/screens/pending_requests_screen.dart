@@ -300,10 +300,7 @@ class _PendingRequestsScreenState extends State<PendingRequestsScreen>
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            request['student']['user']['first_name'] +
-                                    ' ' +
-                                    request['student']['user']['last_name'] ??
-                                'Utilizator necunoscut',
+                            toTitleCase(request['student']['user']['display_name'] ?? request['student']['user']['first_name'] + ' ' + request['student']['user']['last_name'] ?? 'Utilizator necunoscut'),
                             style: Theme.of(context)
                                 .textTheme
                                 .titleMedium
@@ -509,12 +506,9 @@ class _PendingRequestsScreenState extends State<PendingRequestsScreen>
                                 ),
                           ),
                           Text(
-                            request['request_date'] != null
-                                ? DateTime.parse(request['request_date'])
+                            request['due_date'] != null
+                                ? DateTime.parse(request['due_date'])
                                     .toLocal()
-                                    .add(Duration(
-                                        days: request['loan_duration_days'] ??
-                                            14))
                                     .toString()
                                     .split(' ')[0]
                                 : 'N/A',
@@ -601,5 +595,13 @@ class _PendingRequestsScreenState extends State<PendingRequestsScreen>
         );
       },
     );
+  }
+
+  String toTitleCase(String text) {
+    if (text.isEmpty) return text;
+    return text.split(' ').map((word) {
+      if (word.isEmpty) return word;
+      return word[0].toUpperCase() + word.substring(1).toLowerCase();
+    }).join(' ');
   }
 }

@@ -198,10 +198,21 @@ class _MessagesScreenState extends State<MessagesScreen> {
     if (_searchQuery.isEmpty) return _users;
     final query = _searchQuery.toLowerCase();
     return _users.where((user) {
-      final name = (user['display_name'] ?? user['username'] ?? '').toString().toLowerCase();
+      final name = (user['display_name'] ?? user['full_name'] ?? 
+                     (user['first_name'] != null && user['last_name'] != null
+                        ? '${user['first_name']} ${user['last_name']}'
+                        : user['username'] ?? 'Unknown')).toString().toLowerCase();
       final email = (user['email'] ?? '').toString().toLowerCase();
       return name.contains(query) || email.contains(query);
     }).toList();
+  }
+
+  String toTitleCase(String text) {
+    if (text.isEmpty) return text;
+    return text.split(' ').map((word) {
+      if (word.isEmpty) return word;
+      return word[0].toUpperCase() + word.substring(1).toLowerCase();
+    }).join(' ');
   }
 
   Widget _buildUserList() {
@@ -234,19 +245,20 @@ class _MessagesScreenState extends State<MessagesScreen> {
             itemCount: _filteredUsers.length,
             itemBuilder: (context, index) {
               final user = _filteredUsers[index];
-              final displayName = user['display_name'] ?? user['username'] ?? 'Unknown';
+              final displayName = toTitleCase(user['display_name'] ?? user['full_name'] ?? 
+                                 ((user['first_name'] != null && user['last_name'] != null)
+                                    ? '${user['first_name']} ${user['last_name']}'
+                                    : (user['username'] ?? 'Unknown')));
               final email = user['email'] ?? '';
               final isLibrarian = user['is_librarian'] == true;
               
               return ListTile(
                 leading: CircleAvatar(
-                  child: Text(displayName[0].toUpperCase()),
+                  child: Text(displayName.isNotEmpty ? displayName[0] : '?'),
                 ),
                 title: Text(displayName),
                 subtitle: Text(email),
-                trailing: isLibrarian 
-                    ? const Chip(label: Text('Bibliotecar'))
-                    : null,
+                trailing: isLibrarian ? const Icon(Icons.verified_user, color: Colors.blue) : null,
                 selected: _selectedUser?['id'] == user['id'],
                 onTap: () {
                   setState(() {
@@ -308,7 +320,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
                   radius: 16,
                   backgroundColor: Colors.blue[100],
                   child: Text(
-                    senderName[0].toUpperCase(),
+                    toTitleCase(senderName).substring(0, 1),
                     style: TextStyle(color: Colors.blue[900]),
                   ),
                 ),
@@ -326,7 +338,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
                     children: [
                       if (!isMe && _isLibrarian)
                         Text(
-                          senderName,
+                          toTitleCase(senderName),
                           style: const TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 12,
@@ -350,7 +362,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
                   radius: 16,
                   backgroundColor: Colors.blue[100],
                   child: Text(
-                    senderName[0].toUpperCase(),
+                    toTitleCase(senderName).substring(0, 1),
                     style: TextStyle(color: Colors.blue[900]),
                   ),
                 ),
@@ -452,9 +464,10 @@ class _MessagesScreenState extends State<MessagesScreen> {
                         itemCount: _users.length,
                         itemBuilder: (context, index) {
                           final user = _users[index];
-                          final displayName = user['first_name'] != null && user['last_name'] != null
-                              ? '${user['first_name']} ${user['last_name']}'
-                              : user['username'] ?? 'Unknown';
+                          final displayName = toTitleCase(user['display_name'] ?? user['full_name'] ?? 
+                                             (user['first_name'] != null && user['last_name'] != null
+                                                ? '${user['first_name']} ${user['last_name']}'
+                                                : user['username'] ?? 'Unknown'));
                           final email = user['email'] ?? '';
                           final isTeacher = user['student_id']?.toString().startsWith('T') ?? false;
                           final schoolType = user['school_type'];
@@ -501,9 +514,10 @@ class _MessagesScreenState extends State<MessagesScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  _selectedUser!['first_name'] != null && _selectedUser!['last_name'] != null
-                      ? '${_selectedUser!['first_name']} ${_selectedUser!['last_name']}'
-                      : _selectedUser!['username'] ?? 'Unknown',
+                  toTitleCase(_selectedUser!['display_name'] ?? _selectedUser!['full_name'] ??
+                    ((_selectedUser!['first_name'] != null && _selectedUser!['last_name'] != null)
+                        ? '${_selectedUser!['first_name']} ${_selectedUser!['last_name']}'
+                        : (_selectedUser!['username'] ?? 'Unknown'))),
                 ),
                 Text(
                   _selectedUser!['student_id']?.toString().startsWith('T') ?? false

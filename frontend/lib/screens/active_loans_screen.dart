@@ -76,6 +76,14 @@ class _ActiveLoansScreenState extends State<ActiveLoansScreen> {
     }
   }
 
+  String toTitleCase(String text) {
+    if (text.isEmpty) return text;
+    return text.split(' ').map((word) {
+      if (word.isEmpty) return word;
+      return word[0].toUpperCase() + word.substring(1).toLowerCase();
+    }).join(' ');
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -94,13 +102,15 @@ class _ActiveLoansScreenState extends State<ActiveLoansScreen> {
             Padding(
               padding: const EdgeInsets.only(right: 8.0),
               child: ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
+                onPressed: () async {
+                  await Navigator.push(
                     context,
                     MaterialPageRoute(
                       builder: (context) => const ExtensionRequestsScreen(),
                     ),
                   );
+                  // Refresh the active loans data when returning from extension requests
+                  await _loadActiveLoans();
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Theme.of(context).colorScheme.primary,
@@ -207,8 +217,9 @@ class _ActiveLoansScreenState extends State<ActiveLoansScreen> {
                           final pickupDate = loan['pickup_date'] != null
                               ? DateTime.parse(loan['pickup_date']).toLocal()
                               : null;
-                          final dueDate = pickupDate?.add(
-                              Duration(days: loan['loan_duration_days'] ?? 14));
+                          final dueDate = loan['due_date'] != null
+                              ? DateTime.parse(loan['due_date']).toLocal()
+                              : null;
 
                           return Center(
                             child: ConstrainedBox(
@@ -254,7 +265,7 @@ class _ActiveLoansScreenState extends State<ActiveLoansScreen> {
                                                   children: [
                                                     Expanded(
                                                       child: Text(
-                                                        '${student['user']['first_name']} ${student['user']['last_name']}',
+                                                        toTitleCase(student['user']['display_name'] ?? '${student['user']['first_name']} ${student['user']['last_name']}'),
                                                         style: Theme.of(context)
                                                             .textTheme
                                                             .titleMedium

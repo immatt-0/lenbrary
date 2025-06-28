@@ -143,9 +143,19 @@ class ExtensionRequestDetailScreen extends StatelessWidget {
                         requestedDays: requestedDays ?? (loan['loan_duration_days'] ?? 14),
                       );
                       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Extindere aprobată!'), backgroundColor: Colors.green));
+                      // Navigate back and refresh the extension requests list
                       Navigator.pop(context);
+                      // Trigger a refresh of the parent screen
+                      if (context.mounted) {
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const ExtensionRequestsScreen(),
+                          ),
+                        );
+                      }
                     } catch (e) {
-                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Eroare la aprobare: \\${e.toString()}'), backgroundColor: Colors.red));
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Eroare la aprobare: ${e.toString()}'), backgroundColor: Colors.red));
                     }
                   },
                   icon: const Icon(Icons.check),
@@ -158,9 +168,19 @@ class ExtensionRequestDetailScreen extends StatelessWidget {
                     try {
                       await ApiService.declineExtension(borrowingId: loan['id']);
                       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Extindere respinsă!'), backgroundColor: Colors.orange));
+                      // Navigate back and refresh the extension requests list
                       Navigator.pop(context);
+                      // Trigger a refresh of the parent screen
+                      if (context.mounted) {
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const ExtensionRequestsScreen(),
+                          ),
+                        );
+                      }
                     } catch (e) {
-                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Eroare la respingere: \\${e.toString()}'), backgroundColor: Colors.red));
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Eroare la respingere: ${e.toString()}'), backgroundColor: Colors.red));
                     }
                   },
                   icon: const Icon(Icons.close),

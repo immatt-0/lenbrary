@@ -27,6 +27,7 @@ from .serializers import (
     BookSerializer, StudentSerializer, BookBorrowingSerializer,
     RegistrationSerializer, UserSerializer, ExamModelSerializer, EmailVerificationSerializer, InvitationCodeSerializer
 )
+from .utils import get_display_name
 
 # Email validation pattern for @nlenau.ro domain
 EMAIL_PATTERN = r'^[a-zA-Z0-9_.+-]+@nlenau\.ro$'
@@ -279,7 +280,7 @@ def user_info(request):
         'id': user.id,
         'username': user.username,
         'email': user.email,
-        'name': user.get_full_name(),
+        'name': get_display_name(user),
         'is_librarian': is_librarian,
     }
     
@@ -714,7 +715,7 @@ def request_loan_extension(request, borrowing_id):
     # Create notification for librarians
     create_librarian_notification(
         notification_type='extension_requested',
-        message=f"{request.user.get_full_name() or request.user.username} a solicitat extinderea împrumutului pentru '{borrowing.book.name}' cu {requested_days} zile",
+        message=f"{get_display_name(request.user)} a solicitat extinderea împrumutului pentru '{borrowing.book.name}' cu {requested_days} zile",
         book=borrowing.book,
         borrowing=borrowing,
         created_by=request.user
@@ -789,7 +790,7 @@ def get_messages(request):
                     'other_user': {
                         'id': other_user.id,
                         'username': other_user.username,
-                        'name': other_user.get_full_name() or other_user.username,
+                        'name': get_display_name(other_user),
                     },
                     'last_message': {
                         'id': latest_message.id,
@@ -814,7 +815,7 @@ def get_messages(request):
             'sender': {
                 'id': msg.sender.id,
                 'username': msg.sender.username,
-                'name': msg.sender.get_full_name() or msg.sender.username,
+                'name': get_display_name(msg.sender),
             },
             'content': msg.content,
             'timestamp': msg.timestamp.isoformat(),
@@ -860,7 +861,7 @@ def get_all_users(request):
             'id': user.id,
             'username': user.username,
             'display_name': display_name,
-            'full_name': user.get_full_name(),
+            'full_name': get_display_name(user),
             'is_librarian': user.groups.filter(name='Librarians').exists(),
         })
     
@@ -911,7 +912,7 @@ def get_notifications(request):
         if notification.created_by:
             notification_data['created_by'] = {
                 'id': notification.created_by.id,
-                'name': notification.created_by.get_full_name() or notification.created_by.username,
+                'name': get_display_name(notification.created_by),
             }
             
         data.append(notification_data)
@@ -1066,7 +1067,7 @@ def search_users(request):
         data.append({
             'id': user.id,
             'username': user.username,
-            'display_name': user.get_full_name() or user.username,
+            'display_name': get_display_name(user),
             'email': user.email,
             'is_librarian': user.groups.filter(name='Librarians').exists(),
         })

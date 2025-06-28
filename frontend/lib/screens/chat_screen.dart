@@ -359,7 +359,7 @@ class _ChatScreenState extends State<ChatScreen> {
       itemCount: _searchResults.length,
       itemBuilder: (context, index) {
         final user = _searchResults[index];
-        final displayName = user['display_name'] ?? user['username'] ?? 'Unknown';
+        final displayName = user['display_name'] ?? user['full_name'] ?? user['username'] ?? 'Unknown';
         final email = user['email'] ?? '';
         
         return ListTile(

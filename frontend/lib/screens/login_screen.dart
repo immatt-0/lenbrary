@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import '../services/api_service.dart';
+import '../providers/theme_provider.dart';
+import 'package:provider/provider.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -58,6 +60,21 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      floatingActionButton: Consumer<ThemeProvider>(
+        builder: (context, themeProvider, child) {
+          return FloatingActionButton(
+            onPressed: () => themeProvider.toggleTheme(),
+            backgroundColor: Theme.of(context).colorScheme.primary,
+            foregroundColor: Theme.of(context).colorScheme.onPrimary,
+            elevation: 8,
+            child: Icon(
+              themeProvider.isDarkMode ? Icons.light_mode : Icons.dark_mode,
+              size: 24,
+            ),
+          );
+        },
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endTop,
       body: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(

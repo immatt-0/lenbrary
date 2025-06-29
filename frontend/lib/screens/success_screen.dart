@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import '../services/api_service.dart';
 import '../services/notification_service.dart';
 import 'notifications_screen.dart';
-import 'messages_screen.dart';
 
 class SuccessScreen extends StatefulWidget {
   const SuccessScreen({Key? key}) : super(key: key);
@@ -17,7 +16,6 @@ class _SuccessScreenState extends State<SuccessScreen>
   String _userName = '';
   bool _isLoading = true;
   int _unreadNotifications = 0;
-  int _unreadMessages = 0;
   final NotificationService _notificationService = NotificationService();
   bool _isFirstLoad = true;
 
@@ -129,19 +127,10 @@ class _SuccessScreenState extends State<SuccessScreen>
       // Load notifications
       await _notificationService.loadNotifications();
 
-      // Load messages and calculate unread count
-      final messages = await ApiService.getMessages();
-      int unreadMessages = 0;
-
-      if (messages is List) {
-        unreadMessages = messages.where((m) => m['is_read'] == false).length;
-      }
-
       if (!mounted) return;
 
       setState(() {
         _unreadNotifications = _notificationService.unreadCount;
-        _unreadMessages = unreadMessages;
       });
     } catch (e) {
       // Handle errors silently to not disrupt the UI
@@ -149,7 +138,6 @@ class _SuccessScreenState extends State<SuccessScreen>
       if (mounted) {
         setState(() {
           _unreadNotifications = 0;
-          _unreadMessages = 0;
         });
       }
     }
@@ -202,28 +190,6 @@ class _SuccessScreenState extends State<SuccessScreen>
               right: 8,
               top: 8,
               child: _buildNotificationBadge(_unreadNotifications),
-            ),
-          ],
-        ),
-        // Messages icon
-        Stack(
-          children: [
-            IconButton(
-              icon: const Icon(Icons.message, size: 28),
-              onPressed: () async {
-                await Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const MessagesScreen(),
-                  ),
-                );
-                _refreshData(); // Refresh all data when returning
-              },
-            ),
-            Positioned(
-              right: 8,
-              top: 8,
-              child: _buildNotificationBadge(_unreadMessages),
             ),
           ],
         ),
@@ -282,7 +248,7 @@ class _SuccessScreenState extends State<SuccessScreen>
                 child: Icon(
                   Icons.menu_book_rounded,
                   size: 28,
-                  color: Colors.white,
+                  color: Theme.of(context).colorScheme.onPrimary,
                 ),
               ),
               const SizedBox(width: 12),
@@ -300,6 +266,23 @@ class _SuccessScreenState extends State<SuccessScreen>
         automaticallyImplyLeading: false,
         actions: [
           _buildAppBarActions(),
+          IconButton(
+            icon: Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Icon(
+                Icons.settings_rounded,
+                color: Theme.of(context).colorScheme.primary,
+              ),
+            ),
+            onPressed: () async {
+              await Navigator.pushNamed(context, '/settings');
+            },
+            tooltip: 'Setări',
+          ),
           IconButton(
             icon: Container(
               padding: const EdgeInsets.all(8),
@@ -323,169 +306,169 @@ class _SuccessScreenState extends State<SuccessScreen>
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             colors: [
-              Theme.of(context).colorScheme.primary.withOpacity(0.03),
+              Theme.of(context).colorScheme.primary.withOpacity(0.08),
               Theme.of(context).colorScheme.background,
-              Theme.of(context).colorScheme.primary.withOpacity(0.01),
+              Theme.of(context).colorScheme.secondary.withOpacity(0.03),
             ],
             stops: const [0.0, 0.5, 1.0],
           ),
         ),
-        child: Center(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(24.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                // Enhanced Welcome Card
-                FadeTransition(
-                  opacity: _fadeAnimation,
-                  child: SlideTransition(
-                    position: _slideAnimation,
-                    child: Container(
-                      margin: const EdgeInsets.only(bottom: 40.0),
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: [
-                            Colors.white,
-                            Colors.white.withOpacity(0.95),
-                          ],
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                        ),
-                        borderRadius: BorderRadius.circular(24),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Theme.of(context).colorScheme.primary.withOpacity(0.06),
-                            blurRadius: 24,
-                            offset: const Offset(0, 10),
-                            spreadRadius: 3,
+        child: Stack(
+          children: [
+            // Main content
+            Center(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.all(24.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    // Enhanced Welcome Card
+                    FadeTransition(
+                      opacity: _fadeAnimation,
+                      child: SlideTransition(
+                        position: _slideAnimation,
+                        child: Container(
+                          margin: const EdgeInsets.only(bottom: 40.0),
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              colors: [
+                                Theme.of(context).colorScheme.surface,
+                                Theme.of(context).colorScheme.surface.withOpacity(0.95),
+                              ],
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                            ),
+                            borderRadius: BorderRadius.circular(24),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Theme.of(context).colorScheme.primary.withOpacity(0.06),
+                                blurRadius: 24,
+                                offset: const Offset(0, 10),
+                                spreadRadius: 3,
+                              ),
+                            ],
+                            border: Border.all(
+                              color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                              width: 1.5,
+                            ),
                           ),
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.08),
-                            blurRadius: 12,
-                            offset: const Offset(0, 6),
-                          ),
-                        ],
-                        border: Border.all(
-                          color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
-                          width: 1.5,
-                        ),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(36.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
+                          child: Padding(
+                            padding: const EdgeInsets.all(36.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Container(
-                                  padding: const EdgeInsets.all(16),
-                                  decoration: BoxDecoration(
-                                    gradient: LinearGradient(
-                                      colors: [
-                                        Theme.of(context).colorScheme.primary,
-                                        Theme.of(context).colorScheme.primary.withOpacity(0.8),
-                                      ],
+                                Row(
+                                  children: [
+                                    Container(
+                                      padding: const EdgeInsets.all(16),
+                                      decoration: BoxDecoration(
+                                        gradient: LinearGradient(
+                                          colors: [
+                                            Theme.of(context).colorScheme.primary,
+                                            Theme.of(context).colorScheme.primary.withOpacity(0.8),
+                                          ],
+                                        ),
+                                        borderRadius: BorderRadius.circular(16),
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: Theme.of(context).colorScheme.primary.withOpacity(0.4),
+                                            blurRadius: 12,
+                                            offset: const Offset(0, 4),
+                                          ),
+                                        ],
+                                      ),
+                                      child: Icon(
+                                        Icons.person_rounded,
+                                        size: 32,
+                                        color: Theme.of(context).colorScheme.onPrimary,
+                                      ),
                                     ),
-                                    borderRadius: BorderRadius.circular(16),
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: Theme.of(context).colorScheme.primary.withOpacity(0.4),
-                                        blurRadius: 12,
-                                        offset: const Offset(0, 4),
+                                    const SizedBox(width: 20),
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            'Bun venit, $_userName!',
+                                            style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                                              fontWeight: FontWeight.w700,
+                                              color: Theme.of(context).colorScheme.onSurface,
+                                              letterSpacing: -0.5,
+                                              fontSize: 28,
+                                            ),
+                                          ),
+                                          const SizedBox(height: 12.0),
+                                          Text(
+                                            'Ce doriți să faceți astăzi?',
+                                            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                                              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.8),
+                                              fontWeight: FontWeight.w500,
+                                              fontSize: 18,
+                                            ),
+                                          ),
+                                        ],
                                       ),
-                                    ],
-                                  ),
-                                  child: Icon(
-                                    Icons.person_rounded,
-                                    size: 32,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                                const SizedBox(width: 20),
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        'Bun venit, $_userName!',
-                                        style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                                          fontWeight: FontWeight.w700,
-                                          color: Theme.of(context).colorScheme.onSurface,
-                                          letterSpacing: -0.5,
-                                          fontSize: 28,
-                                        ),
-                                      ),
-                                      const SizedBox(height: 12.0),
-                                      Text(
-                                        'Ce doriți să faceți astăzi?',
-                                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                                          color: Theme.of(context).colorScheme.onSurface.withOpacity(0.8),
-                                          fontWeight: FontWeight.w500,
-                                          fontSize: 18,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
+                                    ),
+                                  ],
                                 ),
                               ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+
+                    // Enhanced Menu Sections
+                    FadeTransition(
+                      opacity: _fadeAnimation,
+                      child: SlideTransition(
+                        position: _slideAnimation,
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            // Search Books Button
+                            _buildEnhancedMenuButton(
+                              icon: Icons.search_rounded,
+                              title: 'Caută cărți',
+                              description: 'Explorează catalogul bibliotecii',
+                              color: Colors.green[600]!,
+                              onTap: () {
+                                Navigator.pushNamed(context, '/search-books');
+                              },
+                            ),
+                            const SizedBox(height: 16.0),
+
+                            // My Requests Button
+                            _buildEnhancedMenuButton(
+                              icon: Icons.book_rounded,
+                              title: 'Cererile mele',
+                              description: 'Vizualizează și gestionează cererile tale',
+                              color: Colors.orange[600]!,
+                              onTap: () {
+                                Navigator.pushNamed(context, '/my-requests');
+                              },
+                            ),
+                            const SizedBox(height: 16.0),
+
+                            // Exam Models Button
+                            _buildEnhancedMenuButton(
+                              icon: Icons.description_rounded,
+                              title: 'Modele de examene',
+                              description: 'Găsește modele de examene pentru studiu',
+                              color: Colors.purple[600]!,
+                              onTap: () {
+                                Navigator.pushNamed(context, '/exam-models');
+                              },
                             ),
                           ],
                         ),
                       ),
                     ),
-                  ),
+                  ],
                 ),
-
-                // Enhanced Menu Sections
-                FadeTransition(
-                  opacity: _fadeAnimation,
-                  child: SlideTransition(
-                    position: _slideAnimation,
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        // Search Books Button
-                        _buildEnhancedMenuButton(
-                          icon: Icons.search_rounded,
-                          title: 'Caută cărți',
-                          description: 'Explorează catalogul bibliotecii',
-                          color: Colors.green[600]!,
-                          onTap: () {
-                            Navigator.pushNamed(context, '/search-books');
-                          },
-                        ),
-                        const SizedBox(height: 16.0),
-
-                        // My Requests Button
-                        _buildEnhancedMenuButton(
-                          icon: Icons.book_rounded,
-                          title: 'Cererile mele',
-                          description: 'Vizualizează și gestionează cererile tale',
-                          color: Colors.orange[600]!,
-                          onTap: () {
-                            Navigator.pushNamed(context, '/my-requests');
-                          },
-                        ),
-                        const SizedBox(height: 16.0),
-
-                        // Exam Models Button
-                        _buildEnhancedMenuButton(
-                          icon: Icons.description_rounded,
-                          title: 'Modele de examene',
-                          description: 'Găsește modele de examene pentru studiu',
-                          color: Colors.purple[600]!,
-                          onTap: () {
-                            Navigator.pushNamed(context, '/exam-models');
-                          },
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
+              ),
             ),
-          ),
+          ],
         ),
       ),
     );
@@ -523,7 +506,7 @@ class _SuccessScreenState extends State<SuccessScreen>
                 child: Icon(
                   Icons.menu_book_rounded,
                   size: 28,
-                  color: Colors.white,
+                  color: Theme.of(context).colorScheme.onPrimary,
                 ),
               ),
               const SizedBox(width: 12),
@@ -541,6 +524,23 @@ class _SuccessScreenState extends State<SuccessScreen>
         automaticallyImplyLeading: false,
         actions: [
           _buildAppBarActions(),
+          IconButton(
+            icon: Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Icon(
+                Icons.settings_rounded,
+                color: Theme.of(context).colorScheme.primary,
+              ),
+            ),
+            onPressed: () async {
+              await Navigator.pushNamed(context, '/settings');
+            },
+            tooltip: 'Setări',
+          ),
           IconButton(
             icon: Container(
               padding: const EdgeInsets.all(8),
@@ -564,217 +564,217 @@ class _SuccessScreenState extends State<SuccessScreen>
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             colors: [
-              Theme.of(context).colorScheme.primary.withOpacity(0.03),
+              Theme.of(context).colorScheme.primary.withOpacity(0.08),
               Theme.of(context).colorScheme.background,
-              Theme.of(context).colorScheme.primary.withOpacity(0.01),
+              Theme.of(context).colorScheme.secondary.withOpacity(0.03),
             ],
             stops: const [0.0, 0.5, 1.0],
           ),
         ),
-        child: Center(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(24.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                // Enhanced Welcome Card
-                FadeTransition(
-                  opacity: _fadeAnimation,
-                  child: SlideTransition(
-                    position: _slideAnimation,
-                    child: Container(
-                      margin: const EdgeInsets.only(bottom: 40.0),
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: [
-                            Colors.white,
-                            Colors.white.withOpacity(0.95),
-                          ],
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                        ),
-                        borderRadius: BorderRadius.circular(24),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Theme.of(context).colorScheme.primary.withOpacity(0.06),
-                            blurRadius: 24,
-                            offset: const Offset(0, 10),
-                            spreadRadius: 3,
+        child: Stack(
+          children: [
+            // Main content
+            Center(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.all(24.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    // Enhanced Welcome Card
+                    FadeTransition(
+                      opacity: _fadeAnimation,
+                      child: SlideTransition(
+                        position: _slideAnimation,
+                        child: Container(
+                          margin: const EdgeInsets.only(bottom: 40.0),
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              colors: [
+                                Theme.of(context).colorScheme.surface,
+                                Theme.of(context).colorScheme.surface.withOpacity(0.95),
+                              ],
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                            ),
+                            borderRadius: BorderRadius.circular(24),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Theme.of(context).colorScheme.primary.withOpacity(0.06),
+                                blurRadius: 24,
+                                offset: const Offset(0, 10),
+                                spreadRadius: 3,
+                              ),
+                            ],
+                            border: Border.all(
+                              color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                              width: 1.5,
+                            ),
                           ),
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.08),
-                            blurRadius: 12,
-                            offset: const Offset(0, 6),
-                          ),
-                        ],
-                        border: Border.all(
-                          color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
-                          width: 1.5,
-                        ),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(36.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
+                          child: Padding(
+                            padding: const EdgeInsets.all(36.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Container(
-                                  padding: const EdgeInsets.all(16),
-                                  decoration: BoxDecoration(
-                                    gradient: LinearGradient(
-                                      colors: [
-                                        Theme.of(context).colorScheme.primary,
-                                        Theme.of(context).colorScheme.primary.withOpacity(0.8),
-                                      ],
+                                Row(
+                                  children: [
+                                    Container(
+                                      padding: const EdgeInsets.all(16),
+                                      decoration: BoxDecoration(
+                                        gradient: LinearGradient(
+                                          colors: [
+                                            Theme.of(context).colorScheme.primary,
+                                            Theme.of(context).colorScheme.primary.withOpacity(0.8),
+                                          ],
+                                        ),
+                                        borderRadius: BorderRadius.circular(16),
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: Theme.of(context).colorScheme.primary.withOpacity(0.4),
+                                            blurRadius: 12,
+                                            offset: const Offset(0, 4),
+                                          ),
+                                        ],
+                                      ),
+                                      child: Icon(
+                                        Icons.admin_panel_settings_rounded,
+                                        size: 32,
+                                        color: Theme.of(context).colorScheme.onPrimary,
+                                      ),
                                     ),
-                                    borderRadius: BorderRadius.circular(16),
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: Theme.of(context).colorScheme.primary.withOpacity(0.4),
-                                        blurRadius: 12,
-                                        offset: const Offset(0, 4),
+                                    const SizedBox(width: 20),
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            'Bun venit, doamna Bibliotecara!',
+                                            style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                                              fontWeight: FontWeight.w700,
+                                              color: Theme.of(context).colorScheme.onSurface,
+                                              letterSpacing: -0.5,
+                                              fontSize: 28,
+                                            ),
+                                          ),
+                                          const SizedBox(height: 12.0),
+                                          Text(
+                                            'Gestionează resursele bibliotecii și cererile de cărți',
+                                            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                                              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.8),
+                                              fontWeight: FontWeight.w500,
+                                              fontSize: 18,
+                                            ),
+                                          ),
+                                        ],
                                       ),
-                                    ],
-                                  ),
-                                  child: Icon(
-                                    Icons.admin_panel_settings_rounded,
-                                    size: 32,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                                const SizedBox(width: 20),
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        'Bun venit, doamna Bibliotecara!',
-                                        style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                                          fontWeight: FontWeight.w700,
-                                          color: Theme.of(context).colorScheme.onSurface,
-                                          letterSpacing: -0.5,
-                                          fontSize: 28,
-                                        ),
-                                      ),
-                                      const SizedBox(height: 12.0),
-                                      Text(
-                                        'Gestionează resursele bibliotecii și cererile de cărți',
-                                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                                          color: Theme.of(context).colorScheme.onSurface.withOpacity(0.8),
-                                          fontWeight: FontWeight.w500,
-                                          fontSize: 18,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
+                                    ),
+                                  ],
                                 ),
                               ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+
+                    // Enhanced Menu Sections
+                    FadeTransition(
+                      opacity: _fadeAnimation,
+                      child: SlideTransition(
+                        position: _slideAnimation,
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            // Book Management section
+                            _buildSectionHeader('Gestiunea cărților', Icons.library_books_rounded),
+                            const SizedBox(height: 16.0),
+
+                            // Add new book
+                            _buildEnhancedMenuButton(
+                              icon: Icons.add_circle_rounded,
+                              title: 'Adaugă carte nouă',
+                              description: 'Adaugă o carte nouă în catalogul bibliotecii',
+                              color: Colors.green,
+                              onTap: () {
+                                Navigator.pushNamed(context, '/add-book');
+                              },
+                            ),
+                            const SizedBox(height: 12.0),
+
+                            // View all books
+                            _buildEnhancedMenuButton(
+                              icon: Icons.library_books_rounded,
+                              title: 'Gestionare cărți',
+                              description: 'Vizualizează, editează sau șterge cărți din catalog',
+                              color: Colors.blue,
+                              onTap: () {
+                                Navigator.pushNamed(context, '/manage-books');
+                              },
+                            ),
+
+                            const SizedBox(height: 32.0),
+
+                            // Book Request section
+                            _buildSectionHeader('Cereri de cărți', Icons.pending_actions_rounded),
+                            const SizedBox(height: 16.0),
+
+                            // Pending requests
+                            _buildEnhancedMenuButton(
+                              icon: Icons.pending_actions_rounded,
+                              title: 'Cereri în așteptare',
+                              description: 'Vizualizează și aprobă cererile de cărți în așteptare',
+                              color: Colors.orange,
+                              onTap: () {
+                                Navigator.pushNamed(context, '/pending-requests');
+                              },
+                            ),
+                            const SizedBox(height: 12.0),
+
+                            // Active loans
+                            _buildEnhancedMenuButton(
+                              icon: Icons.assignment_returned_rounded,
+                              title: 'Împrumuturi active',
+                              description: 'Vizualizează toate cărțile împrumutate în prezent',
+                              color: Colors.purple,
+                              onTap: () {
+                                Navigator.pushNamed(context, '/active-loans');
+                              },
+                            ),
+                            const SizedBox(height: 12.0),
+
+                            // Return history
+                            _buildEnhancedMenuButton(
+                              icon: Icons.history_rounded,
+                              title: 'Istoric împrumuturi',
+                              description: 'Vizualizează istoricul împrumuturilor finalizate',
+                              color: Colors.indigo,
+                              onTap: () {
+                                Navigator.pushNamed(context, '/loan-history');
+                              },
+                            ),
+                            const SizedBox(height: 32.0),
+
+                            // Exam Models Admin Button
+                            _buildSectionHeader('Modele de examene', Icons.description_outlined),
+                            const SizedBox(height: 16.0),
+
+                            _buildEnhancedMenuButton(
+                              icon: Icons.description_outlined,
+                              title: 'Modele de examene',
+                              description: 'Adaugă sau gestionează modele de examene',
+                              color: Colors.teal,
+                              onTap: () {
+                                Navigator.pushNamed(context, '/admin-exam-models');
+                              },
                             ),
                           ],
                         ),
                       ),
                     ),
-                  ),
+                  ],
                 ),
-
-                // Enhanced Menu Sections
-                FadeTransition(
-                  opacity: _fadeAnimation,
-                  child: SlideTransition(
-                    position: _slideAnimation,
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        // Book Management section
-                        _buildSectionHeader('Gestiunea cărților', Icons.library_books_rounded),
-                        const SizedBox(height: 16.0),
-
-                        // Add new book
-                        _buildEnhancedMenuButton(
-                          icon: Icons.add_circle_rounded,
-                          title: 'Adaugă carte nouă',
-                          description: 'Adaugă o carte nouă în catalogul bibliotecii',
-                          color: Colors.green,
-                          onTap: () {
-                            Navigator.pushNamed(context, '/add-book');
-                          },
-                        ),
-                        const SizedBox(height: 12.0),
-
-                        // View all books
-                        _buildEnhancedMenuButton(
-                          icon: Icons.library_books_rounded,
-                          title: 'Gestionare cărți',
-                          description: 'Vizualizează, editează sau șterge cărți din catalog',
-                          color: Colors.blue,
-                          onTap: () {
-                            Navigator.pushNamed(context, '/manage-books');
-                          },
-                        ),
-
-                        const SizedBox(height: 32.0),
-
-                        // Book Request section
-                        _buildSectionHeader('Cereri de cărți', Icons.pending_actions_rounded),
-                        const SizedBox(height: 16.0),
-
-                        // Pending requests
-                        _buildEnhancedMenuButton(
-                          icon: Icons.pending_actions_rounded,
-                          title: 'Cereri în așteptare',
-                          description: 'Vizualizează și aprobă cererile de cărți în așteptare',
-                          color: Colors.orange,
-                          onTap: () {
-                            Navigator.pushNamed(context, '/pending-requests');
-                          },
-                        ),
-                        const SizedBox(height: 12.0),
-
-                        // Active loans
-                        _buildEnhancedMenuButton(
-                          icon: Icons.assignment_returned_rounded,
-                          title: 'Împrumuturi active',
-                          description: 'Vizualizează toate cărțile împrumutate în prezent',
-                          color: Colors.purple,
-                          onTap: () {
-                            Navigator.pushNamed(context, '/active-loans');
-                          },
-                        ),
-                        const SizedBox(height: 12.0),
-
-                        // Return history
-                        _buildEnhancedMenuButton(
-                          icon: Icons.history_rounded,
-                          title: 'Istoric împrumuturi',
-                          description: 'Vizualizează istoricul împrumuturilor finalizate',
-                          color: Colors.indigo,
-                          onTap: () {
-                            Navigator.pushNamed(context, '/loan-history');
-                          },
-                        ),
-                        const SizedBox(height: 32.0),
-
-                        // Exam Models Admin Button
-                        _buildSectionHeader('Modele de examene', Icons.description_outlined),
-                        const SizedBox(height: 16.0),
-
-                        _buildEnhancedMenuButton(
-                          icon: Icons.description_outlined,
-                          title: 'Modele de examene',
-                          description: 'Adaugă sau gestionează modele de examene',
-                          color: Colors.teal,
-                          onTap: () {
-                            Navigator.pushNamed(context, '/admin-exam-models');
-                          },
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
+              ),
             ),
-          ),
+          ],
         ),
       ),
     );
@@ -894,7 +894,7 @@ class _SuccessScreenState extends State<SuccessScreen>
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   colors: [
-                    Colors.white,
+                    Theme.of(context).colorScheme.surface,
                     color.withOpacity(0.01),
                   ],
                   begin: Alignment.topLeft,
@@ -909,7 +909,9 @@ class _SuccessScreenState extends State<SuccessScreen>
                     spreadRadius: 1,
                   ),
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.05),
+                    color: Theme.of(context).brightness == Brightness.dark 
+                        ? Colors.black.withOpacity(0.2)
+                        : Colors.black.withOpacity(0.05),
                     blurRadius: 8,
                     offset: const Offset(0, 2),
                   ),

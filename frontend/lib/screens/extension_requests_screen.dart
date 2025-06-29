@@ -229,7 +229,7 @@ class _ExtensionRequestsScreenState extends State<ExtensionRequestsScreen>
             colors: [
               Theme.of(context).colorScheme.primary.withOpacity(0.08),
               Theme.of(context).colorScheme.background,
-              Theme.of(context).colorScheme.primary.withOpacity(0.03),
+              Theme.of(context).colorScheme.secondary.withOpacity(0.03),
             ],
             stops: const [0.0, 0.5, 1.0],
           ),
@@ -943,7 +943,7 @@ class ExtensionRequestDetailScreen extends StatelessWidget {
             colors: [
               Theme.of(context).colorScheme.primary.withOpacity(0.08),
               Theme.of(context).colorScheme.background,
-              Theme.of(context).colorScheme.primary.withOpacity(0.03),
+              Theme.of(context).colorScheme.secondary.withOpacity(0.03),
             ],
             stops: const [0.0, 0.5, 1.0],
           ),

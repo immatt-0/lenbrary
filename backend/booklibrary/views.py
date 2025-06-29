@@ -1179,11 +1179,28 @@ def list_exam_models(request):
 @parser_classes([MultiPartParser, FormParser])
 def create_exam_model(request):
     """Create a new exam model (admin only)"""
+    # Debug information
+    print(f"Creating exam model - User: {request.user.email}")
+    print(f"Request data: {request.data}")
+    print(f"Request files: {request.FILES}")
+    
+    if 'pdf_file' in request.FILES:
+        pdf_file = request.FILES['pdf_file']
+        print(f"PDF file info:")
+        print(f"  Name: {pdf_file.name}")
+        print(f"  Size: {pdf_file.size}")
+        print(f"  Content type: {getattr(pdf_file, 'content_type', 'Not set')}")
+        print(f"  Content type from request: {request.FILES['pdf_file'].content_type if hasattr(request.FILES['pdf_file'], 'content_type') else 'Not available'}")
+    else:
+        print("No PDF file found in request.FILES")
+    
     serializer = ExamModelSerializer(data=request.data, context={'request': request})
     if serializer.is_valid():
         serializer.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
-    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    else:
+        print(f"Serializer errors: {serializer.errors}")
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['DELETE'])
 @permission_classes([IsAuthenticated])

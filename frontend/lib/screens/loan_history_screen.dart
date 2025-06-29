@@ -150,53 +150,57 @@ class _LoanHistoryScreenState extends State<LoanHistoryScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        elevation: 0,
+        backgroundColor: Colors.transparent,
+        centerTitle: true,
         title: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
           children: [
             Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   colors: [
-                    Theme.of(context).colorScheme.primary,
-                    Theme.of(context).colorScheme.primary.withOpacity(0.8),
+                    Theme.of(context).colorScheme.surface,
+                    Theme.of(context).colorScheme.surface.withOpacity(0.8),
                   ],
                 ),
                 borderRadius: BorderRadius.circular(10),
                 boxShadow: [
                   BoxShadow(
-                    color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
+                    color: Theme.of(context).colorScheme.shadow.withOpacity(0.08),
                     blurRadius: 8,
                     offset: const Offset(0, 2),
                   ),
                 ],
               ),
-              child: const Icon(
+              child: Icon(
                 Icons.history_rounded,
-                color: Colors.white,
+                color: Theme.of(context).colorScheme.onPrimary,
                 size: 24,
               ),
             ),
             const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
+            Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Istoric împrumuturi',
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: -0.5,
+                  ),
+                ),
+                if (_filteredLoanHistory.isNotEmpty)
                   Text(
-                    'Istoric împrumuturi',
-                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                      fontWeight: FontWeight.w700,
-                      letterSpacing: -0.5,
+                    '${_filteredLoanHistory.length} înregistrări',
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
                     ),
                   ),
-                  if (_filteredLoanHistory.isNotEmpty)
-                    Text(
-                      '${_filteredLoanHistory.length} înregistrări',
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
-                      ),
-                    ),
-                ],
-              ),
+              ],
             ),
           ],
         ),
@@ -216,8 +220,6 @@ class _LoanHistoryScreenState extends State<LoanHistoryScreen>
             tooltip: 'Înapoi',
           ),
         ),
-        backgroundColor: Colors.transparent,
-        elevation: 0,
       ),
       body: Container(
         decoration: BoxDecoration(
@@ -227,7 +229,7 @@ class _LoanHistoryScreenState extends State<LoanHistoryScreen>
             colors: [
               Theme.of(context).colorScheme.primary.withOpacity(0.08),
               Theme.of(context).colorScheme.background,
-              Theme.of(context).colorScheme.primary.withOpacity(0.03),
+              Theme.of(context).colorScheme.secondary.withOpacity(0.03),
             ],
             stops: const [0.0, 0.5, 1.0],
           ),
@@ -245,14 +247,14 @@ class _LoanHistoryScreenState extends State<LoanHistoryScreen>
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
                         colors: [
-                          Colors.white,
-                          Colors.grey[50]!,
+                          Theme.of(context).colorScheme.surface,
+                          Theme.of(context).colorScheme.surface.withOpacity(0.8),
                         ],
                       ),
                       borderRadius: BorderRadius.circular(20),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.08),
+                          color: Theme.of(context).colorScheme.shadow.withOpacity(0.08),
                           blurRadius: 12,
                           offset: const Offset(0, 4),
                         ),
@@ -408,10 +410,10 @@ class _LoanHistoryScreenState extends State<LoanHistoryScreen>
                                 opacity: _fadeAnimation,
                                 child: ElevatedButton.icon(
                                   onPressed: _fetchLoanHistory,
-                                  icon: const Icon(Icons.refresh_rounded, color: Colors.white),
-                                  label: const Text(
+                                  icon: Icon(Icons.refresh_rounded, color: Theme.of(context).colorScheme.onPrimary),
+                                  label: Text(
                                     'Reîncearcă',
-                                    style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
+                                    style: TextStyle(color: Theme.of(context).colorScheme.onPrimary, fontWeight: FontWeight.w600),
                                   ),
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: Theme.of(context).colorScheme.primary,
@@ -546,8 +548,8 @@ class _LoanHistoryScreenState extends State<LoanHistoryScreen>
           decoration: BoxDecoration(
             gradient: LinearGradient(
               colors: [
-                Colors.white,
-                Colors.grey[50]!,
+                Theme.of(context).colorScheme.surface,
+                Theme.of(context).colorScheme.surface.withOpacity(0.8),
               ],
             ),
             borderRadius: BorderRadius.circular(20),

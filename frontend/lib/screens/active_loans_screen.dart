@@ -150,9 +150,12 @@ class _ActiveLoansScreenState extends State<ActiveLoansScreen>
       appBar: AppBar(
         elevation: 0,
         backgroundColor: Colors.transparent,
+        centerTitle: true,
         title: FadeTransition(
           opacity: _fadeAnimation,
           child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
             children: [
               Container(
                 padding: const EdgeInsets.all(8),
@@ -174,7 +177,7 @@ class _ActiveLoansScreenState extends State<ActiveLoansScreen>
                 ),
                 child: Icon(
                   Icons.book_rounded,
-                  color: Colors.white,
+                  color: Theme.of(context).colorScheme.onPrimary,
                   size: 24,
                 ),
               ),
@@ -216,7 +219,7 @@ class _ActiveLoansScreenState extends State<ActiveLoansScreen>
             colors: [
               Theme.of(context).colorScheme.primary.withOpacity(0.08),
               Theme.of(context).colorScheme.background,
-              Theme.of(context).colorScheme.primary.withOpacity(0.03),
+              Theme.of(context).colorScheme.secondary.withOpacity(0.03),
             ],
             stops: const [0.0, 0.5, 1.0],
           ),
@@ -274,14 +277,14 @@ class _ActiveLoansScreenState extends State<ActiveLoansScreen>
                           decoration: BoxDecoration(
                             gradient: LinearGradient(
                               colors: [
-                                Colors.white,
-                                Colors.grey[50]!,
+                                Theme.of(context).colorScheme.surface,
+                                Theme.of(context).colorScheme.surface.withOpacity(0.8),
                               ],
                             ),
                             borderRadius: BorderRadius.circular(16),
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.black.withOpacity(0.08),
+                                color: Theme.of(context).colorScheme.shadow.withOpacity(0.08),
                                 blurRadius: 12,
                                 offset: const Offset(0, 4),
                               ),
@@ -524,14 +527,14 @@ class _ActiveLoansScreenState extends State<ActiveLoansScreen>
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
                       colors: [
-                        Colors.white,
-                        Colors.grey[50]!,
+                        Theme.of(context).colorScheme.surface,
+                        Theme.of(context).colorScheme.surface.withOpacity(0.8),
                       ],
                     ),
                     borderRadius: BorderRadius.circular(20),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.08),
+                        color: Theme.of(context).colorScheme.shadow.withOpacity(0.08),
                         blurRadius: 16,
                         offset: const Offset(0, 6),
                       ),
@@ -595,7 +598,7 @@ class _ActiveLoansScreenState extends State<ActiveLoansScreen>
                                                         toTitleCase(student['user']['display_name'] ?? '${student['user']['first_name']} ${student['user']['last_name']}'),
                                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
                                         fontWeight: FontWeight.w700,
-                                        color: Theme.of(context).colorScheme.primary,
+                                        color: Theme.of(context).colorScheme.onSurface,
                                         letterSpacing: 0.5,
                                         fontSize: 18,
                                       ),
@@ -940,14 +943,14 @@ class _ActiveLoansScreenState extends State<ActiveLoansScreen>
                                         height: 20,
                                         child: CircularProgressIndicator(
                                           strokeWidth: 2,
-                                          valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                          valueColor: AlwaysStoppedAnimation<Color>(Theme.of(context).colorScheme.onPrimary),
                                         ),
                                       )
                                     : const Icon(Icons.assignment_return_rounded),
                                 label: Text(_processingAction ? 'Se procesează...' : 'Carte Returnată'),
                                             style: ElevatedButton.styleFrom(
                                   backgroundColor: Colors.transparent,
-                                              foregroundColor: Colors.white,
+                                              foregroundColor: Theme.of(context).colorScheme.onPrimary,
                                   elevation: 0,
                                   padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
                                               shape: RoundedRectangleBorder(

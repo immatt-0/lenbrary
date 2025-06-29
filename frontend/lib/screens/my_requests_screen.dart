@@ -48,7 +48,10 @@ class _MyRequestsScreenState extends State<MyRequestsScreen> {
       appBar: AppBar(
         elevation: 0,
         backgroundColor: Colors.transparent,
+        centerTitle: true,
         title: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
           children: [
             Container(
               padding: const EdgeInsets.all(8),
@@ -59,7 +62,7 @@ class _MyRequestsScreenState extends State<MyRequestsScreen> {
                     Theme.of(context).colorScheme.primary.withOpacity(0.8),
                   ],
                 ),
-                borderRadius: BorderRadius.circular(10),
+                borderRadius: BorderRadius.circular(12),
                 boxShadow: [
                   BoxShadow(
                     color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
@@ -70,7 +73,7 @@ class _MyRequestsScreenState extends State<MyRequestsScreen> {
               ),
               child: Icon(
                 Icons.book_rounded,
-                color: Colors.white,
+                color: Theme.of(context).colorScheme.onPrimary,
                 size: 24,
               ),
             ),
@@ -111,7 +114,7 @@ class _MyRequestsScreenState extends State<MyRequestsScreen> {
             colors: [
               Theme.of(context).colorScheme.primary.withOpacity(0.08),
               Theme.of(context).colorScheme.background,
-              Theme.of(context).colorScheme.primary.withOpacity(0.03),
+              Theme.of(context).colorScheme.secondary.withOpacity(0.03),
             ],
             stops: const [0.0, 0.5, 1.0],
           ),
@@ -484,8 +487,8 @@ class _MyRequestsScreenState extends State<MyRequestsScreen> {
           decoration: BoxDecoration(
             gradient: LinearGradient(
               colors: [
-                Colors.white,
-                Colors.grey[50]!,
+                Theme.of(context).colorScheme.surface,
+                Theme.of(context).colorScheme.surface.withOpacity(0.95),
               ],
             ),
             borderRadius: BorderRadius.circular(20),

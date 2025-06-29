@@ -152,7 +152,7 @@ class ExamModelSerializer(serializers.ModelSerializer):
     def validate_pdf_file(self, value):
         """Validate that uploaded file is a PDF"""
         if value:
-            # Check file extension
+            # Check file extension (primary validation)
             if not value.name.lower().endswith('.pdf'):
                 raise serializers.ValidationError("Only PDF files are allowed.")
             
@@ -160,10 +160,20 @@ class ExamModelSerializer(serializers.ModelSerializer):
             if value.size > 10 * 1024 * 1024:  # 10MB in bytes
                 raise serializers.ValidationError("File size must be less than 10MB.")
             
-            # Check MIME type if available
+            # Check MIME type if available (secondary validation)
             if hasattr(value, 'content_type') and value.content_type:
-                if value.content_type != 'application/pdf':
-                    raise serializers.ValidationError("Only PDF files are allowed.")
+                # Be more lenient with MIME type - accept common PDF MIME types
+                allowed_mime_types = [
+                    'application/pdf',
+                    'application/x-pdf',
+                    'binary/octet-stream',  # Sometimes PDFs are sent with this type
+                    'application/octet-stream',  # Another common fallback
+                ]
+                if value.content_type not in allowed_mime_types:
+                    # Log the unexpected MIME type for debugging
+                    logger = logging.getLogger(__name__)
+                    logger.warning(f"Unexpected MIME type for PDF file: {value.content_type}, filename: {value.name}")
+                    # Don't raise error for MIME type mismatch if extension is correct
         
         return value
     

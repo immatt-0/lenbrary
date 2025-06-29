@@ -206,9 +206,12 @@ class _NotificationsScreenState extends State<NotificationsScreen>
       appBar: AppBar(
         elevation: 0,
         backgroundColor: Colors.transparent,
+        centerTitle: true,
         title: FadeTransition(
           opacity: _fadeAnimation,
           child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
             children: [
               Container(
                 padding: const EdgeInsets.all(8),
@@ -230,7 +233,7 @@ class _NotificationsScreenState extends State<NotificationsScreen>
                 ),
                 child: Icon(
                   Icons.notifications_rounded,
-                  color: Colors.white,
+                  color: Theme.of(context).colorScheme.onPrimary,
                   size: 24,
                 ),
               ),
@@ -311,7 +314,7 @@ class _NotificationsScreenState extends State<NotificationsScreen>
             colors: [
               Theme.of(context).colorScheme.primary.withOpacity(0.08),
               Theme.of(context).colorScheme.background,
-              Theme.of(context).colorScheme.primary.withOpacity(0.03),
+              Theme.of(context).colorScheme.secondary.withOpacity(0.03),
             ],
             stops: const [0.0, 0.5, 1.0],
           ),
@@ -399,7 +402,7 @@ class _NotificationsScreenState extends State<NotificationsScreen>
                           child: Text(
                             'Toate notificările tale vor apărea aici',
                             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                              color: Colors.grey[600],
+                              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
                             ),
                             textAlign: TextAlign.center,
                           ),
@@ -447,10 +450,10 @@ class _NotificationsScreenState extends State<NotificationsScreen>
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: isRead 
-              ? [Colors.white, Colors.grey[50]!]
+              ? [Theme.of(context).colorScheme.surface, Theme.of(context).colorScheme.surface.withOpacity(0.8)]
               : [
-                  Colors.blue[50]!,
-                  Colors.white,
+                  Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                  Theme.of(context).colorScheme.surface,
                 ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
@@ -459,8 +462,8 @@ class _NotificationsScreenState extends State<NotificationsScreen>
         boxShadow: [
           BoxShadow(
             color: isRead 
-                ? Colors.black.withOpacity(0.05)
-                : Colors.blue.withOpacity(0.15),
+                ? Theme.of(context).colorScheme.shadow.withOpacity(0.05)
+                : Theme.of(context).colorScheme.primary.withOpacity(0.15),
             blurRadius: isRead ? 8 : 12,
             offset: const Offset(0, 4),
             spreadRadius: isRead ? 0 : 2,
@@ -468,8 +471,8 @@ class _NotificationsScreenState extends State<NotificationsScreen>
         ],
         border: Border.all(
           color: isRead 
-              ? Colors.grey[200]!
-              : Colors.blue[200]!,
+              ? Theme.of(context).colorScheme.outline.withOpacity(0.2)
+              : Theme.of(context).colorScheme.primary.withOpacity(0.3),
           width: isRead ? 1 : 2,
         ),
       ),
@@ -511,7 +514,7 @@ class _NotificationsScreenState extends State<NotificationsScreen>
                             _getNotificationTitle(type),
                             style: Theme.of(context).textTheme.titleMedium?.copyWith(
                               fontWeight: isRead ? FontWeight.w600 : FontWeight.w700,
-                              color: isRead ? Colors.grey[700] : Colors.grey[800],
+                              color: isRead ? Theme.of(context).colorScheme.onSurface.withOpacity(0.7) : Theme.of(context).colorScheme.onSurface,
                             ),
                           ),
                         ),
@@ -537,7 +540,7 @@ class _NotificationsScreenState extends State<NotificationsScreen>
                     Text(
                       content,
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: isRead ? Colors.grey[600] : Colors.grey[700],
+                        color: isRead ? Theme.of(context).colorScheme.onSurface.withOpacity(0.6) : Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
                         fontWeight: isRead ? FontWeight.w400 : FontWeight.w500,
                       ),
                       maxLines: 2,
@@ -549,13 +552,13 @@ class _NotificationsScreenState extends State<NotificationsScreen>
                         Icon(
                           Icons.access_time_rounded,
                           size: 14,
-                          color: Colors.grey[500],
+                          color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
                         ),
                         const SizedBox(width: 4),
                         Text(
                           _formatTimestamp(notification['timestamp']),
                           style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: Colors.grey[500],
+                            color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
                             fontWeight: FontWeight.w500,
                           ),
                         ),
@@ -564,16 +567,16 @@ class _NotificationsScreenState extends State<NotificationsScreen>
                           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                           decoration: BoxDecoration(
                             color: isRead 
-                                ? Colors.grey[200]
-                                : Colors.blue[100],
+                                ? Theme.of(context).colorScheme.surfaceVariant
+                                : Theme.of(context).colorScheme.primary.withOpacity(0.2),
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: Text(
                             isRead ? 'Citită' : 'Nouă',
                             style: Theme.of(context).textTheme.bodySmall?.copyWith(
                               color: isRead 
-                                  ? Colors.grey[600]
-                                  : Colors.blue[700],
+                                  ? Theme.of(context).colorScheme.onSurfaceVariant
+                                  : Theme.of(context).colorScheme.primary,
                               fontWeight: FontWeight.w600,
                               fontSize: 10,
                             ),

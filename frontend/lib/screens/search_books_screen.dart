@@ -149,7 +149,10 @@ class _SearchBooksScreenState extends State<SearchBooksScreen> {
       appBar: AppBar(
         elevation: 0,
         backgroundColor: Colors.transparent,
+        centerTitle: true,
         title: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
           children: [
             Container(
               padding: const EdgeInsets.all(8),
@@ -160,7 +163,7 @@ class _SearchBooksScreenState extends State<SearchBooksScreen> {
                     Theme.of(context).colorScheme.primary.withOpacity(0.8),
                   ],
                 ),
-                borderRadius: BorderRadius.circular(10),
+                borderRadius: BorderRadius.circular(12),
                 boxShadow: [
                   BoxShadow(
                     color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
@@ -171,7 +174,7 @@ class _SearchBooksScreenState extends State<SearchBooksScreen> {
               ),
               child: Icon(
                 Icons.search_rounded,
-                color: Colors.white,
+                color: Theme.of(context).colorScheme.onPrimary,
                 size: 24,
               ),
             ),
@@ -212,7 +215,7 @@ class _SearchBooksScreenState extends State<SearchBooksScreen> {
             colors: [
               Theme.of(context).colorScheme.primary.withOpacity(0.08),
               Theme.of(context).colorScheme.background,
-              Theme.of(context).colorScheme.primary.withOpacity(0.03),
+              Theme.of(context).colorScheme.secondary.withOpacity(0.03),
             ],
             stops: const [0.0, 0.5, 1.0],
           ),
@@ -225,14 +228,14 @@ class _SearchBooksScreenState extends State<SearchBooksScreen> {
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     colors: [
-                      Colors.white,
-                      Colors.grey[50]!,
+                      Theme.of(context).colorScheme.surface,
+                      Theme.of(context).colorScheme.surface.withOpacity(0.8),
                     ],
                   ),
-                  borderRadius: BorderRadius.circular(20),
+                  borderRadius: BorderRadius.circular(25),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.08),
+                      color: Theme.of(context).colorScheme.shadow.withOpacity(0.08),
                       blurRadius: 12,
                       offset: const Offset(0, 4),
                     ),
@@ -286,7 +289,20 @@ class _SearchBooksScreenState extends State<SearchBooksScreen> {
                             ),
                           )
                         : null,
-                    border: InputBorder.none,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(25),
+                      borderSide: BorderSide.none,
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(25),
+                      borderSide: BorderSide.none,
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(25),
+                      borderSide: BorderSide.none,
+                    ),
+                    filled: true,
+                    fillColor: Colors.transparent,
                     contentPadding: const EdgeInsets.symmetric(
                       horizontal: 20,
                       vertical: 18,
@@ -489,9 +505,11 @@ class _SearchBooksScreenState extends State<SearchBooksScreen> {
         child: Container(
           decoration: BoxDecoration(
             gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
               colors: [
-                Colors.white,
-                Colors.grey[50]!,
+                Theme.of(context).colorScheme.surface,
+                Theme.of(context).colorScheme.surface.withOpacity(0.8),
               ],
             ),
             borderRadius: BorderRadius.circular(20),

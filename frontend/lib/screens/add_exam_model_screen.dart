@@ -181,6 +181,7 @@ class _AddExamModelScreenState extends State<AddExamModelScreen>
       appBar: AppBar(
         elevation: 0,
         backgroundColor: Colors.transparent,
+        centerTitle: true,
         title: FadeTransition(
           opacity: _fadeAnimation,
           child: Row(
@@ -193,7 +194,7 @@ class _AddExamModelScreenState extends State<AddExamModelScreen>
                   gradient: LinearGradient(
                     colors: [
                       Theme.of(context).colorScheme.primary,
-                      Theme.of(context).colorScheme.secondary,
+                      Theme.of(context).colorScheme.primary.withOpacity(0.8),
                     ],
                   ),
                   borderRadius: BorderRadius.circular(12),
@@ -208,7 +209,7 @@ class _AddExamModelScreenState extends State<AddExamModelScreen>
                 child: Icon(
                   Icons.add_task_rounded,
                   size: 28,
-                  color: Colors.white,
+                  color: Theme.of(context).colorScheme.onPrimary,
                 ),
               ),
               const SizedBox(width: 12),
@@ -266,8 +267,8 @@ class _AddExamModelScreenState extends State<AddExamModelScreen>
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
                         colors: [
-                          Colors.white,
-                          Colors.grey[50]!,
+                          Theme.of(context).colorScheme.surface,
+                          Theme.of(context).colorScheme.surface.withOpacity(0.8),
                         ],
                       ),
                       borderRadius: BorderRadius.circular(24),
@@ -478,7 +479,7 @@ class _AddExamModelScreenState extends State<AddExamModelScreen>
                                       ),
                                       style: ElevatedButton.styleFrom(
                                         backgroundColor: Colors.transparent,
-                                        foregroundColor: Colors.white,
+                                        foregroundColor: Theme.of(context).colorScheme.onPrimary,
                                         elevation: 0,
                                         padding: const EdgeInsets.symmetric(
                                           horizontal: 32,
@@ -514,8 +515,8 @@ class _AddExamModelScreenState extends State<AddExamModelScreen>
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            Colors.white,
-            Colors.grey[50]!,
+            Theme.of(context).colorScheme.surface,
+            Theme.of(context).colorScheme.surface.withOpacity(0.8),
           ],
         ),
         borderRadius: BorderRadius.circular(16),
@@ -589,8 +590,8 @@ class _AddExamModelScreenState extends State<AddExamModelScreen>
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            Colors.white,
-            Colors.grey[50]!,
+            Theme.of(context).colorScheme.surface,
+            Theme.of(context).colorScheme.surface.withOpacity(0.8),
           ],
         ),
         borderRadius: BorderRadius.circular(16),
@@ -650,7 +651,7 @@ class _AddExamModelScreenState extends State<AddExamModelScreen>
           color: Theme.of(context).colorScheme.onSurface,
           fontWeight: FontWeight.w500,
         ),
-        dropdownColor: Colors.white,
+        dropdownColor: Theme.of(context).colorScheme.surface,
         icon: Icon(
           Icons.keyboard_arrow_down_rounded,
           color: Theme.of(context).colorScheme.primary,
@@ -664,8 +665,8 @@ class _AddExamModelScreenState extends State<AddExamModelScreen>
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            Colors.white,
-            Colors.grey[50]!,
+            Theme.of(context).colorScheme.surface,
+            Theme.of(context).colorScheme.surface.withOpacity(0.8),
           ],
         ),
         borderRadius: BorderRadius.circular(16),

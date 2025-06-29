@@ -143,7 +143,7 @@ class _UpdateBookDialogState extends State<UpdateBookDialog>
                 ),
                 child: Icon(
                   Icons.edit_rounded,
-                  color: Colors.white,
+                  color: Theme.of(context).colorScheme.onPrimary,
                   size: 20,
                 ),
               ),
@@ -246,14 +246,14 @@ class _UpdateBookDialogState extends State<UpdateBookDialog>
                       width: 16,
                       child: CircularProgressIndicator(
                         strokeWidth: 2,
-                        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                        valueColor: AlwaysStoppedAnimation<Color>(Theme.of(context).colorScheme.onPrimary),
                       ),
                     )
                   : Icon(Icons.save_rounded),
               label: Text(_isProcessing ? 'Se actualizează...' : 'Actualizează'),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Theme.of(context).colorScheme.primary,
-                foregroundColor: Colors.white,
+                foregroundColor: Theme.of(context).colorScheme.onPrimary,
                 padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
@@ -599,10 +599,13 @@ class _ManageBooksScreenState extends State<ManageBooksScreen>
       appBar: AppBar(
         elevation: 0,
         backgroundColor: Colors.transparent,
+        centerTitle: true,
         automaticallyImplyLeading: true,
         title: FadeTransition(
           opacity: _fadeAnimation,
           child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
             children: [
               Container(
                 padding: const EdgeInsets.all(8),
@@ -624,7 +627,7 @@ class _ManageBooksScreenState extends State<ManageBooksScreen>
                 ),
                 child: Icon(
                   Icons.library_books_rounded,
-                  color: Colors.white,
+                  color: Theme.of(context).colorScheme.onPrimary,
                   size: 24,
                 ),
               ),
@@ -668,7 +671,7 @@ class _ManageBooksScreenState extends State<ManageBooksScreen>
             colors: [
               Theme.of(context).colorScheme.primary.withOpacity(0.08),
               Theme.of(context).colorScheme.background,
-              Theme.of(context).colorScheme.primary.withOpacity(0.03),
+              Theme.of(context).colorScheme.secondary.withOpacity(0.03),
             ],
             stops: const [0.0, 0.5, 1.0],
           ),
@@ -823,14 +826,14 @@ class _ManageBooksScreenState extends State<ManageBooksScreen>
                                 decoration: BoxDecoration(
                                   gradient: LinearGradient(
                                     colors: [
-                                      Colors.white,
-                                      Colors.grey[50]!,
+                                      Theme.of(context).colorScheme.surface,
+                                      Theme.of(context).colorScheme.surface.withOpacity(0.8),
                                     ],
                                   ),
                                   borderRadius: BorderRadius.circular(16),
                                   boxShadow: [
                                     BoxShadow(
-                                      color: Colors.black.withOpacity(0.08),
+                                      color: Theme.of(context).colorScheme.shadow.withOpacity(0.08),
                                       blurRadius: 12,
                                       offset: const Offset(0, 4),
                                     ),
@@ -842,7 +845,7 @@ class _ManageBooksScreenState extends State<ManageBooksScreen>
                                   decoration: InputDecoration(
                                     hintText: 'Caută după titlu, autor sau categorie...',
                                     hintStyle: TextStyle(
-                                      color: Colors.grey[500],
+                                      color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
                                       fontSize: 16,
                                     ),
                                     prefixIcon: Container(
@@ -858,7 +861,7 @@ class _ManageBooksScreenState extends State<ManageBooksScreen>
                                       ),
                                       child: Icon(
                                         Icons.search_rounded,
-                                        color: Colors.white,
+                                        color: Theme.of(context).colorScheme.onPrimary,
                                         size: 20,
                                       ),
                                     ),
@@ -866,7 +869,7 @@ class _ManageBooksScreenState extends State<ManageBooksScreen>
                                         ? IconButton(
                                             icon: Icon(
                                               Icons.clear_rounded,
-                                              color: Colors.grey[500],
+                                              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
                                             ),
                                             onPressed: () {
                                               _searchController.clear();
@@ -887,7 +890,7 @@ class _ManageBooksScreenState extends State<ManageBooksScreen>
                                   ),
                                   style: TextStyle(
                                     fontSize: 16,
-                                    color: Colors.grey[800],
+                                    color: Theme.of(context).colorScheme.onSurface,
                                     fontWeight: FontWeight.w500,
                                   ),
                                 ),
@@ -915,7 +918,7 @@ class _ManageBooksScreenState extends State<ManageBooksScreen>
                                       const SizedBox(width: 8),
                                       Text(
                                         '${_filteredBooks.length} rezultat${_filteredBooks.length == 1 ? '' : 'e'} găsit${_filteredBooks.length == 1 ? '' : 'e'}',
-                                        style: TextStyle(
+                                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
                                           color: Theme.of(context).colorScheme.primary,
                                           fontWeight: FontWeight.w600,
                                           fontSize: 14,
@@ -1028,9 +1031,9 @@ class _ManageBooksScreenState extends State<ManageBooksScreen>
         tooltip: 'Adaugă carte',
               backgroundColor: Colors.transparent,
               elevation: 0,
-              child: const Icon(
+              child: Icon(
                 Icons.add_rounded,
-                color: Colors.white,
+                color: Theme.of(context).colorScheme.onPrimary,
                 size: 28,
               ),
             ),
@@ -1046,8 +1049,8 @@ class _ManageBooksScreenState extends State<ManageBooksScreen>
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            Colors.white,
-            Colors.grey[50]!,
+            Theme.of(context).colorScheme.surface,
+            Theme.of(context).colorScheme.surface.withOpacity(0.8),
           ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
@@ -1055,19 +1058,19 @@ class _ManageBooksScreenState extends State<ManageBooksScreen>
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.08),
+            color: Theme.of(context).colorScheme.shadow.withOpacity(0.08),
             blurRadius: 16,
             offset: const Offset(0, 6),
             spreadRadius: 2,
           ),
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Theme.of(context).colorScheme.shadow.withOpacity(0.05),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
         ],
         border: Border.all(
-          color: Colors.grey[200]!,
+          color: Theme.of(context).colorScheme.outline.withOpacity(0.2),
           width: 1,
         ),
       ),
@@ -1150,10 +1153,10 @@ class _ManageBooksScreenState extends State<ManageBooksScreen>
                       Container(
                         padding: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
-                          color: Colors.grey[50]!,
+                          color: Theme.of(context).colorScheme.surfaceVariant,
                           borderRadius: BorderRadius.circular(12),
                           border: Border.all(
-                            color: Colors.grey[200]!,
+                            color: Theme.of(context).colorScheme.outline.withOpacity(0.2),
                           ),
                         ),
                         child: Column(
@@ -1187,14 +1190,14 @@ class _ManageBooksScreenState extends State<ManageBooksScreen>
                                         book['name'] ?? 'Carte necunoscută',
                                         style: Theme.of(context).textTheme.titleMedium?.copyWith(
                                           fontWeight: FontWeight.w700,
-                                          color: Colors.grey[800],
+                                          color: Theme.of(context).colorScheme.onSurfaceVariant,
                                         ),
                                       ),
                                       const SizedBox(height: 4),
                       Text(
                                         book['author'] ?? '',
                                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                          color: Colors.grey[600],
+                                          color: Theme.of(context).colorScheme.onSurfaceVariant,
                                           fontWeight: FontWeight.w500,
                                         ),
                                       ),
@@ -1211,10 +1214,10 @@ class _ManageBooksScreenState extends State<ManageBooksScreen>
                       Container(
                         padding: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
-                          color: Colors.grey[50]!,
+                          color: Theme.of(context).colorScheme.surfaceVariant,
                           borderRadius: BorderRadius.circular(12),
                           border: Border.all(
-                            color: Colors.grey[200]!,
+                            color: Theme.of(context).colorScheme.outline.withOpacity(0.2),
                           ),
                         ),
                         child: Row(
@@ -1252,7 +1255,7 @@ class _ManageBooksScreenState extends State<ManageBooksScreen>
                       Text(
                                     book['category'] ?? '',
                                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                      color: Colors.grey[700],
+                                      color: Theme.of(context).colorScheme.onSurfaceVariant,
                                       fontWeight: FontWeight.w500,
                                     ),
                                   ),
@@ -1267,10 +1270,10 @@ class _ManageBooksScreenState extends State<ManageBooksScreen>
                       Container(
                         padding: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
-                          color: Colors.grey[50]!,
+                          color: Theme.of(context).colorScheme.surfaceVariant,
                           borderRadius: BorderRadius.circular(12),
                           border: Border.all(
-                            color: Colors.grey[200]!,
+                            color: Theme.of(context).colorScheme.outline.withOpacity(0.2),
                           ),
                         ),
                         child: Row(
@@ -1308,7 +1311,7 @@ class _ManageBooksScreenState extends State<ManageBooksScreen>
                       Text(
                                     '${book['stock'] ?? 0} exemplare',
                                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                      color: Colors.grey[700],
+                                      color: Theme.of(context).colorScheme.onSurfaceVariant,
                                       fontWeight: FontWeight.w500,
                                     ),
                                   ),
@@ -1392,7 +1395,7 @@ class _ManageBooksScreenState extends State<ManageBooksScreen>
                       label: const Text('Gestionare stoc'),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.transparent,
-                        foregroundColor: Colors.white,
+                        foregroundColor: Theme.of(context).colorScheme.onPrimary,
                         elevation: 0,
                         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                         shape: RoundedRectangleBorder(

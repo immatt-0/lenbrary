@@ -788,55 +788,6 @@ class ApiService {
     }
   }
 
-  // Send a message
-  static Future<Map<String, dynamic>> sendMessage({
-    required int recipientId,
-    required String content,
-    int? borrowingId,
-  }) async {
-    final requestData = {
-      'recipient_id': recipientId,
-      'content': content,
-      if (borrowingId != null) 'borrowing_id': borrowingId,
-    };
-
-    return await _makeRequest(
-      'POST',
-      '/book-library/send-message',
-      body: requestData,
-    );
-  }
-
-  // Get messages
-  static Future<List<dynamic>> getMessages({String? conversationId}) async {
-    final queryParams =
-        conversationId != null ? {'conversation_id': conversationId} : null;
-    final response = await _makeRequest(
-      'GET',
-      '/book-library/messages',
-      queryParams: queryParams,
-    );
-    return response;
-  }
-
-  // Mark message as read
-  static Future<bool> markMessageRead(int messageId) async {
-    await _makeRequest(
-      'POST',
-      '/book-library/mark-message-read/$messageId',
-    );
-    return true;
-  }
-
-  // Get all users for messaging
-  static Future<List<dynamic>> getAllUsers() async {
-    final response = await _makeRequest(
-      'GET',
-      '/book-library/users',
-    );
-    return response;
-  }
-
   // Get unread notification count
   static Future<int> getUnreadNotificationCount() async {
     try {
@@ -846,16 +797,6 @@ class ApiService {
       print('Error getting unread notification count: $e');
       return 0;
     }
-  }
-
-  // Search users (for librarians)
-  static Future<List<dynamic>> searchUsers(String query) async {
-    final response = await _makeRequest(
-      'GET',
-      '/book-library/search-users',
-      queryParams: {'q': query},
-    );
-    return response;
   }
 
   // Fetch all exam models
@@ -881,24 +822,48 @@ class ApiService {
     if (token == null) {
       throw Exception('Not authenticated');
     }
+    
+    // Debug information
+    print('Adding exam model:');
+    print('  Name: $name');
+    print('  Type: $type');
+    print('  Category: $category');
+    print('  PDF File Name: $pdfFileName');
+    print('  PDF File Path: $pdfFilePath');
+    print('  PDF File Bytes: ${pdfFileBytes?.length ?? 0} bytes');
+    print('  Is Web: $kIsWeb');
+    
     var request = http.MultipartRequest('POST', Uri.parse('$baseUrl$createExamModelEndpoint'));
     request.headers['Authorization'] = 'Bearer $token';
     request.fields['name'] = name;
     request.fields['type'] = type;
     request.fields['category'] = category;
+    
     if (kIsWeb) {
       if (pdfFileBytes == null || pdfFileName == null) {
         throw Exception('PDF file bytes and name are required for web upload');
       }
-      request.files.add(http.MultipartFile.fromBytes('pdf_file', pdfFileBytes, filename: pdfFileName));
+      var multipartFile = http.MultipartFile.fromBytes('pdf_file', pdfFileBytes, filename: pdfFileName);
+      request.files.add(multipartFile);
+      print('  Web upload - File added with name: $pdfFileName, size: ${pdfFileBytes.length}');
     } else {
       if (pdfFilePath == null) {
         throw Exception('PDF file path is required for non-web upload');
       }
-      request.files.add(await http.MultipartFile.fromPath('pdf_file', pdfFilePath));
+      var multipartFile = await http.MultipartFile.fromPath('pdf_file', pdfFilePath);
+      request.files.add(multipartFile);
+      print('  Mobile upload - File added with path: $pdfFilePath');
     }
+    
+    print('  Request fields: ${request.fields}');
+    print('  Request files count: ${request.files.length}');
+    
     final streamedResponse = await request.send();
     final response = await http.Response.fromStream(streamedResponse);
+    
+    print('  Response status: ${response.statusCode}');
+    print('  Response body: ${response.body}');
+    
     if (response.statusCode == 201) {
       return jsonDecode(response.body);
     } else {

@@ -152,9 +152,12 @@ class _ExamModelsAdminScreenState extends State<ExamModelsAdminScreen>
       appBar: AppBar(
         elevation: 0,
         backgroundColor: Colors.transparent,
+        centerTitle: true,
         title: FadeTransition(
           opacity: _fadeAnimation,
           child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
             children: [
               Container(
                 padding: const EdgeInsets.all(8),
@@ -165,7 +168,7 @@ class _ExamModelsAdminScreenState extends State<ExamModelsAdminScreen>
                       Theme.of(context).colorScheme.primary.withOpacity(0.8),
                     ],
                   ),
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: BorderRadius.circular(12),
                   boxShadow: [
                     BoxShadow(
                       color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
@@ -176,7 +179,7 @@ class _ExamModelsAdminScreenState extends State<ExamModelsAdminScreen>
                 ),
                 child: Icon(
                   Icons.description_rounded,
-                  color: Colors.white,
+                  color: Theme.of(context).colorScheme.onPrimary,
                   size: 24,
                 ),
               ),
@@ -239,7 +242,7 @@ class _ExamModelsAdminScreenState extends State<ExamModelsAdminScreen>
             colors: [
               Theme.of(context).colorScheme.primary.withOpacity(0.08),
               Theme.of(context).colorScheme.background,
-              Theme.of(context).colorScheme.primary.withOpacity(0.03),
+              Theme.of(context).colorScheme.secondary.withOpacity(0.03),
             ],
             stops: const [0.0, 0.5, 1.0],
           ),
@@ -260,21 +263,20 @@ class _ExamModelsAdminScreenState extends State<ExamModelsAdminScreen>
                         decoration: BoxDecoration(
                           gradient: LinearGradient(
                             colors: [
-                              Colors.white,
-                              Colors.grey[50]!,
+                              Theme.of(context).colorScheme.surface,
+                              Theme.of(context).colorScheme.surface.withOpacity(0.8),
                             ],
                           ),
-                          borderRadius: BorderRadius.circular(20),
+                          borderRadius: BorderRadius.circular(25),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.black.withOpacity(0.08),
-                              blurRadius: 12,
-                              offset: const Offset(0, 4),
+                              color: Theme.of(context).colorScheme.shadow.withOpacity(0.05),
+                              blurRadius: 8,
+                              offset: const Offset(0, 2),
                             ),
                           ],
                           border: Border.all(
-                            color: Theme.of(context).colorScheme.primary.withOpacity(0.2),
-                            width: 1.5,
+                            color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
                           ),
                         ),
                         child: TextField(
@@ -321,7 +323,20 @@ class _ExamModelsAdminScreenState extends State<ExamModelsAdminScreen>
                                     ),
                                   )
                                 : null,
-                            border: InputBorder.none,
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(25),
+                              borderSide: BorderSide.none,
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(25),
+                              borderSide: BorderSide.none,
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(25),
+                              borderSide: BorderSide.none,
+                            ),
+                            filled: true,
+                            fillColor: Colors.transparent,
                             contentPadding: const EdgeInsets.symmetric(
                               horizontal: 20,
                               vertical: 18,
@@ -345,14 +360,14 @@ class _ExamModelsAdminScreenState extends State<ExamModelsAdminScreen>
                               decoration: BoxDecoration(
                                 gradient: LinearGradient(
                                   colors: [
-                                    Colors.white,
-                                    Colors.grey[50]!,
+                                    Theme.of(context).colorScheme.surface,
+                                    Theme.of(context).colorScheme.surface.withOpacity(0.8),
                                   ],
                                 ),
-                                borderRadius: BorderRadius.circular(16),
+                                borderRadius: BorderRadius.circular(25),
                                 boxShadow: [
                                   BoxShadow(
-                                    color: Colors.black.withOpacity(0.05),
+                                    color: Theme.of(context).colorScheme.shadow.withOpacity(0.05),
                                     blurRadius: 8,
                                     offset: const Offset(0, 2),
                                   ),
@@ -371,7 +386,20 @@ class _ExamModelsAdminScreenState extends State<ExamModelsAdminScreen>
                                     fontWeight: FontWeight.w600,
                                     fontSize: 13,
                                   ),
-                                  border: InputBorder.none,
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(25),
+                                    borderSide: BorderSide.none,
+                                  ),
+                                  enabledBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(25),
+                                    borderSide: BorderSide.none,
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(25),
+                                    borderSide: BorderSide.none,
+                                  ),
+                                  filled: true,
+                                  fillColor: Colors.transparent,
                                   contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                                   prefixIcon: Container(
                                     margin: const EdgeInsets.all(6),
@@ -427,20 +455,20 @@ class _ExamModelsAdminScreenState extends State<ExamModelsAdminScreen>
                               decoration: BoxDecoration(
                                 gradient: LinearGradient(
                                   colors: [
-                                    Colors.white,
-                                    Colors.grey[50]!,
+                                    Theme.of(context).colorScheme.surface,
+                                    Theme.of(context).colorScheme.surface.withOpacity(0.8),
                                   ],
                                 ),
-                                borderRadius: BorderRadius.circular(16),
+                                borderRadius: BorderRadius.circular(25),
                                 boxShadow: [
                                   BoxShadow(
-                                    color: Colors.black.withOpacity(0.05),
+                                    color: Theme.of(context).colorScheme.shadow.withOpacity(0.05),
                                     blurRadius: 8,
                                     offset: const Offset(0, 2),
                                   ),
                                 ],
                                 border: Border.all(
-                                  color: Theme.of(context).colorScheme.secondary.withOpacity(0.1),
+                                  color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
                                 ),
                               ),
                               child: DropdownButtonFormField<String>(
@@ -449,22 +477,35 @@ class _ExamModelsAdminScreenState extends State<ExamModelsAdminScreen>
                                 decoration: InputDecoration(
                                   labelText: 'Materia',
                                   labelStyle: TextStyle(
-                                    color: Theme.of(context).colorScheme.secondary,
+                                    color: Theme.of(context).colorScheme.primary,
                                     fontWeight: FontWeight.w600,
                                     fontSize: 13,
                                   ),
-                                  border: InputBorder.none,
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(25),
+                                    borderSide: BorderSide.none,
+                                  ),
+                                  enabledBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(25),
+                                    borderSide: BorderSide.none,
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(25),
+                                    borderSide: BorderSide.none,
+                                  ),
+                                  filled: true,
+                                  fillColor: Colors.transparent,
                                   contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                                   prefixIcon: Container(
                                     margin: const EdgeInsets.all(6),
                                     padding: const EdgeInsets.all(6),
                                     decoration: BoxDecoration(
-                                      color: Theme.of(context).colorScheme.secondary.withOpacity(0.1),
+                                      color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
                                       borderRadius: BorderRadius.circular(6),
                                     ),
                                     child: Icon(
                                       Icons.subject_rounded,
-                                      color: Theme.of(context).colorScheme.secondary,
+                                      color: Theme.of(context).colorScheme.primary,
                                       size: 16,
                                     ),
                                   ),
@@ -519,14 +560,14 @@ class _ExamModelsAdminScreenState extends State<ExamModelsAdminScreen>
                         ),
                         child: ElevatedButton.icon(
                           onPressed: _addExamModel,
-                          icon: const Icon(Icons.add_rounded, color: Colors.white),
-                          label: const Text(
+                          icon: Icon(Icons.add_rounded, color: Theme.of(context).colorScheme.onPrimary),
+                          label: Text(
                             'Adaugă model de examen',
-                            style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
+                            style: TextStyle(color: Theme.of(context).colorScheme.onPrimary, fontWeight: FontWeight.w600),
                           ),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.transparent,
-                            foregroundColor: Colors.white,
+                            foregroundColor: Theme.of(context).colorScheme.onPrimary,
                             elevation: 0,
                             padding: const EdgeInsets.symmetric(
                               horizontal: 32,
@@ -682,8 +723,8 @@ class _ExamModelsAdminScreenState extends State<ExamModelsAdminScreen>
           decoration: BoxDecoration(
             gradient: LinearGradient(
               colors: [
-                Colors.white,
-                Colors.grey[50]!,
+                Theme.of(context).colorScheme.surface,
+                Theme.of(context).colorScheme.surface.withOpacity(0.8),
               ],
             ),
             borderRadius: BorderRadius.circular(20),
@@ -824,7 +865,7 @@ class _ExamModelsAdminScreenState extends State<ExamModelsAdminScreen>
                               gradient: LinearGradient(
                                 colors: [
                                   Theme.of(context).colorScheme.primary,
-                                  Theme.of(context).colorScheme.secondary,
+                                  Theme.of(context).colorScheme.primary.withOpacity(0.8),
                                 ],
                               ),
                               borderRadius: BorderRadius.circular(12),

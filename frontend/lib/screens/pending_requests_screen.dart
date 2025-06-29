@@ -189,24 +189,27 @@ class _PendingRequestsScreenState extends State<PendingRequestsScreen>
       appBar: AppBar(
         elevation: 0,
         backgroundColor: Colors.transparent,
+        centerTitle: true,
         toolbarHeight: 80,
         title: FadeTransition(
           opacity: _fadeAnimation,
           child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
             children: [
               Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     colors: [
-                      Theme.of(context).colorScheme.primary,
-                      Theme.of(context).colorScheme.primary.withOpacity(0.8),
+                      Theme.of(context).colorScheme.surface,
+                      Theme.of(context).colorScheme.surface.withOpacity(0.8),
                     ],
                   ),
                   borderRadius: BorderRadius.circular(10),
                   boxShadow: [
                     BoxShadow(
-                      color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
+                      color: Theme.of(context).colorScheme.shadow.withOpacity(0.1),
                       blurRadius: 8,
                       offset: const Offset(0, 2),
                     ),
@@ -214,7 +217,7 @@ class _PendingRequestsScreenState extends State<PendingRequestsScreen>
                 ),
                 child: Icon(
                   Icons.pending_actions_rounded,
-                  color: Colors.white,
+                  color: Theme.of(context).colorScheme.onPrimary,
                   size: 24,
                 ),
               ),
@@ -256,14 +259,14 @@ class _PendingRequestsScreenState extends State<PendingRequestsScreen>
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   colors: [
-                    Colors.white,
-                    Colors.grey[50]!,
+                    Theme.of(context).colorScheme.surface,
+                    Theme.of(context).colorScheme.surface.withOpacity(0.8),
                   ],
                 ),
                 borderRadius: BorderRadius.circular(20),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
+                    color: Theme.of(context).colorScheme.shadow.withOpacity(0.08),
                     blurRadius: 16,
                     offset: const Offset(0, 6),
                   ),
@@ -340,7 +343,7 @@ class _PendingRequestsScreenState extends State<PendingRequestsScreen>
             colors: [
               Theme.of(context).colorScheme.primary.withOpacity(0.08),
               Theme.of(context).colorScheme.background,
-              Theme.of(context).colorScheme.primary.withOpacity(0.03),
+              Theme.of(context).colorScheme.secondary.withOpacity(0.03),
             ],
             stops: const [0.0, 0.5, 1.0],
           ),
@@ -481,22 +484,18 @@ class _PendingRequestsScreenState extends State<PendingRequestsScreen>
           decoration: BoxDecoration(
             gradient: LinearGradient(
               colors: [
-                Colors.white,
-                Colors.grey[50]!,
+                Theme.of(context).colorScheme.surface,
+                Theme.of(context).colorScheme.surface.withOpacity(0.8),
               ],
             ),
             borderRadius: BorderRadius.circular(24),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.08),
+                color: Theme.of(context).colorScheme.shadow.withOpacity(0.08),
                 blurRadius: 16,
                 offset: const Offset(0, 6),
               ),
             ],
-            border: Border.all(
-              color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
-              width: 1,
-            ),
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -555,22 +554,18 @@ class _PendingRequestsScreenState extends State<PendingRequestsScreen>
           decoration: BoxDecoration(
             gradient: LinearGradient(
               colors: [
-                Colors.white,
-                Colors.grey[50]!,
+                Theme.of(context).colorScheme.surface,
+                Theme.of(context).colorScheme.surface.withOpacity(0.8),
               ],
             ),
             borderRadius: BorderRadius.circular(20),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.08),
+                color: Theme.of(context).colorScheme.shadow.withOpacity(0.08),
                 blurRadius: 16,
                 offset: const Offset(0, 6),
               ),
             ],
-            border: Border.all(
-              color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
-              width: 1,
-            ),
           ),
           child: Padding(
             padding: const EdgeInsets.all(20),

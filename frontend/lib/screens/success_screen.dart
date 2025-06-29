@@ -323,9 +323,9 @@ class _SuccessScreenState extends State<SuccessScreen>
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             colors: [
-              Theme.of(context).colorScheme.primary.withOpacity(0.08),
-              Theme.of(context).colorScheme.background,
               Theme.of(context).colorScheme.primary.withOpacity(0.03),
+              Theme.of(context).colorScheme.background,
+              Theme.of(context).colorScheme.primary.withOpacity(0.01),
             ],
             stops: const [0.0, 0.5, 1.0],
           ),
@@ -355,7 +355,7 @@ class _SuccessScreenState extends State<SuccessScreen>
                         borderRadius: BorderRadius.circular(24),
                         boxShadow: [
                           BoxShadow(
-                            color: Theme.of(context).colorScheme.primary.withOpacity(0.12),
+                            color: Theme.of(context).colorScheme.primary.withOpacity(0.06),
                             blurRadius: 24,
                             offset: const Offset(0, 10),
                             spreadRadius: 3,
@@ -367,7 +367,7 @@ class _SuccessScreenState extends State<SuccessScreen>
                           ),
                         ],
                         border: Border.all(
-                          color: Theme.of(context).colorScheme.primary.withOpacity(0.2),
+                          color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
                           width: 1.5,
                         ),
                       ),
@@ -450,7 +450,7 @@ class _SuccessScreenState extends State<SuccessScreen>
                           icon: Icons.search_rounded,
                           title: 'Caută cărți',
                           description: 'Explorează catalogul bibliotecii',
-                          color: Theme.of(context).colorScheme.primary,
+                          color: Colors.green[600]!,
                           onTap: () {
                             Navigator.pushNamed(context, '/search-books');
                           },
@@ -462,7 +462,7 @@ class _SuccessScreenState extends State<SuccessScreen>
                           icon: Icons.book_rounded,
                           title: 'Cererile mele',
                           description: 'Vizualizează și gestionează cererile tale',
-                          color: Theme.of(context).colorScheme.primary,
+                          color: Colors.orange[600]!,
                           onTap: () {
                             Navigator.pushNamed(context, '/my-requests');
                           },
@@ -474,7 +474,7 @@ class _SuccessScreenState extends State<SuccessScreen>
                           icon: Icons.description_rounded,
                           title: 'Modele de examene',
                           description: 'Găsește modele de examene pentru studiu',
-                          color: Theme.of(context).colorScheme.primary,
+                          color: Colors.purple[600]!,
                           onTap: () {
                             Navigator.pushNamed(context, '/exam-models');
                           },
@@ -564,9 +564,9 @@ class _SuccessScreenState extends State<SuccessScreen>
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             colors: [
-              Theme.of(context).colorScheme.primary.withOpacity(0.08),
-              Theme.of(context).colorScheme.background,
               Theme.of(context).colorScheme.primary.withOpacity(0.03),
+              Theme.of(context).colorScheme.background,
+              Theme.of(context).colorScheme.primary.withOpacity(0.01),
             ],
             stops: const [0.0, 0.5, 1.0],
           ),
@@ -596,7 +596,7 @@ class _SuccessScreenState extends State<SuccessScreen>
                         borderRadius: BorderRadius.circular(24),
                         boxShadow: [
                           BoxShadow(
-                            color: Theme.of(context).colorScheme.primary.withOpacity(0.12),
+                            color: Theme.of(context).colorScheme.primary.withOpacity(0.06),
                             blurRadius: 24,
                             offset: const Offset(0, 10),
                             spreadRadius: 3,
@@ -608,7 +608,7 @@ class _SuccessScreenState extends State<SuccessScreen>
                           ),
                         ],
                         border: Border.all(
-                          color: Theme.of(context).colorScheme.primary.withOpacity(0.2),
+                          color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
                           width: 1.5,
                         ),
                       ),
@@ -854,13 +854,13 @@ class _SuccessScreenState extends State<SuccessScreen>
         Container(
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+            color: Theme.of(context).colorScheme.primary.withOpacity(0.05),
             borderRadius: BorderRadius.circular(8),
           ),
           child: Icon(
             icon,
             size: 20,
-            color: Theme.of(context).colorScheme.primary,
+            color: Theme.of(context).colorScheme.primary.withOpacity(0.7),
           ),
         ),
         const SizedBox(width: 12),

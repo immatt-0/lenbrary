@@ -62,14 +62,17 @@ class _LoginScreenState extends State<LoginScreen> {
     return Scaffold(
       floatingActionButton: Consumer<ThemeProvider>(
         builder: (context, themeProvider, child) {
-          return FloatingActionButton(
-            onPressed: () => themeProvider.toggleTheme(),
-            backgroundColor: Theme.of(context).colorScheme.primary,
-            foregroundColor: Theme.of(context).colorScheme.onPrimary,
-            elevation: 8,
-            child: Icon(
-              themeProvider.isDarkMode ? Icons.light_mode : Icons.dark_mode,
-              size: 24,
+          return Padding(
+            padding: const EdgeInsets.only(top: 16.0, right: 8.0),
+            child: FloatingActionButton(
+              onPressed: () => themeProvider.toggleTheme(),
+              backgroundColor: Theme.of(context).colorScheme.primary,
+              foregroundColor: Theme.of(context).colorScheme.onPrimary,
+              elevation: 8,
+              child: Icon(
+                themeProvider.isDarkMode ? Icons.light_mode : Icons.dark_mode,
+                size: 24,
+              ),
             ),
           );
         },

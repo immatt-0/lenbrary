@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/theme_provider.dart';
+import '../services/notification_service.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({Key? key}) : super(key: key);
@@ -308,19 +309,9 @@ class _SettingsScreenState extends State<SettingsScreen>
                   value: isDarkMode,
                   onChanged: (value) {
                     themeProvider.toggleTheme();
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(
-                          isDarkMode ? 'Tema deschisă activată' : 'Tema întunecată activată',
-                          style: const TextStyle(fontWeight: FontWeight.w600),
-                        ),
-                        backgroundColor: Theme.of(context).colorScheme.primary,
-                        behavior: SnackBarBehavior.floating,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        margin: const EdgeInsets.all(16),
-                      ),
+                    NotificationService.showSuccess(
+                      context: context,
+                      message: isDarkMode ? 'Tema deschisă activată' : 'Tema întunecată activată',
                     );
                   },
                   activeColor: Colors.purple[600],

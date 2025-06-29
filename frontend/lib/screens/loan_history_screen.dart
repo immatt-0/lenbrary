@@ -162,14 +162,14 @@ class _LoanHistoryScreenState extends State<LoanHistoryScreen>
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   colors: [
-                    Theme.of(context).colorScheme.surface,
-                    Theme.of(context).colorScheme.surface.withOpacity(0.8),
+                    Theme.of(context).colorScheme.primary,
+                    Theme.of(context).colorScheme.primary.withOpacity(0.8),
                   ],
                 ),
                 borderRadius: BorderRadius.circular(10),
                 boxShadow: [
                   BoxShadow(
-                    color: Theme.of(context).colorScheme.shadow.withOpacity(0.08),
+                    color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
                     blurRadius: 8,
                     offset: const Offset(0, 2),
                   ),
@@ -251,7 +251,7 @@ class _LoanHistoryScreenState extends State<LoanHistoryScreen>
                           Theme.of(context).colorScheme.surface.withOpacity(0.8),
                         ],
                       ),
-                      borderRadius: BorderRadius.circular(20),
+                      borderRadius: BorderRadius.circular(25),
                       boxShadow: [
                         BoxShadow(
                           color: Theme.of(context).colorScheme.shadow.withOpacity(0.08),
@@ -307,7 +307,20 @@ class _LoanHistoryScreenState extends State<LoanHistoryScreen>
                                 ),
                               )
                             : null,
-                        border: InputBorder.none,
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(25),
+                          borderSide: BorderSide.none,
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(25),
+                          borderSide: BorderSide.none,
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(25),
+                          borderSide: BorderSide.none,
+                        ),
+                        filled: true,
+                        fillColor: Colors.transparent,
                         contentPadding: const EdgeInsets.symmetric(
                           horizontal: 20,
                           vertical: 18,

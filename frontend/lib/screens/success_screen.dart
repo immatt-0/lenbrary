@@ -223,44 +223,47 @@ class _SuccessScreenState extends State<SuccessScreen>
         backgroundColor: Colors.transparent,
         title: FadeTransition(
           opacity: _fadeAnimation,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [
-                      Theme.of(context).colorScheme.primary,
-                      Theme.of(context).colorScheme.primary.withOpacity(0.8),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
+                        Theme.of(context).colorScheme.primary,
+                        Theme.of(context).colorScheme.primary.withOpacity(0.8),
+                      ],
+                    ),
+                    borderRadius: BorderRadius.circular(12),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
+                        blurRadius: 8,
+                        offset: const Offset(0, 2),
+                      ),
                     ],
                   ),
-                  borderRadius: BorderRadius.circular(12),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
-                      blurRadius: 8,
-                      offset: const Offset(0, 2),
-                    ),
-                  ],
+                  child: Icon(
+                    Icons.menu_book_rounded,
+                    size: 28,
+                    color: Theme.of(context).colorScheme.onPrimary,
+                  ),
                 ),
-                child: Icon(
-                  Icons.menu_book_rounded,
-                  size: 28,
-                  color: Theme.of(context).colorScheme.onPrimary,
+                const SizedBox(width: 12),
+                const Text(
+                  'Lenbrary',
+                  style: TextStyle(
+                    fontSize: 26.0,
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: -0.5,
+                  ),
                 ),
-              ),
-              const SizedBox(width: 12),
-              const Text(
-                'Lenbrary',
-                style: TextStyle(
-                  fontSize: 26.0,
-                  fontWeight: FontWeight.w800,
-                  letterSpacing: -0.5,
-                ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
         automaticallyImplyLeading: false,
@@ -481,44 +484,47 @@ class _SuccessScreenState extends State<SuccessScreen>
         backgroundColor: Colors.transparent,
         title: FadeTransition(
           opacity: _fadeAnimation,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [
-                      Theme.of(context).colorScheme.primary,
-                      Theme.of(context).colorScheme.primary.withOpacity(0.8),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
+                        Theme.of(context).colorScheme.primary,
+                        Theme.of(context).colorScheme.primary.withOpacity(0.8),
+                      ],
+                    ),
+                    borderRadius: BorderRadius.circular(12),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
+                        blurRadius: 8,
+                        offset: const Offset(0, 2),
+                      ),
                     ],
                   ),
-                  borderRadius: BorderRadius.circular(12),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
-                      blurRadius: 8,
-                      offset: const Offset(0, 2),
-                    ),
-                  ],
+                  child: Icon(
+                    Icons.menu_book_rounded,
+                    size: 28,
+                    color: Theme.of(context).colorScheme.onPrimary,
+                  ),
                 ),
-                child: Icon(
-                  Icons.menu_book_rounded,
-                  size: 28,
-                  color: Theme.of(context).colorScheme.onPrimary,
+                const SizedBox(width: 12),
+                const Text(
+                  'Lenbrary',
+                  style: TextStyle(
+                    fontSize: 26.0,
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: -0.5,
+                  ),
                 ),
-              ),
-              const SizedBox(width: 12),
-              const Text(
-                'Lenbrary',
-                style: TextStyle(
-                  fontSize: 26.0,
-                  fontWeight: FontWeight.w800,
-                  letterSpacing: -0.5,
-                ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
         automaticallyImplyLeading: false,

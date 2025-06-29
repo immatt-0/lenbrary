@@ -15,7 +15,11 @@ class _PendingRequestsScreenState extends State<PendingRequestsScreen>
   bool _isLoading = true;
   List<dynamic> _pendingRequests = [];
   List<dynamic> _approvedRequests = [];
+  List<dynamic> _filteredPendingRequests = [];
+  List<dynamic> _filteredApprovedRequests = [];
   String? _errorMessage;
+  final TextEditingController _searchController = TextEditingController();
+  String _searchQuery = '';
 
   // Animation controllers
   late AnimationController _fadeController;
@@ -30,6 +34,7 @@ class _PendingRequestsScreenState extends State<PendingRequestsScreen>
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
     _loadRequests();
+    _searchController.addListener(_filterRequests);
     
     // Initialize animations
     _fadeController = AnimationController(
@@ -77,6 +82,7 @@ class _PendingRequestsScreenState extends State<PendingRequestsScreen>
 
   @override
   void dispose() {
+    _searchController.dispose();
     _tabController.dispose();
     _fadeController.dispose();
     _slideController.dispose();
@@ -98,6 +104,8 @@ class _PendingRequestsScreenState extends State<PendingRequestsScreen>
             allRequests.where((r) => r['status'] == 'IN_ASTEPTARE').toList();
         _approvedRequests =
             allRequests.where((r) => r['status'] == 'APROBAT').toList();
+        _filteredPendingRequests = _pendingRequests;
+        _filteredApprovedRequests = _approvedRequests;
       });
     } catch (e) {
       setState(() {
@@ -108,6 +116,31 @@ class _PendingRequestsScreenState extends State<PendingRequestsScreen>
         _isLoading = false;
       });
     }
+  }
+
+  void _filterRequests() {
+    final query = _searchController.text.toLowerCase().trim();
+    
+    setState(() {
+      _searchQuery = query;
+      
+      if (query.isEmpty) {
+        _filteredPendingRequests = _pendingRequests;
+        _filteredApprovedRequests = _approvedRequests;
+      } else {
+        _filteredPendingRequests = _pendingRequests.where((request) {
+          final bookName = request['book']['name']?.toLowerCase() ?? '';
+          final studentName = request['student']['user']['display_name']?.toLowerCase() ?? '';
+          return bookName.contains(query) || studentName.contains(query);
+        }).toList();
+        
+        _filteredApprovedRequests = _approvedRequests.where((request) {
+          final bookName = request['book']['name']?.toLowerCase() ?? '';
+          final studentName = request['student']['user']['display_name']?.toLowerCase() ?? '';
+          return bookName.contains(query) || studentName.contains(query);
+        }).toList();
+      }
+    });
   }
 
   Future<void> _handleRequest(String requestId, bool approve) async {
@@ -202,14 +235,14 @@ class _PendingRequestsScreenState extends State<PendingRequestsScreen>
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     colors: [
-                      Theme.of(context).colorScheme.surface,
-                      Theme.of(context).colorScheme.surface.withOpacity(0.8),
+                      Theme.of(context).colorScheme.primary,
+                      Theme.of(context).colorScheme.primary.withOpacity(0.8),
                     ],
                   ),
                   borderRadius: BorderRadius.circular(10),
                   boxShadow: [
                     BoxShadow(
-                      color: Theme.of(context).colorScheme.shadow.withOpacity(0.1),
+                      color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
                       blurRadius: 8,
                       offset: const Offset(0, 2),
                     ),
@@ -452,18 +485,119 @@ class _PendingRequestsScreenState extends State<PendingRequestsScreen>
                       opacity: _fadeAnimation,
                       child: SlideTransition(
                         position: _slideAnimation,
-                        child: TabBarView(
-                          controller: _tabController,
+                        child: Column(
                           children: [
-                            _buildRequestsList(
-                              _pendingRequests,
-                              showActions: true,
-                              emptyMessage: 'Nu există cereri în așteptare',
+                            // Search Bar
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  gradient: LinearGradient(
+                                    colors: [
+                                      Theme.of(context).colorScheme.surface,
+                                      Theme.of(context).colorScheme.surface.withOpacity(0.8),
+                                    ],
+                                  ),
+                                  borderRadius: BorderRadius.circular(25),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Theme.of(context).colorScheme.shadow.withOpacity(0.08),
+                                      blurRadius: 12,
+                                      offset: const Offset(0, 4),
+                                    ),
+                                  ],
+                                  border: Border.all(
+                                    color: Theme.of(context).colorScheme.primary.withOpacity(0.2),
+                                    width: 1.5,
+                                  ),
+                                ),
+                                child: TextField(
+                                  controller: _searchController,
+                                  decoration: InputDecoration(
+                                    hintText: '🔍 Caută după numele cărții sau studentului...',
+                                    hintStyle: TextStyle(
+                                      color: Theme.of(context).colorScheme.primary.withOpacity(0.6),
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                    prefixIcon: Container(
+                                      margin: const EdgeInsets.all(8),
+                                      padding: const EdgeInsets.all(10),
+                                      decoration: BoxDecoration(
+                                        color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
+                                      child: Icon(
+                                        Icons.search_rounded,
+                                        color: Theme.of(context).colorScheme.primary,
+                                        size: 24,
+                                      ),
+                                    ),
+                                    suffixIcon: _searchController.text.isNotEmpty
+                                        ? AnimatedContainer(
+                                            duration: const Duration(milliseconds: 200),
+                                            child: Container(
+                                              margin: const EdgeInsets.all(8),
+                                              decoration: BoxDecoration(
+                                                color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                                                borderRadius: BorderRadius.circular(10),
+                                              ),
+                                              child: IconButton(
+                                                icon: Icon(
+                                                  Icons.clear_rounded,
+                                                  color: Theme.of(context).colorScheme.primary,
+                                                ),
+                                                onPressed: () {
+                                                  _searchController.clear();
+                                                },
+                                              ),
+                                            ),
+                                          )
+                                        : null,
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(25),
+                                      borderSide: BorderSide.none,
+                                    ),
+                                    enabledBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(25),
+                                      borderSide: BorderSide.none,
+                                    ),
+                                    focusedBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(25),
+                                      borderSide: BorderSide.none,
+                                    ),
+                                    filled: true,
+                                    fillColor: Colors.transparent,
+                                    contentPadding: const EdgeInsets.symmetric(
+                                      horizontal: 20,
+                                      vertical: 18,
+                                    ),
+                                  ),
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w500,
+                                    color: Theme.of(context).colorScheme.onSurface,
+                                  ),
+                                ),
+                              ),
                             ),
-                            _buildRequestsList(
-                              _approvedRequests,
-                              showActions: false,
-                              emptyMessage: 'Nu există cereri aprobate',
+                            // TabBarView
+                            Expanded(
+                              child: TabBarView(
+                                controller: _tabController,
+                                children: [
+                                  _buildRequestsList(
+                                    _filteredPendingRequests,
+                                    showActions: true,
+                                    emptyMessage: 'Nu există cereri în așteptare',
+                                  ),
+                                  _buildRequestsList(
+                                    _filteredApprovedRequests,
+                                    showActions: false,
+                                    emptyMessage: 'Nu există cereri aprobate',
+                                  ),
+                                ],
+                              ),
                             ),
                           ],
                         ),
@@ -512,14 +646,18 @@ class _PendingRequestsScreenState extends State<PendingRequestsScreen>
                   shape: BoxShape.circle,
                 ),
                 child: Icon(
-                  showActions ? Icons.pending_actions_rounded : Icons.check_circle_rounded,
+                  _searchQuery.isNotEmpty 
+                      ? Icons.search_off_rounded 
+                      : (showActions ? Icons.pending_actions_rounded : Icons.check_circle_rounded),
                   size: 48,
                   color: Theme.of(context).colorScheme.primary,
                 ),
               ),
               const SizedBox(height: 24),
               Text(
-                emptyMessage,
+                _searchQuery.isNotEmpty 
+                    ? 'Nu s-au găsit rezultate pentru "$_searchQuery"'
+                    : emptyMessage,
                 style: Theme.of(context).textTheme.titleLarge?.copyWith(
                   fontWeight: FontWeight.w700,
                   color: Theme.of(context).colorScheme.onSurface,
@@ -529,9 +667,11 @@ class _PendingRequestsScreenState extends State<PendingRequestsScreen>
               ),
               const SizedBox(height: 8),
               Text(
-                showActions 
-                  ? 'Nu există cereri care necesită aprobare'
-                  : 'Nu există cereri aprobate în acest moment',
+                _searchQuery.isNotEmpty
+                    ? 'Încearcă să modifici termenii de căutare'
+                    : (showActions 
+                        ? 'Nu există cereri care necesită aprobare'
+                        : 'Nu există cereri aprobate în acest moment'),
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                   color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
                   fontWeight: FontWeight.w500,

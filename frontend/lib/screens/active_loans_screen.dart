@@ -14,9 +14,12 @@ class _ActiveLoansScreenState extends State<ActiveLoansScreen>
     with TickerProviderStateMixin {
   bool _isLoading = true;
   List<dynamic> _activeLoans = [];
+  List<dynamic> _filteredActiveLoans = [];
   String? _errorMessage;
   bool _processingAction = false;
   bool _isLibrarian = false;
+  final TextEditingController _searchController = TextEditingController();
+  String _searchQuery = '';
 
   // Animation controllers
   late AnimationController _fadeController;
@@ -31,6 +34,7 @@ class _ActiveLoansScreenState extends State<ActiveLoansScreen>
     super.initState();
     _loadUserInfo();
     _loadActiveLoans();
+    _searchController.addListener(_filterActiveLoans);
     
     // Initialize animations
     _fadeController = AnimationController(
@@ -78,6 +82,7 @@ class _ActiveLoansScreenState extends State<ActiveLoansScreen>
 
   @override
   void dispose() {
+    _searchController.dispose();
     _fadeController.dispose();
     _slideController.dispose();
     _scaleController.dispose();
@@ -105,6 +110,7 @@ class _ActiveLoansScreenState extends State<ActiveLoansScreen>
       final loans = await ApiService.getActiveLoans();
       setState(() {
         _activeLoans = loans;
+        _filteredActiveLoans = loans;
       });
     } catch (e) {
       setState(() {
@@ -142,6 +148,16 @@ class _ActiveLoansScreenState extends State<ActiveLoansScreen>
       if (word.isEmpty) return word;
       return word[0].toUpperCase() + word.substring(1).toLowerCase();
     }).join(' ');
+  }
+
+  void _filterActiveLoans() {
+    setState(() {
+      _searchQuery = _searchController.text.trim();
+      _filteredActiveLoans = _activeLoans.where((loan) {
+        final bookName = loan['book']['name']?.toLowerCase() ?? '';
+        return bookName.contains(_searchQuery.toLowerCase());
+      }).toList();
+    });
   }
 
   @override
@@ -381,6 +397,107 @@ class _ActiveLoansScreenState extends State<ActiveLoansScreen>
                       ),
                     ),
                   
+                  // Search Bar
+                  FadeTransition(
+                    opacity: _fadeAnimation,
+                    child: SlideTransition(
+                      position: _slideAnimation,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              colors: [
+                                Theme.of(context).colorScheme.surface,
+                                Theme.of(context).colorScheme.surface.withOpacity(0.8),
+                              ],
+                            ),
+                            borderRadius: BorderRadius.circular(25),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Theme.of(context).colorScheme.shadow.withOpacity(0.08),
+                                blurRadius: 12,
+                                offset: const Offset(0, 4),
+                              ),
+                            ],
+                            border: Border.all(
+                              color: Theme.of(context).colorScheme.primary.withOpacity(0.2),
+                              width: 1.5,
+                            ),
+                          ),
+                          child: TextField(
+                            controller: _searchController,
+                            decoration: InputDecoration(
+                              hintText: '🔍 Caută după numele cărții...',
+                              hintStyle: TextStyle(
+                                color: Theme.of(context).colorScheme.primary.withOpacity(0.6),
+                                fontSize: 16,
+                                fontWeight: FontWeight.w500,
+                              ),
+                              prefixIcon: Container(
+                                margin: const EdgeInsets.all(8),
+                                padding: const EdgeInsets.all(10),
+                                decoration: BoxDecoration(
+                                  color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                child: Icon(
+                                  Icons.search_rounded,
+                                  color: Theme.of(context).colorScheme.primary,
+                                  size: 24,
+                                ),
+                              ),
+                              suffixIcon: _searchController.text.isNotEmpty
+                                  ? AnimatedContainer(
+                                      duration: const Duration(milliseconds: 200),
+                                      child: Container(
+                                        margin: const EdgeInsets.all(8),
+                                        decoration: BoxDecoration(
+                                          color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                                          borderRadius: BorderRadius.circular(10),
+                                        ),
+                                        child: IconButton(
+                                          icon: Icon(
+                                            Icons.clear_rounded,
+                                            color: Theme.of(context).colorScheme.primary,
+                                          ),
+                                          onPressed: () {
+                                            _searchController.clear();
+                                          },
+                                        ),
+                                      ),
+                                    )
+                                  : null,
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(25),
+                                borderSide: BorderSide.none,
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(25),
+                                borderSide: BorderSide.none,
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(25),
+                                borderSide: BorderSide.none,
+                              ),
+                              filled: true,
+                              fillColor: Colors.transparent,
+                              contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 20,
+                                vertical: 18,
+                              ),
+                            ),
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500,
+                              color: Theme.of(context).colorScheme.onSurface,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  
                   // Main Content
                   Expanded(
                     child: _errorMessage != null
@@ -441,41 +558,43 @@ class _ActiveLoansScreenState extends State<ActiveLoansScreen>
                       ],
                     ),
                   )
-                : _activeLoans.isEmpty
+                : _filteredActiveLoans.isEmpty
                     ? Center(
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                                    TweenAnimationBuilder<double>(
-                                      duration: const Duration(milliseconds: 600),
-                                      tween: Tween(begin: 0.0, end: 1.0),
-                                      builder: (context, value, child) {
-                                        return Transform.scale(
-                                          scale: value,
-                                          child: Container(
-                                            padding: const EdgeInsets.all(20),
-                                            decoration: BoxDecoration(
-                                              color: Colors.grey[100],
-                                              shape: BoxShape.circle,
-                                            ),
-                                            child: Icon(
-                              Icons.book_outlined,
-                                              size: 48,
-                                              color: Colors.grey[400],
-                                            ),
-                                          ),
-                                        );
-                                      },
+                            TweenAnimationBuilder<double>(
+                              duration: const Duration(milliseconds: 600),
+                              tween: Tween(begin: 0.0, end: 1.0),
+                              builder: (context, value, child) {
+                                return Transform.scale(
+                                  scale: value,
+                                  child: Container(
+                                    padding: const EdgeInsets.all(20),
+                                    decoration: BoxDecoration(
+                                      color: Colors.grey[100],
+                                      shape: BoxShape.circle,
+                                    ),
+                                    child: Icon(
+                                      _searchQuery.isNotEmpty ? Icons.search_off_rounded : Icons.book_outlined,
+                                      size: 48,
+                                      color: Colors.grey[400],
+                                    ),
+                                  ),
+                                );
+                              },
                             ),
                             const SizedBox(height: 16),
-                                    FadeTransition(
-                                      opacity: _fadeAnimation,
-                                      child: Text(
-                              'Nu există împrumuturi active',
-                                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                                          color: Theme.of(context).colorScheme.primary.withOpacity(0.5),
-                                        ),
-                                  ),
+                            FadeTransition(
+                              opacity: _fadeAnimation,
+                              child: Text(
+                                _searchQuery.isNotEmpty 
+                                    ? 'Nu s-au găsit rezultate pentru "$_searchQuery"'
+                                    : 'Nu există împrumuturi active',
+                                style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                                  color: Theme.of(context).colorScheme.primary.withOpacity(0.5),
+                                ),
+                              ),
                             ),
                           ],
                         ),
@@ -486,9 +605,9 @@ class _ActiveLoansScreenState extends State<ActiveLoansScreen>
                                   position: _slideAnimation,
                                   child: ListView.builder(
                                     padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-                        itemCount: _activeLoans.length,
+                        itemCount: _filteredActiveLoans.length,
                         itemBuilder: (context, index) {
-                          final loan = _activeLoans[index];
+                          final loan = _filteredActiveLoans[index];
                                       return _buildLoanCard(loan, index);
                                     },
                                   ),

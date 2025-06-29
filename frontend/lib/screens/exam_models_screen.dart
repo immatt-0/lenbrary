@@ -170,6 +170,35 @@ class _ExamModelsScreenState extends State<ExamModelsScreen>
     }
   }
 
+  // Helper method to check if the search is for a special subject
+  bool _isSpecialSubject(String query) {
+    final specialSubjects = [
+      'istorie', 'geografie', 'biologie', 'chimie', 'fizica', 'filosofie',
+      'sociologie', 'psihologie', 'economie', 'drept', 'medicina', 'inginerie',
+      'informatica', 'programare', 'arte', 'muzica', 'sport', 'religie'
+    ];
+    
+    final normalizedQuery = query.toLowerCase().trim();
+    return specialSubjects.any((subject) => normalizedQuery.contains(subject));
+  }
+
+  // Helper method to get the special subject name from query
+  String? _getSpecialSubject(String query) {
+    final specialSubjects = [
+      'istorie', 'geografie', 'biologie', 'chimie', 'fizica', 'filosofie',
+      'sociologie', 'psihologie', 'economie', 'drept', 'medicina', 'inginerie',
+      'informatica', 'programare', 'arte', 'muzica', 'sport', 'religie'
+    ];
+    
+    final normalizedQuery = query.toLowerCase().trim();
+    for (final subject in specialSubjects) {
+      if (normalizedQuery.contains(subject)) {
+        return subject;
+      }
+    }
+    return null;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -596,6 +625,9 @@ class _ExamModelsScreenState extends State<ExamModelsScreen>
                                 duration: const Duration(milliseconds: 1000),
                                 tween: Tween(begin: 0.0, end: 1.0),
                                 builder: (context, value, child) {
+                                  final isSpecialSubject = _searchController.text.isNotEmpty && 
+                                      _isSpecialSubject(_searchController.text);
+                                  
                                   return Transform.scale(
                                     scale: value,
                                     child: Container(
@@ -605,9 +637,11 @@ class _ExamModelsScreenState extends State<ExamModelsScreen>
                                         shape: BoxShape.circle,
                                       ),
                                       child: Icon(
-                                        _searchQuery.isNotEmpty || _selectedType != null || _selectedCategory != null
-                                            ? Icons.search_off_rounded
-                                            : Icons.description_rounded,
+                                        isSpecialSubject
+                                            ? Icons.schedule_rounded
+                                            : (_searchController.text.isNotEmpty || _selectedType != null || _selectedCategory != null
+                                                ? Icons.search_off_rounded
+                                                : Icons.description_rounded),
                                         size: 56,
                                         color: Theme.of(context).colorScheme.primary,
                                       ),
@@ -617,9 +651,11 @@ class _ExamModelsScreenState extends State<ExamModelsScreen>
                               ),
                               const SizedBox(height: 24),
                               Text(
-                                _searchQuery.isNotEmpty || _selectedType != null || _selectedCategory != null
-                                    ? 'Nu s-au găsit modele pentru filtrele selectate'
-                                    : 'Nu există modele de examene disponibile',
+                                _searchController.text.isNotEmpty && _isSpecialSubject(_searchController.text)
+                                    ? 'Vom adăuga examenele de ${_getSpecialSubject(_searchController.text)} în viitor'
+                                    : (_searchController.text.isNotEmpty || _selectedType != null || _selectedCategory != null
+                                        ? 'Nu s-au găsit modele pentru căutarea ta'
+                                        : 'Nu există modele de examene disponibile'),
                                 style: Theme.of(context).textTheme.titleLarge?.copyWith(
                                   color: Theme.of(context).colorScheme.primary.withOpacity(0.7),
                                   fontWeight: FontWeight.w600,
@@ -628,9 +664,11 @@ class _ExamModelsScreenState extends State<ExamModelsScreen>
                               ),
                               const SizedBox(height: 16),
                               Text(
-                                _searchQuery.isNotEmpty || _selectedType != null || _selectedCategory != null
-                                    ? 'Încearcă să modifici filtrele de căutare'
-                                    : 'Modelele vor apărea aici după ce vor fi adăugate',
+                                _searchController.text.isNotEmpty && _isSpecialSubject(_searchController.text)
+                                    ? 'Momentan ne concentrăm pe matematica și română'
+                                    : (_searchController.text.isNotEmpty || _selectedType != null || _selectedCategory != null
+                                        ? 'Încearcă să modifici termenii de căutare'
+                                        : 'Modelele vor apărea aici după ce vor fi adăugate'),
                                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                                   color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
                                 ),

@@ -37,7 +37,11 @@ class ThemeProvider extends ChangeNotifier {
       colorScheme: ColorScheme.fromSeed(
         seedColor: Colors.blue,
         brightness: Brightness.light,
+        background: const Color(0xFFF8FAFF),
+        surface: const Color(0xFFF0F4FF),
+        surfaceVariant: const Color(0xFFE8F0FF),
       ),
+      scaffoldBackgroundColor: const Color(0xFFF8FAFF),
       appBarTheme: const AppBarTheme(
         elevation: 0,
         centerTitle: true,
@@ -49,6 +53,7 @@ class ThemeProvider extends ChangeNotifier {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
         ),
+        color: const Color(0xFFF0F4FF),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
@@ -63,7 +68,7 @@ class ThemeProvider extends ChangeNotifier {
           borderRadius: BorderRadius.circular(12),
         ),
         filled: true,
-        fillColor: Colors.grey[50],
+        fillColor: const Color(0xFFE8F0FF),
       ),
     );
   }
@@ -75,8 +80,8 @@ class ThemeProvider extends ChangeNotifier {
       colorScheme: ColorScheme.fromSeed(
         seedColor: Colors.blue,
         brightness: Brightness.dark,
-        surface: const Color(0xFF1E1E1E),
-        background: const Color(0xFF0A0A0A),
+        surface: const Color(0xFF1A1A1A),
+        background: const Color(0xFF0D0D0D),
         onSurface: const Color(0xFFE0E0E0),
         onBackground: const Color(0xFFE0E0E0),
         primary: const Color(0xFF2196F3),
@@ -86,7 +91,7 @@ class ThemeProvider extends ChangeNotifier {
         outline: const Color(0xFF3A3A3A),
         shadow: const Color(0xFF000000),
       ),
-      scaffoldBackgroundColor: const Color(0xFF0A0A0A),
+      scaffoldBackgroundColor: const Color(0xFF0D0D0D),
       appBarTheme: const AppBarTheme(
         elevation: 0,
         centerTitle: true,
@@ -98,7 +103,7 @@ class ThemeProvider extends ChangeNotifier {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
         ),
-        color: const Color(0xFF1E1E1E),
+        color: const Color(0xFF1A1A1A),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(

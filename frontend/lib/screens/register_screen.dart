@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import '../services/api_service.dart';
 import '../services/notification_service.dart';
+import '../services/responsive_service.dart';
+import '../widgets/responsive_button.dart';
+import '../widgets/responsive_text_field.dart';
 import '../providers/theme_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -11,7 +14,7 @@ class RegisterScreen extends StatefulWidget {
   State<RegisterScreen> createState() => _RegisterScreenState();
 }
 
-class _RegisterScreenState extends State<RegisterScreen> {
+class _RegisterScreenState extends State<RegisterScreen> with ResponsiveWidget {
   final _formKey = GlobalKey<FormState>();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
@@ -161,11 +164,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   @override
   Widget build(BuildContext context) {
+    ResponsiveService.init(context);
+    
     return Scaffold(
       floatingActionButton: Consumer<ThemeProvider>(
         builder: (context, themeProvider, child) {
           return Padding(
-            padding: const EdgeInsets.only(top: 16.0, right: 8.0),
+            padding: EdgeInsets.only(
+              top: getResponsiveSpacing(16.0), 
+              right: getResponsiveSpacing(8.0)
+            ),
             child: FloatingActionButton(
               onPressed: () => themeProvider.toggleTheme(),
               backgroundColor: Theme.of(context).colorScheme.primary,
@@ -173,7 +181,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               elevation: 8,
               child: Icon(
                 themeProvider.isDarkMode ? Icons.light_mode : Icons.dark_mode,
-                size: 24,
+                size: getResponsiveIconSize(24),
               ),
             ),
           );
@@ -195,12 +203,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
           child: Center(
             child: SingleChildScrollView(
               child: Padding(
-                padding: const EdgeInsets.all(24.0),
+                padding: getResponsivePadding(all: 24.0),
                 child: Card(
                   child: ConstrainedBox(
-                    constraints: const BoxConstraints(maxWidth: 400),
+                    constraints: BoxConstraints(maxWidth: ResponsiveService.cardMaxWidth),
                     child: Padding(
-                      padding: const EdgeInsets.all(32.0),
+                      padding: getResponsivePadding(all: 32.0),
                       child: Form(
                         key: _formKey,
                         child: Column(
@@ -210,29 +218,26 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             // Logo
                             Icon(
                               Icons.menu_book_rounded,
-                              size: 64,
+                              size: getResponsiveIconSize(64),
                               color: Theme.of(context).colorScheme.primary,
                             ),
-                            const SizedBox(height: 16.0),
+                            SizedBox(height: getResponsiveSpacing(16.0)),
                             // App title
-                            const Text(
+                            Text(
                               'Lenbrary',
-                              style: TextStyle(
+                              style: ResponsiveTextStyles.getResponsiveTitleStyle(
                                 fontSize: 32.0,
                                 fontWeight: FontWeight.w700,
-                                letterSpacing: -0.5,
                               ),
                               textAlign: TextAlign.center,
                             ),
-                            const SizedBox(height: 32.0),
+                            SizedBox(height: getResponsiveSpacing(32.0)),
                             // Email field
-                            TextFormField(
+                            ResponsiveTextField(
                               controller: _emailController,
-                              decoration: const InputDecoration(
-                                labelText: 'Email',
-                                hintText: 'example@nlenau.ro',
-                                prefixIcon: Icon(Icons.email_outlined),
-                              ),
+                              labelText: 'Email',
+                              hintText: 'example@nlenau.ro',
+                              prefixIcon: Icon(Icons.email_outlined),
                               keyboardType: TextInputType.emailAddress,
                               validator: (value) {
                                 if (value == null || value.isEmpty) {
@@ -244,14 +249,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                 return null;
                               },
                             ),
-                            const SizedBox(height: 16.0),
+                            SizedBox(height: getResponsiveSpacing(16.0)),
                             // First name field
-                            TextFormField(
+                            ResponsiveTextField(
                               controller: _firstNameController,
-                              decoration: const InputDecoration(
-                                labelText: 'Prenume',
-                                prefixIcon: Icon(Icons.person_outline),
-                              ),
+                              labelText: 'Prenume',
+                              prefixIcon: Icon(Icons.person_outline),
                               validator: (value) {
                                 if (value == null || value.isEmpty) {
                                   return 'Vă rugăm să introduceți prenumele';
@@ -259,14 +262,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                 return null;
                               },
                             ),
-                            const SizedBox(height: 16.0),
+                            SizedBox(height: getResponsiveSpacing(16.0)),
                             // Last name field
-                            TextFormField(
+                            ResponsiveTextField(
                               controller: _lastNameController,
-                              decoration: const InputDecoration(
-                                labelText: 'Nume',
-                                prefixIcon: Icon(Icons.person_outline),
-                              ),
+                              labelText: 'Nume',
+                              prefixIcon: Icon(Icons.person_outline),
                               validator: (value) {
                                 if (value == null || value.isEmpty) {
                                   return 'Vă rugăm să introduceți numele';
@@ -274,26 +275,23 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                 return null;
                               },
                             ),
-                            const SizedBox(height: 16.0),
+                            SizedBox(height: getResponsiveSpacing(16.0)),
                             // Password field
-                            TextFormField(
+                            ResponsiveTextField(
                               controller: _passwordController,
-                              decoration: InputDecoration(
-                                labelText: 'Parolă',
-                                prefixIcon: const Icon(Icons.lock_outline),
-                                suffixIcon: IconButton(
-                                  icon: Icon(
-                                    _obscurePassword
-                                        ? Icons.visibility_outlined
-                                        : Icons.visibility_off_outlined,
-                                    color: Theme.of(context).colorScheme.primary,
-                                  ),
-                                  onPressed: () {
-                                    setState(() {
-                                      _obscurePassword = !_obscurePassword;
-                                    });
-                                  },
+                              labelText: 'Parolă',
+                              prefixIcon: Icon(Icons.lock_outline),
+                              suffixIcon: IconButton(
+                                icon: Icon(
+                                  _obscurePassword
+                                      ? Icons.visibility_outlined
+                                      : Icons.visibility_off_outlined,
                                 ),
+                                onPressed: () {
+                                  setState(() {
+                                    _obscurePassword = !_obscurePassword;
+                                  });
+                                },
                               ),
                               obscureText: _obscurePassword,
                               validator: (value) {
@@ -318,14 +316,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                 return null;
                               },
                             ),
-                            const SizedBox(height: 16.0),
+                            SizedBox(height: getResponsiveSpacing(16.0)),
                             // Confirm password field
-                            TextFormField(
+                            ResponsiveTextField(
                               controller: _confirmPasswordController,
-                              decoration: InputDecoration(
-                                labelText: 'Confirmă parola',
-                                prefixIcon: const Icon(Icons.lock_outline),
-                              ),
+                              labelText: 'Confirmă parola',
+                              prefixIcon: Icon(Icons.lock_outline),
                               obscureText: _obscurePassword,
                               validator: (value) {
                                 if (value == null || value.isEmpty) {
@@ -337,10 +333,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                 return null;
                               },
                             ),
-                            const SizedBox(height: 16.0),
+                            SizedBox(height: getResponsiveSpacing(16.0)),
                             // Teacher switch
                             SwitchListTile(
-                              title: const Text('Înregistrare ca profesor'),
+                              title: Text(
+                                'Înregistrare ca profesor',
+                                style: ResponsiveTextStyles.getResponsiveTextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
                               value: _isTeacher,
                               onChanged: (value) {
                                 setState(() {
@@ -355,19 +357,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               },
                             ),
                             if (!_isTeacher) ...[
-                              const SizedBox(height: 16.0),
-                              DropdownButtonFormField<String>(
-                                decoration: const InputDecoration(
-                                  labelText: 'Tip Școală',
-                                  prefixIcon: Icon(Icons.school_outlined),
-                                ),
+                              SizedBox(height: getResponsiveSpacing(16.0)),
+                              ResponsiveDropdownField<String>(
+                                labelText: 'Tip Școală',
+                                prefixIcon: Icon(Icons.school_outlined),
                                 value: _selectedSchoolType,
-                                items: _schoolTypeOptions.map((type) {
-                                  return DropdownMenuItem<String>(
-                                    value: type,
-                                    child: Text(type),
-                                  );
-                                }).toList(),
+                                items: _schoolTypeOptions,
+                                itemToString: (type) => type,
                                 onChanged: (value) {
                                   setState(() {
                                     _selectedSchoolType = value;
@@ -384,19 +380,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                 },
                               ),
                               if (_selectedSchoolType == 'Liceu') ...[
-                                const SizedBox(height: 16.0),
-                                DropdownButtonFormField<String>(
-                                  decoration: const InputDecoration(
-                                    labelText: 'Clasă',
-                                    prefixIcon: Icon(Icons.class_outlined),
-                                  ),
+                                SizedBox(height: getResponsiveSpacing(16.0)),
+                                ResponsiveDropdownField<String>(
+                                  labelText: 'Clasă',
+                                  prefixIcon: Icon(Icons.class_outlined),
                                   value: _selectedClass,
-                                  items: _liceuClassOptions.map((classOption) {
-                                    return DropdownMenuItem<String>(
-                                      value: classOption,
-                                      child: Text(classOption),
-                                    );
-                                  }).toList(),
+                                  items: _liceuClassOptions,
+                                  itemToString: (classOption) => classOption,
                                   onChanged: (value) {
                                     setState(() {
                                       _selectedClass = value;
@@ -409,19 +399,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                     return null;
                                   },
                                 ),
-                                const SizedBox(height: 16.0),
-                                DropdownButtonFormField<String>(
-                                  decoration: const InputDecoration(
-                                    labelText: 'Profil',
-                                    prefixIcon: Icon(Icons.account_tree_outlined),
-                                  ),
+                                SizedBox(height: getResponsiveSpacing(16.0)),
+                                ResponsiveDropdownField<String>(
+                                  labelText: 'Profil',
+                                  prefixIcon: Icon(Icons.account_tree_outlined),
                                   value: _selectedDepartment,
-                                  items: _departmentOptions.map((dept) {
-                                    return DropdownMenuItem<String>(
-                                      value: dept,
-                                      child: Text(dept),
-                                    );
-                                  }).toList(),
+                                  items: _departmentOptions,
+                                  itemToString: (dept) => dept,
                                   onChanged: (value) {
                                     setState(() {
                                       _selectedDepartment = value;
@@ -435,19 +419,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                   },
                                 ),
                               ] else if (_selectedSchoolType == 'Generala') ...[
-                                const SizedBox(height: 16.0),
-                                DropdownButtonFormField<String>(
-                                  decoration: const InputDecoration(
-                                    labelText: 'Clasă',
-                                    prefixIcon: Icon(Icons.class_outlined),
-                                  ),
+                                SizedBox(height: getResponsiveSpacing(16.0)),
+                                ResponsiveDropdownField<String>(
+                                  labelText: 'Clasă',
+                                  prefixIcon: Icon(Icons.class_outlined),
                                   value: _selectedClass,
-                                  items: _generalaClassOptions.map((classOption) {
-                                    return DropdownMenuItem<String>(
-                                      value: classOption,
-                                      child: Text(classOption),
-                                    );
-                                  }).toList(),
+                                  items: _generalaClassOptions,
+                                  itemToString: (classOption) => classOption,
                                   onChanged: (value) {
                                     setState(() {
                                       _selectedClass = value;
@@ -460,19 +438,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                     return null;
                                   },
                                 ),
-                                const SizedBox(height: 16.0),
-                                DropdownButtonFormField<String>(
-                                  decoration: const InputDecoration(
-                                    labelText: 'Litera clasei',
-                                    prefixIcon: Icon(Icons.font_download_outlined),
-                                  ),
+                                SizedBox(height: getResponsiveSpacing(16.0)),
+                                ResponsiveDropdownField<String>(
+                                  labelText: 'Litera clasei',
+                                  prefixIcon: Icon(Icons.font_download_outlined),
                                   value: _selectedClassCharacter,
-                                  items: _classCharacterOptions.map((character) {
-                                    return DropdownMenuItem<String>(
-                                      value: character,
-                                      child: Text(character),
-                                    );
-                                  }).toList(),
+                                  items: _classCharacterOptions,
+                                  itemToString: (character) => character,
                                   onChanged: (value) {
                                     setState(() {
                                       _selectedClassCharacter = value;
@@ -488,13 +460,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               ],
                             ],
                             if (_isTeacher) ...[
-                              const SizedBox(height: 16.0),
-                              TextFormField(
+                              SizedBox(height: getResponsiveSpacing(16.0)),
+                              ResponsiveTextField(
                                 controller: _invitationCodeController,
-                                decoration: const InputDecoration(
-                                  labelText: 'Cod de invitație',
-                                  prefixIcon: Icon(Icons.verified_user_outlined),
-                                ),
+                                labelText: 'Cod de invitație',
+                                prefixIcon: Icon(Icons.verified_user_outlined),
                                 validator: (value) {
                                   if (_isTeacher && (value == null || value.isEmpty)) {
                                     return 'Vă rugăm să introduceți codul de invitație';
@@ -503,53 +473,45 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                 },
                               ),
                             ],
-                            const SizedBox(height: 24.0),
+                            SizedBox(height: getResponsiveSpacing(24.0)),
                             if (_errorMessage != null)
                               Container(
-                                padding: const EdgeInsets.all(12.0),
+                                padding: getResponsivePadding(all: 12.0),
                                 decoration: BoxDecoration(
                                   color: Theme.of(context)
                                       .colorScheme
                                       .error
                                       .withOpacity(0.1),
-                                  borderRadius: BorderRadius.circular(8),
+                                  borderRadius: getResponsiveBorderRadius(8),
                                 ),
                                 child: Text(
                                   _errorMessage!,
-                                  style: TextStyle(
+                                  style: ResponsiveTextStyles.getResponsiveTextStyle(
+                                    fontSize: 14,
                                     color: Theme.of(context).colorScheme.error,
                                   ),
                                   textAlign: TextAlign.center,
                                 ),
                               ),
                             if (_errorMessage != null)
-                              const SizedBox(height: 16.0),
-                            ElevatedButton(
+                              SizedBox(height: getResponsiveSpacing(16.0)),
+                            ResponsiveButton(
+                              text: 'Înregistrare',
                               onPressed: _isLoading ? null : _register,
-                              child: Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 12.0),
-                                child: _isLoading
-                                    ? const SizedBox(
-                                        height: 20.0,
-                                        width: 20.0,
-                                        child: CircularProgressIndicator(
-                                          strokeWidth: 2.0,
-                                          color: Colors.white,
-                                        ),
-                                      )
-                                    : const Text(
-                                        'Înregistrare',
-                                        style: TextStyle(fontSize: 16),
-                                      ),
-                              ),
+                              isLoading: _isLoading,
                             ),
-                            const SizedBox(height: 16.0),
+                            SizedBox(height: getResponsiveSpacing(16.0)),
                             TextButton(
                               onPressed: () {
                                 Navigator.pushReplacementNamed(context, '/login');
                               },
-                              child: const Text('Ai deja un cont? Autentifică-te'),
+                              child: Text(
+                                'Ai deja un cont? Autentifică-te',
+                                style: ResponsiveTextStyles.getResponsiveTextStyle(
+                                  fontSize: 14,
+                                  color: Theme.of(context).colorScheme.primary,
+                                ),
+                              ),
                             ),
                           ],
                         ),

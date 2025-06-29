@@ -2,6 +2,10 @@ import 'package:flutter/material.dart';
 import '../services/api_service.dart';
 import '../services/notification_service.dart';
 import 'notifications_screen.dart';
+import '../services/responsive_service.dart';
+import '../widgets/responsive_button.dart';
+import '../providers/theme_provider.dart';
+import 'package:provider/provider.dart';
 
 class SuccessScreen extends StatefulWidget {
   const SuccessScreen({Key? key}) : super(key: key);
@@ -11,7 +15,7 @@ class SuccessScreen extends StatefulWidget {
 }
 
 class _SuccessScreenState extends State<SuccessScreen>
-    with TickerProviderStateMixin {
+    with TickerProviderStateMixin, ResponsiveWidget {
   bool _isLibrarian = false;
   String _userName = '';
   bool _isLoading = true;
@@ -147,21 +151,21 @@ class _SuccessScreenState extends State<SuccessScreen>
     if (count <= 0) return const SizedBox.shrink();
 
     return Container(
-      padding: const EdgeInsets.all(4),
+      padding: EdgeInsets.all(getResponsiveSpacing(4)),
       decoration: BoxDecoration(
         color: Colors.red,
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: getResponsiveBorderRadius(10),
       ),
-      constraints: const BoxConstraints(
-        minWidth: 16,
-        minHeight: 16,
+      constraints: BoxConstraints(
+        minWidth: getResponsiveSpacing(16),
+        minHeight: getResponsiveSpacing(16),
       ),
       child: Text(
         count.toString(),
-        style: const TextStyle(
-          color: Colors.white,
+        style: ResponsiveTextStyles.getResponsiveTextStyle(
           fontSize: 10,
           fontWeight: FontWeight.bold,
+          color: Colors.white,
         ),
         textAlign: TextAlign.center,
       ),
@@ -175,7 +179,10 @@ class _SuccessScreenState extends State<SuccessScreen>
         Stack(
           children: [
             IconButton(
-              icon: const Icon(Icons.notifications, size: 28),
+              icon: Icon(
+                Icons.notifications, 
+                size: getResponsiveIconSize(28)
+              ),
               onPressed: () async {
                 await Navigator.push(
                   context,
@@ -187,8 +194,8 @@ class _SuccessScreenState extends State<SuccessScreen>
               },
             ),
             Positioned(
-              right: 8,
-              top: 8,
+              right: getResponsiveSpacing(8),
+              top: getResponsiveSpacing(8),
               child: _buildNotificationBadge(_unreadNotifications),
             ),
           ],
@@ -199,13 +206,21 @@ class _SuccessScreenState extends State<SuccessScreen>
 
   @override
   Widget build(BuildContext context) {
+    ResponsiveService.init(context);
+    
     if (_isLoading) {
       return Scaffold(
         appBar: AppBar(
-          title: const Text('Se încarcă...'),
+          title: Text(
+            'Se încarcă...',
+            style: ResponsiveTextStyles.getResponsiveTitleStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
           automaticallyImplyLeading: false,
         ),
-        body: const Center(
+        body: Center(
           child: CircularProgressIndicator(),
         ),
       );
@@ -224,13 +239,16 @@ class _SuccessScreenState extends State<SuccessScreen>
         title: FadeTransition(
           opacity: _fadeAnimation,
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+            padding: EdgeInsets.symmetric(
+              horizontal: getResponsiveSpacing(16.0), 
+              vertical: getResponsiveSpacing(8.0)
+            ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               mainAxisSize: MainAxisSize.min,
               children: [
                 Container(
-                  padding: const EdgeInsets.all(8),
+                  padding: EdgeInsets.all(getResponsiveSpacing(8)),
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
                       colors: [
@@ -238,28 +256,27 @@ class _SuccessScreenState extends State<SuccessScreen>
                         Theme.of(context).colorScheme.primary.withOpacity(0.8),
                       ],
                     ),
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: getResponsiveBorderRadius(12),
                     boxShadow: [
                       BoxShadow(
                         color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
-                        blurRadius: 8,
-                        offset: const Offset(0, 2),
+                        blurRadius: getResponsiveSpacing(8),
+                        offset: Offset(0, getResponsiveSpacing(2)),
                       ),
                     ],
                   ),
                   child: Icon(
                     Icons.menu_book_rounded,
-                    size: 28,
+                    size: getResponsiveIconSize(28),
                     color: Theme.of(context).colorScheme.onPrimary,
                   ),
                 ),
-                const SizedBox(width: 12),
-                const Text(
+                SizedBox(width: getResponsiveSpacing(12)),
+                Text(
                   'Lenbrary',
-                  style: TextStyle(
+                  style: ResponsiveTextStyles.getResponsiveTitleStyle(
                     fontSize: 26.0,
                     fontWeight: FontWeight.w800,
-                    letterSpacing: -0.5,
                   ),
                 ),
               ],
@@ -271,14 +288,15 @@ class _SuccessScreenState extends State<SuccessScreen>
           _buildAppBarActions(),
           IconButton(
             icon: Container(
-              padding: const EdgeInsets.all(8),
+              padding: EdgeInsets.all(getResponsiveSpacing(8)),
               decoration: BoxDecoration(
                 color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: getResponsiveBorderRadius(8),
               ),
               child: Icon(
                 Icons.settings_rounded,
                 color: Theme.of(context).colorScheme.primary,
+                size: getResponsiveIconSize(24),
               ),
             ),
             onPressed: () async {
@@ -288,14 +306,15 @@ class _SuccessScreenState extends State<SuccessScreen>
           ),
           IconButton(
             icon: Container(
-              padding: const EdgeInsets.all(8),
+              padding: EdgeInsets.all(getResponsiveSpacing(8)),
               decoration: BoxDecoration(
                 color: Theme.of(context).colorScheme.error.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: getResponsiveBorderRadius(8),
               ),
               child: Icon(
                 Icons.logout_rounded,
                 color: Theme.of(context).colorScheme.error,
+                size: getResponsiveIconSize(24),
               ),
             ),
             onPressed: _logout,
@@ -321,7 +340,7 @@ class _SuccessScreenState extends State<SuccessScreen>
             // Main content
             Center(
               child: SingleChildScrollView(
-                padding: const EdgeInsets.all(24.0),
+                padding: getResponsivePadding(all: 24.0),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -331,7 +350,7 @@ class _SuccessScreenState extends State<SuccessScreen>
                       child: SlideTransition(
                         position: _slideAnimation,
                         child: Container(
-                          margin: const EdgeInsets.only(bottom: 40.0),
+                          margin: EdgeInsets.only(bottom: getResponsiveSpacing(40.0)),
                           decoration: BoxDecoration(
                             gradient: LinearGradient(
                               colors: [
@@ -341,12 +360,12 @@ class _SuccessScreenState extends State<SuccessScreen>
                               begin: Alignment.topLeft,
                               end: Alignment.bottomRight,
                             ),
-                            borderRadius: BorderRadius.circular(24),
+                            borderRadius: getResponsiveBorderRadius(24),
                             boxShadow: [
                               BoxShadow(
                                 color: Theme.of(context).colorScheme.primary.withOpacity(0.06),
-                                blurRadius: 24,
-                                offset: const Offset(0, 10),
+                                blurRadius: getResponsiveSpacing(24),
+                                offset: Offset(0, getResponsiveSpacing(10)),
                                 spreadRadius: 3,
                               ),
                             ],
@@ -356,14 +375,14 @@ class _SuccessScreenState extends State<SuccessScreen>
                             ),
                           ),
                           child: Padding(
-                            padding: const EdgeInsets.all(36.0),
+                            padding: getResponsivePadding(all: 36.0),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Row(
                                   children: [
                                     Container(
-                                      padding: const EdgeInsets.all(16),
+                                      padding: EdgeInsets.all(getResponsiveSpacing(16)),
                                       decoration: BoxDecoration(
                                         gradient: LinearGradient(
                                           colors: [
@@ -371,22 +390,22 @@ class _SuccessScreenState extends State<SuccessScreen>
                                             Theme.of(context).colorScheme.primary.withOpacity(0.8),
                                           ],
                                         ),
-                                        borderRadius: BorderRadius.circular(16),
+                                        borderRadius: getResponsiveBorderRadius(16),
                                         boxShadow: [
                                           BoxShadow(
                                             color: Theme.of(context).colorScheme.primary.withOpacity(0.4),
-                                            blurRadius: 12,
-                                            offset: const Offset(0, 4),
+                                            blurRadius: getResponsiveSpacing(12),
+                                            offset: Offset(0, getResponsiveSpacing(4)),
                                           ),
                                         ],
                                       ),
                                       child: Icon(
                                         Icons.person_rounded,
-                                        size: 32,
+                                        size: getResponsiveIconSize(32),
                                         color: Theme.of(context).colorScheme.onPrimary,
                                       ),
                                     ),
-                                    const SizedBox(width: 20),
+                                    SizedBox(width: getResponsiveSpacing(20)),
                                     Expanded(
                                       child: Column(
                                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -400,7 +419,7 @@ class _SuccessScreenState extends State<SuccessScreen>
                                               fontSize: 28,
                                             ),
                                           ),
-                                          const SizedBox(height: 12.0),
+                                          SizedBox(height: getResponsiveSpacing(12.0)),
                                           Text(
                                             'Ce doriți să faceți astăzi?',
                                             style: Theme.of(context).textTheme.bodyLarge?.copyWith(
@@ -439,7 +458,7 @@ class _SuccessScreenState extends State<SuccessScreen>
                                 Navigator.pushNamed(context, '/search-books');
                               },
                             ),
-                            const SizedBox(height: 16.0),
+                            SizedBox(height: getResponsiveSpacing(16.0)),
 
                             // My Requests Button
                             _buildEnhancedMenuButton(
@@ -451,7 +470,7 @@ class _SuccessScreenState extends State<SuccessScreen>
                                 Navigator.pushNamed(context, '/my-requests');
                               },
                             ),
-                            const SizedBox(height: 16.0),
+                            SizedBox(height: getResponsiveSpacing(16.0)),
 
                             // Exam Models Button
                             _buildEnhancedMenuButton(
@@ -485,13 +504,16 @@ class _SuccessScreenState extends State<SuccessScreen>
         title: FadeTransition(
           opacity: _fadeAnimation,
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+            padding: EdgeInsets.symmetric(
+              horizontal: getResponsiveSpacing(16.0), 
+              vertical: getResponsiveSpacing(8.0)
+            ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               mainAxisSize: MainAxisSize.min,
               children: [
                 Container(
-                  padding: const EdgeInsets.all(8),
+                  padding: EdgeInsets.all(getResponsiveSpacing(8)),
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
                       colors: [
@@ -499,28 +521,27 @@ class _SuccessScreenState extends State<SuccessScreen>
                         Theme.of(context).colorScheme.primary.withOpacity(0.8),
                       ],
                     ),
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: getResponsiveBorderRadius(12),
                     boxShadow: [
                       BoxShadow(
                         color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
-                        blurRadius: 8,
-                        offset: const Offset(0, 2),
+                        blurRadius: getResponsiveSpacing(8),
+                        offset: Offset(0, getResponsiveSpacing(2)),
                       ),
                     ],
                   ),
                   child: Icon(
                     Icons.menu_book_rounded,
-                    size: 28,
+                    size: getResponsiveIconSize(28),
                     color: Theme.of(context).colorScheme.onPrimary,
                   ),
                 ),
-                const SizedBox(width: 12),
-                const Text(
+                SizedBox(width: getResponsiveSpacing(12)),
+                Text(
                   'Lenbrary',
-                  style: TextStyle(
+                  style: ResponsiveTextStyles.getResponsiveTitleStyle(
                     fontSize: 26.0,
                     fontWeight: FontWeight.w800,
-                    letterSpacing: -0.5,
                   ),
                 ),
               ],
@@ -532,14 +553,15 @@ class _SuccessScreenState extends State<SuccessScreen>
           _buildAppBarActions(),
           IconButton(
             icon: Container(
-              padding: const EdgeInsets.all(8),
+              padding: EdgeInsets.all(getResponsiveSpacing(8)),
               decoration: BoxDecoration(
                 color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: getResponsiveBorderRadius(8),
               ),
               child: Icon(
                 Icons.settings_rounded,
                 color: Theme.of(context).colorScheme.primary,
+                size: getResponsiveIconSize(24),
               ),
             ),
             onPressed: () async {
@@ -549,14 +571,15 @@ class _SuccessScreenState extends State<SuccessScreen>
           ),
           IconButton(
             icon: Container(
-              padding: const EdgeInsets.all(8),
+              padding: EdgeInsets.all(getResponsiveSpacing(8)),
               decoration: BoxDecoration(
                 color: Theme.of(context).colorScheme.error.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: getResponsiveBorderRadius(8),
               ),
               child: Icon(
                 Icons.logout_rounded,
                 color: Theme.of(context).colorScheme.error,
+                size: getResponsiveIconSize(24),
               ),
             ),
             onPressed: _logout,
@@ -582,7 +605,7 @@ class _SuccessScreenState extends State<SuccessScreen>
             // Main content
             Center(
               child: SingleChildScrollView(
-                padding: const EdgeInsets.all(24.0),
+                padding: getResponsivePadding(all: 24.0),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -592,7 +615,7 @@ class _SuccessScreenState extends State<SuccessScreen>
                       child: SlideTransition(
                         position: _slideAnimation,
                         child: Container(
-                          margin: const EdgeInsets.only(bottom: 40.0),
+                          margin: EdgeInsets.only(bottom: getResponsiveSpacing(40.0)),
                           decoration: BoxDecoration(
                             gradient: LinearGradient(
                               colors: [
@@ -602,12 +625,12 @@ class _SuccessScreenState extends State<SuccessScreen>
                               begin: Alignment.topLeft,
                               end: Alignment.bottomRight,
                             ),
-                            borderRadius: BorderRadius.circular(24),
+                            borderRadius: getResponsiveBorderRadius(24),
                             boxShadow: [
                               BoxShadow(
                                 color: Theme.of(context).colorScheme.primary.withOpacity(0.06),
-                                blurRadius: 24,
-                                offset: const Offset(0, 10),
+                                blurRadius: getResponsiveSpacing(24),
+                                offset: Offset(0, getResponsiveSpacing(10)),
                                 spreadRadius: 3,
                               ),
                             ],
@@ -617,14 +640,14 @@ class _SuccessScreenState extends State<SuccessScreen>
                             ),
                           ),
                           child: Padding(
-                            padding: const EdgeInsets.all(36.0),
+                            padding: getResponsivePadding(all: 36.0),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Row(
                                   children: [
                                     Container(
-                                      padding: const EdgeInsets.all(16),
+                                      padding: EdgeInsets.all(getResponsiveSpacing(16)),
                                       decoration: BoxDecoration(
                                         gradient: LinearGradient(
                                           colors: [
@@ -632,42 +655,41 @@ class _SuccessScreenState extends State<SuccessScreen>
                                             Theme.of(context).colorScheme.primary.withOpacity(0.8),
                                           ],
                                         ),
-                                        borderRadius: BorderRadius.circular(16),
+                                        borderRadius: getResponsiveBorderRadius(16),
                                         boxShadow: [
                                           BoxShadow(
                                             color: Theme.of(context).colorScheme.primary.withOpacity(0.4),
-                                            blurRadius: 12,
-                                            offset: const Offset(0, 4),
+                                            blurRadius: getResponsiveSpacing(12),
+                                            offset: Offset(0, getResponsiveSpacing(4)),
                                           ),
                                         ],
                                       ),
                                       child: Icon(
                                         Icons.admin_panel_settings_rounded,
-                                        size: 32,
+                                        size: getResponsiveIconSize(32),
                                         color: Theme.of(context).colorScheme.onPrimary,
                                       ),
                                     ),
-                                    const SizedBox(width: 20),
+                                    SizedBox(width: getResponsiveSpacing(20)),
                                     Expanded(
                                       child: Column(
                                         crossAxisAlignment: CrossAxisAlignment.start,
                                         children: [
                                           Text(
-                                            'Bun venit, doamna Bibliotecara!',
-                                            style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                                            'Bun venit, $_userName!',
+                                            style: ResponsiveTextStyles.getResponsiveTitleStyle(
+                                              fontSize: 28,
                                               fontWeight: FontWeight.w700,
                                               color: Theme.of(context).colorScheme.onSurface,
-                                              letterSpacing: -0.5,
-                                              fontSize: 28,
                                             ),
                                           ),
-                                          const SizedBox(height: 12.0),
+                                          SizedBox(height: getResponsiveSpacing(12.0)),
                                           Text(
-                                            'Gestionează resursele bibliotecii și cererile de cărți',
-                                            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                                              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.8),
-                                              fontWeight: FontWeight.w500,
+                                            'Panou de administrare bibliotă',
+                                            style: ResponsiveTextStyles.getResponsiveBodyStyle(
                                               fontSize: 18,
+                                              fontWeight: FontWeight.w500,
+                                              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.8),
                                             ),
                                           ),
                                         ],
@@ -690,84 +712,72 @@ class _SuccessScreenState extends State<SuccessScreen>
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            // Book Management section
-                            _buildSectionHeader('Gestiunea cărților', Icons.library_books_rounded),
-                            const SizedBox(height: 16.0),
-
-                            // Add new book
+                            // Add Book Button
                             _buildEnhancedMenuButton(
                               icon: Icons.add_circle_rounded,
-                              title: 'Adaugă carte nouă',
-                              description: 'Adaugă o carte nouă în catalogul bibliotecii',
-                              color: Colors.green,
+                              title: 'Adaugă carte',
+                              description: 'Adaugă o nouă carte în catalog',
+                              color: Colors.green[600]!,
                               onTap: () {
                                 Navigator.pushNamed(context, '/add-book');
                               },
                             ),
-                            const SizedBox(height: 12.0),
+                            SizedBox(height: getResponsiveSpacing(16.0)),
 
-                            // View all books
+                            // Manage Books Button
                             _buildEnhancedMenuButton(
                               icon: Icons.library_books_rounded,
-                              title: 'Gestionare cărți',
-                              description: 'Vizualizează, editează sau șterge cărți din catalog',
-                              color: Colors.blue,
+                              title: 'Gestionează cărți',
+                              description: 'Editează și șterge cărți din catalog',
+                              color: Colors.blue[600]!,
                               onTap: () {
                                 Navigator.pushNamed(context, '/manage-books');
                               },
                             ),
+                            SizedBox(height: getResponsiveSpacing(16.0)),
 
-                            const SizedBox(height: 32.0),
-
-                            // Book Request section
-                            _buildSectionHeader('Cereri de cărți', Icons.pending_actions_rounded),
-                            const SizedBox(height: 16.0),
-
-                            // Pending requests
+                            // Pending Requests Button
                             _buildEnhancedMenuButton(
                               icon: Icons.pending_actions_rounded,
                               title: 'Cereri în așteptare',
-                              description: 'Vizualizează și aprobă cererile de cărți în așteptare',
-                              color: Colors.orange,
+                              description: 'Gestionează cererile de împrumut',
+                              color: Colors.orange[600]!,
                               onTap: () {
                                 Navigator.pushNamed(context, '/pending-requests');
                               },
                             ),
-                            const SizedBox(height: 12.0),
+                            SizedBox(height: getResponsiveSpacing(16.0)),
 
-                            // Active loans
+                            // Active Loans Button
                             _buildEnhancedMenuButton(
-                              icon: Icons.assignment_returned_rounded,
+                              icon: Icons.book_online_rounded,
                               title: 'Împrumuturi active',
-                              description: 'Vizualizează toate cărțile împrumutate în prezent',
-                              color: Colors.purple,
+                              description: 'Vizualizează împrumuturile curente',
+                              color: Colors.purple[600]!,
                               onTap: () {
                                 Navigator.pushNamed(context, '/active-loans');
                               },
                             ),
-                            const SizedBox(height: 12.0),
+                            SizedBox(height: getResponsiveSpacing(16.0)),
 
-                            // Return history
+                            // Loan History Button
                             _buildEnhancedMenuButton(
                               icon: Icons.history_rounded,
                               title: 'Istoric împrumuturi',
-                              description: 'Vizualizează istoricul împrumuturilor finalizate',
-                              color: Colors.indigo,
+                              description: 'Vizualizează istoricul împrumuturilor',
+                              color: Colors.indigo[600]!,
                               onTap: () {
                                 Navigator.pushNamed(context, '/loan-history');
                               },
                             ),
-                            const SizedBox(height: 32.0),
+                            SizedBox(height: getResponsiveSpacing(16.0)),
 
                             // Exam Models Admin Button
-                            _buildSectionHeader('Modele de examene', Icons.description_outlined),
-                            const SizedBox(height: 16.0),
-
                             _buildEnhancedMenuButton(
-                              icon: Icons.description_outlined,
+                              icon: Icons.description_rounded,
                               title: 'Modele de examene',
-                              description: 'Adaugă sau gestionează modele de examene',
-                              color: Colors.teal,
+                              description: 'Gestionează modelele de examene',
+                              color: Colors.teal[600]!,
                               onTap: () {
                                 Navigator.pushNamed(context, '/admin-exam-models');
                               },
@@ -888,8 +898,8 @@ class _SuccessScreenState extends State<SuccessScreen>
     required VoidCallback onTap,
   }) {
     return Container(
-      width: 400,
-      margin: const EdgeInsets.only(bottom: 8.0),
+      width: ResponsiveService.cardMaxWidth,
+      margin: EdgeInsets.only(bottom: getResponsiveSpacing(8.0)),
       child: TweenAnimationBuilder<double>(
         duration: const Duration(milliseconds: 300),
         tween: Tween(begin: 0.0, end: 1.0),
@@ -906,20 +916,20 @@ class _SuccessScreenState extends State<SuccessScreen>
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: getResponsiveBorderRadius(16),
                 boxShadow: [
                   BoxShadow(
                     color: color.withOpacity(0.08),
-                    blurRadius: 12,
-                    offset: const Offset(0, 4),
+                    blurRadius: getResponsiveSpacing(12),
+                    offset: Offset(0, getResponsiveSpacing(4)),
                     spreadRadius: 1,
                   ),
                   BoxShadow(
                     color: Theme.of(context).brightness == Brightness.dark 
                         ? Colors.black.withOpacity(0.2)
                         : Colors.black.withOpacity(0.05),
-                    blurRadius: 8,
-                    offset: const Offset(0, 2),
+                    blurRadius: getResponsiveSpacing(8),
+                    offset: Offset(0, getResponsiveSpacing(2)),
                   ),
                 ],
                 border: Border.all(
@@ -931,13 +941,13 @@ class _SuccessScreenState extends State<SuccessScreen>
                 color: Colors.transparent,
                 child: InkWell(
                   onTap: onTap,
-                  borderRadius: BorderRadius.circular(16),
+                  borderRadius: getResponsiveBorderRadius(16),
                   child: Padding(
-                    padding: const EdgeInsets.all(20.0),
+                    padding: getResponsivePadding(all: 20.0),
                     child: Row(
                       children: [
                         Container(
-                          padding: const EdgeInsets.all(12),
+                          padding: EdgeInsets.all(getResponsiveSpacing(12)),
                           decoration: BoxDecoration(
                             gradient: LinearGradient(
                               colors: [
@@ -947,54 +957,55 @@ class _SuccessScreenState extends State<SuccessScreen>
                               begin: Alignment.topLeft,
                               end: Alignment.bottomRight,
                             ),
-                            borderRadius: BorderRadius.circular(12),
+                            borderRadius: getResponsiveBorderRadius(12),
                             boxShadow: [
                               BoxShadow(
                                 color: color.withOpacity(0.15),
-                                blurRadius: 8,
-                                offset: const Offset(0, 2),
+                                blurRadius: getResponsiveSpacing(8),
+                                offset: Offset(0, getResponsiveSpacing(2)),
                               ),
                             ],
                           ),
                           child: Icon(
                             icon,
-                            size: 24,
+                            size: getResponsiveIconSize(24),
                             color: color,
                           ),
                         ),
-                        const SizedBox(width: 16.0),
+                        SizedBox(width: getResponsiveSpacing(16.0)),
                         Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
                                 title,
-                                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                style: ResponsiveTextStyles.getResponsiveTitleStyle(
+                                  fontSize: 16,
                                   fontWeight: FontWeight.w700,
                                   color: Theme.of(context).colorScheme.onSurface,
-                                  letterSpacing: -0.2,
                                 ),
                               ),
-                              const SizedBox(height: 4),
+                              SizedBox(height: getResponsiveSpacing(4)),
                               Text(
                                 description,
-                                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                  color: Theme.of(context).colorScheme.onSurface.withOpacity(0.8),
+                                style: ResponsiveTextStyles.getResponsiveBodyStyle(
+                                  fontSize: 14,
                                   fontWeight: FontWeight.w500,
+                                  color: Theme.of(context).colorScheme.onSurface.withOpacity(0.8),
                                 ),
                               ),
                             ],
                           ),
                         ),
                         Container(
-                          padding: const EdgeInsets.all(8),
+                          padding: EdgeInsets.all(getResponsiveSpacing(8)),
                           decoration: BoxDecoration(
                             color: color.withOpacity(0.08),
-                            borderRadius: BorderRadius.circular(8),
+                            borderRadius: getResponsiveBorderRadius(8),
                           ),
                           child: Icon(
                             Icons.arrow_forward_ios_rounded,
-                            size: 16,
+                            size: getResponsiveIconSize(16),
                             color: color,
                           ),
                         ),

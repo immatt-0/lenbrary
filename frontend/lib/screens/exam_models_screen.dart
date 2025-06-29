@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import '../services/api_service.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../services/notification_service.dart';
+import '../services/responsive_service.dart';
+import '../widgets/responsive_button.dart';
+import '../widgets/responsive_text_field.dart';
 
 class ExamModelsScreen extends StatefulWidget {
   const ExamModelsScreen({Key? key}) : super(key: key);
@@ -11,7 +14,7 @@ class ExamModelsScreen extends StatefulWidget {
 }
 
 class _ExamModelsScreenState extends State<ExamModelsScreen>
-    with TickerProviderStateMixin {
+    with TickerProviderStateMixin, ResponsiveWidget {
   List<dynamic> _models = [];
   bool _isLoading = true;
   String? _selectedType; // 'EN' or 'BAC'
@@ -201,6 +204,8 @@ class _ExamModelsScreenState extends State<ExamModelsScreen>
 
   @override
   Widget build(BuildContext context) {
+    ResponsiveService.init(context);
+    
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
@@ -213,7 +218,7 @@ class _ExamModelsScreenState extends State<ExamModelsScreen>
             mainAxisSize: MainAxisSize.min,
             children: [
               Container(
-                padding: const EdgeInsets.all(8),
+                padding: EdgeInsets.all(getResponsiveSpacing(8)),
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     colors: [
@@ -221,27 +226,27 @@ class _ExamModelsScreenState extends State<ExamModelsScreen>
                       Theme.of(context).colorScheme.primary.withOpacity(0.8),
                     ],
                   ),
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: getResponsiveBorderRadius(12),
                   boxShadow: [
                     BoxShadow(
                       color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
-                      blurRadius: 8,
-                      offset: const Offset(0, 2),
+                      blurRadius: getResponsiveSpacing(8),
+                      offset: Offset(0, getResponsiveSpacing(2)),
                     ),
                   ],
                 ),
                 child: Icon(
                   Icons.description_rounded,
-                  size: 28,
+                  size: getResponsiveIconSize(28),
                   color: Theme.of(context).colorScheme.onPrimary,
                 ),
               ),
-              const SizedBox(width: 12),
+              SizedBox(width: getResponsiveSpacing(12)),
               Text(
                 'Modele de examene',
-                style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                style: ResponsiveTextStyles.getResponsiveTitleStyle(
+                  fontSize: 20,
                   fontWeight: FontWeight.w700,
-                  letterSpacing: -0.5,
                 ),
               ),
             ],
@@ -249,15 +254,16 @@ class _ExamModelsScreenState extends State<ExamModelsScreen>
         ),
         automaticallyImplyLeading: false,
         leading: Container(
-          margin: const EdgeInsets.only(left: 8),
+          margin: EdgeInsets.only(left: getResponsiveSpacing(8)),
           decoration: BoxDecoration(
             color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
-            borderRadius: BorderRadius.circular(10),
+            borderRadius: getResponsiveBorderRadius(10),
           ),
           child: IconButton(
             icon: Icon(
               Icons.arrow_back_rounded,
               color: Theme.of(context).colorScheme.primary,
+              size: getResponsiveIconSize(24),
             ),
             onPressed: () {
               Navigator.pop(context);
@@ -287,7 +293,7 @@ class _ExamModelsScreenState extends State<ExamModelsScreen>
               child: SlideTransition(
                 position: _slideAnimation,
                 child: Container(
-                  padding: const EdgeInsets.all(16),
+                  padding: getResponsivePadding(all: 16),
                   child: Column(
                     children: [
                       // Search Bar
@@ -299,12 +305,12 @@ class _ExamModelsScreenState extends State<ExamModelsScreen>
                               Theme.of(context).colorScheme.surface.withOpacity(0.8),
                             ],
                           ),
-                          borderRadius: BorderRadius.circular(25),
+                          borderRadius: getResponsiveBorderRadius(25),
                           boxShadow: [
                             BoxShadow(
                               color: Theme.of(context).colorScheme.shadow.withOpacity(0.08),
-                              blurRadius: 12,
-                              offset: const Offset(0, 4),
+                              blurRadius: getResponsiveSpacing(12),
+                              offset: Offset(0, getResponsiveSpacing(4)),
                             ),
                           ],
                           border: Border.all(
@@ -312,78 +318,13 @@ class _ExamModelsScreenState extends State<ExamModelsScreen>
                             width: 1.5,
                           ),
                         ),
-                        child: TextField(
+                        child: ResponsiveTextField(
                           controller: _searchController,
-                          decoration: InputDecoration(
-                            hintText: '🔍 Caută modele de examene...',
-                            hintStyle: TextStyle(
-                              color: Theme.of(context).colorScheme.primary.withOpacity(0.6),
-                              fontSize: 16,
-                              fontWeight: FontWeight.w500,
-                            ),
-                            prefixIcon: Container(
-                              margin: const EdgeInsets.all(8),
-                              padding: const EdgeInsets.all(10),
-                              decoration: BoxDecoration(
-                                color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child: Icon(
-                                Icons.search_rounded,
-                                color: Theme.of(context).colorScheme.primary,
-                                size: 24,
-                              ),
-                            ),
-                            suffixIcon: _searchQuery.isNotEmpty
-                                ? AnimatedContainer(
-                                    duration: const Duration(milliseconds: 200),
-                                    child: Container(
-                                      margin: const EdgeInsets.all(8),
-                                      decoration: BoxDecoration(
-                                        color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
-                                        borderRadius: BorderRadius.circular(10),
-                                      ),
-                                      child: IconButton(
-                                        icon: Icon(
-                                          Icons.clear_rounded,
-                                          color: Theme.of(context).colorScheme.primary,
-                                        ),
-                                        onPressed: () {
-                                          _searchController.clear();
-                                          setState(() => _searchQuery = '');
-                                        },
-                                      ),
-                                    ),
-                                  )
-                                : null,
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(25),
-                              borderSide: BorderSide.none,
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(25),
-                              borderSide: BorderSide.none,
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(25),
-                              borderSide: BorderSide.none,
-                            ),
-                            filled: true,
-                            fillColor: Colors.transparent,
-                            contentPadding: const EdgeInsets.symmetric(
-                              horizontal: 20,
-                              vertical: 18,
-                            ),
-                          ),
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w500,
-                            color: Theme.of(context).colorScheme.onSurface,
-                          ),
+                          hintText: '🔍 Caută modele de examene...',
                           onChanged: (value) => setState(() => _searchQuery = value),
                         ),
                       ),
-                      const SizedBox(height: 16),
+                      SizedBox(height: getResponsiveSpacing(16)),
                       // Filters Row
                       Row(
                         children: [
@@ -714,12 +655,12 @@ class _ExamModelsScreenState extends State<ExamModelsScreen>
     final categoryColor = _getCategoryColor(model['category']);
 
     return Container(
-      margin: const EdgeInsets.only(bottom: 16),
+      margin: EdgeInsets.only(bottom: getResponsiveSpacing(16)),
       child: Card(
         elevation: 8,
         shadowColor: Colors.black.withOpacity(0.1),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: getResponsiveBorderRadius(20),
         ),
         child: Container(
           decoration: BoxDecoration(
@@ -729,10 +670,10 @@ class _ExamModelsScreenState extends State<ExamModelsScreen>
                 Theme.of(context).colorScheme.surface.withOpacity(0.8),
               ],
             ),
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: getResponsiveBorderRadius(20),
           ),
           child: Padding(
-            padding: const EdgeInsets.all(20),
+            padding: getResponsivePadding(all: 20),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -741,7 +682,7 @@ class _ExamModelsScreenState extends State<ExamModelsScreen>
                   children: [
                     // Type Icon
                     Container(
-                      padding: const EdgeInsets.all(12),
+                      padding: EdgeInsets.all(getResponsiveSpacing(12)),
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
                           colors: [
@@ -749,25 +690,25 @@ class _ExamModelsScreenState extends State<ExamModelsScreen>
                             typeColor.withOpacity(0.8),
                           ],
                         ),
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: getResponsiveBorderRadius(12),
                         boxShadow: [
                           BoxShadow(
                             color: typeColor.withOpacity(0.3),
-                            blurRadius: 8,
-                            offset: const Offset(0, 2),
+                            blurRadius: getResponsiveSpacing(8),
+                            offset: Offset(0, getResponsiveSpacing(2)),
                           ),
                         ],
                       ),
                       child: Icon(
                         _getTypeIcon(model['type']),
                         color: Colors.white,
-                        size: 24,
+                        size: getResponsiveIconSize(24),
                       ),
                     ),
-                    const SizedBox(width: 12),
+                    SizedBox(width: getResponsiveSpacing(12)),
                     // Category Icon
                     Container(
-                      padding: const EdgeInsets.all(12),
+                      padding: EdgeInsets.all(getResponsiveSpacing(12)),
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
                           colors: [
@@ -775,22 +716,22 @@ class _ExamModelsScreenState extends State<ExamModelsScreen>
                             categoryColor.withOpacity(0.8),
                           ],
                         ),
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: getResponsiveBorderRadius(12),
                         boxShadow: [
                           BoxShadow(
                             color: categoryColor.withOpacity(0.3),
-                            blurRadius: 8,
-                            offset: const Offset(0, 2),
+                            blurRadius: getResponsiveSpacing(8),
+                            offset: Offset(0, getResponsiveSpacing(2)),
                           ),
                         ],
                       ),
                       child: Icon(
                         _getCategoryIcon(model['category']),
                         color: Colors.white,
-                        size: 24,
+                        size: getResponsiveIconSize(24),
                       ),
                     ),
-                    const SizedBox(width: 16),
+                    SizedBox(width: getResponsiveSpacing(16)),
                     // Title and Info
                     Expanded(
                       child: Column(
@@ -798,55 +739,61 @@ class _ExamModelsScreenState extends State<ExamModelsScreen>
                         children: [
                           Text(
                             model['name'] ?? 'Model fără nume',
-                            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                            style: ResponsiveTextStyles.getResponsiveTitleStyle(
+                              fontSize: 18,
                               fontWeight: FontWeight.bold,
                               color: Theme.of(context).colorScheme.onSurface,
-                              fontSize: 18,
                             ),
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
                           ),
-                          const SizedBox(height: 8),
+                          SizedBox(height: getResponsiveSpacing(8)),
                           Wrap(
-                            spacing: 8,
-                            runSpacing: 4,
+                            spacing: getResponsiveSpacing(8),
+                            runSpacing: getResponsiveSpacing(4),
                             children: [
                               Tooltip(
                                 message: model['type'] == 'EN' ? 'Evaluare Națională' : 'Bacalaureat',
                                 child: Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: getResponsiveSpacing(8), 
+                                    vertical: getResponsiveSpacing(4)
+                                  ),
                                   decoration: BoxDecoration(
                                     color: typeColor.withOpacity(0.1),
-                                    borderRadius: BorderRadius.circular(12),
+                                    borderRadius: getResponsiveBorderRadius(12),
                                     border: Border.all(
                                       color: typeColor.withOpacity(0.3),
                                     ),
                                   ),
                                   child: Text(
                                     model['type'] == 'EN' ? 'EN' : 'BAC',
-                                    style: TextStyle(
+                                    style: ResponsiveTextStyles.getResponsiveTextStyle(
+                                      fontSize: 12,
                                       color: typeColor,
                                       fontWeight: FontWeight.bold,
-                                      fontSize: 12,
                                     ),
                                   ),
                                 ),
                               ),
                               Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: getResponsiveSpacing(8), 
+                                  vertical: getResponsiveSpacing(4)
+                                ),
                                 decoration: BoxDecoration(
                                   color: categoryColor.withOpacity(0.1),
-                                  borderRadius: BorderRadius.circular(12),
+                                  borderRadius: getResponsiveBorderRadius(12),
                                   border: Border.all(
                                     color: categoryColor.withOpacity(0.3),
                                   ),
                                 ),
                                 child: Text(
                                   model['category'] == 'Matematica' ? 'Matematică' : 'Română',
-                                  style: TextStyle(
+                                  style: ResponsiveTextStyles.getResponsiveTextStyle(
+                                    fontSize: 12,
                                     color: categoryColor,
                                     fontWeight: FontWeight.bold,
-                                    fontSize: 12,
                                   ),
                                 ),
                               ),
@@ -865,20 +812,20 @@ class _ExamModelsScreenState extends State<ExamModelsScreen>
                               Theme.of(context).colorScheme.primary.withOpacity(0.8),
                             ],
                           ),
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: getResponsiveBorderRadius(12),
                           boxShadow: [
                             BoxShadow(
                               color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
-                              blurRadius: 8,
-                              offset: const Offset(0, 2),
+                              blurRadius: getResponsiveSpacing(8),
+                              offset: Offset(0, getResponsiveSpacing(2)),
                             ),
                           ],
                         ),
                         child: IconButton(
-                          icon: const Icon(
+                          icon: Icon(
                             Icons.picture_as_pdf_rounded,
                             color: Colors.white,
-                            size: 24,
+                            size: getResponsiveIconSize(24),
                           ),
                           onPressed: () => _openPdf(pdfUrl),
                           tooltip: 'Deschide PDF',

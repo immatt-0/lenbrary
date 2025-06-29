@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import '../services/api_service.dart';
+import '../services/notification_service.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class LoanHistoryScreen extends StatefulWidget {
   const LoanHistoryScreen({Key? key}) : super(key: key);
@@ -136,6 +138,90 @@ class _LoanHistoryScreenState extends State<LoanHistoryScreen>
                bookAuthor.contains(query);
       }).toList();
     });
+  }
+
+  void _viewPdf(String pdfUrl) {
+    // Open PDF in browser or external PDF viewer
+    try {
+      // Use url_launcher to open the PDF
+      // For now, we'll show a dialog with the PDF URL
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Row(
+            children: [
+              Icon(
+                Icons.picture_as_pdf_rounded,
+                color: Theme.of(context).colorScheme.secondary,
+              ),
+              const SizedBox(width: 8),
+              const Text('Vizualizează PDF'),
+            ],
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text('PDF-ul manualului va fi deschis în browser.'),
+              const SizedBox(height: 12),
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.surfaceVariant,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Text(
+                  pdfUrl,
+                  style: Theme.of(context).textTheme.bodySmall,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('Anulează'),
+            ),
+            ElevatedButton.icon(
+              onPressed: () {
+                Navigator.of(context).pop();
+                // TODO: Implement actual PDF opening with url_launcher
+                // For now, just show a success message
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: const Text('PDF-ul va fi deschis în browser!'),
+                    backgroundColor: Theme.of(context).colorScheme.secondary,
+                    behavior: SnackBarBehavior.floating,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                );
+              },
+              icon: const Icon(Icons.open_in_new_rounded),
+              label: const Text('Deschide PDF'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Theme.of(context).colorScheme.secondary,
+                foregroundColor: Theme.of(context).colorScheme.onSecondary,
+              ),
+            ),
+          ],
+        ),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Eroare la deschiderea PDF-ului: ${e.toString()}'),
+          backgroundColor: Theme.of(context).colorScheme.error,
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+        ),
+      );
+    }
   }
 
   String toTitleCase(String text) {
@@ -646,6 +732,40 @@ class _LoanHistoryScreenState extends State<LoanHistoryScreen>
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                           ),
+                          // Class info for manuals
+                          if (book['type'] == 'manual' && book['book_class'] != null) ...[
+                            const SizedBox(height: 8),
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                              decoration: BoxDecoration(
+                                color: Theme.of(context).colorScheme.secondary.withOpacity(0.1),
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(
+                                  color: Theme.of(context).colorScheme.secondary.withOpacity(0.3),
+                                  width: 1,
+                                ),
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(
+                                    Icons.school_rounded,
+                                    color: Theme.of(context).colorScheme.secondary,
+                                    size: 14,
+                                  ),
+                                  const SizedBox(width: 4),
+                                  Text(
+                                    'Clasa ${book['book_class']}',
+                                    style: TextStyle(
+                                      color: Theme.of(context).colorScheme.secondary,
+                                      fontWeight: FontWeight.w600,
+                                      fontSize: 11,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
                           const SizedBox(height: 12),
                           // Status Badge
                           Container(

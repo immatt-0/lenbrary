@@ -15,16 +15,17 @@ class ApiService {
     'RETURNAT': 'Returnat',
     'INTARZIAT': 'Întârziat',
     'RESPINS': 'Respins',
+    'ANULATA': 'Anulată',
   };
 
   // Base URL of your Django backend - update this for your testing environment
   // For emulators:
   // static const String baseUrl = 'http://10.0.2.2:8000';      // Android emulator
-  static const String baseUrl =
-      'http://localhost:8000'; // Windows/Web/iOS simulator
+  // static const String baseUrl =
+     // 'http://localhost:8000'; // Windows/Web/iOS simulator
 
   // For physical devices, use your computer's actual IP address:
-  // static const String baseUrl = 'http://192.168.1.100:8000'; // Replace with your actual IP
+   static const String baseUrl = 'http://192.168.68.111:8000'; // Replace with your actual IP
 
   // Endpoints
   static const String registerEndpoint = '/book-library/register';
@@ -222,46 +223,133 @@ class ApiService {
   }
 
   // Upload book thumbnail
-  static Future<String> uploadThumbnail() async {
+  static Future<String> uploadThumbnail(dynamic imageFile) async {
     final token = await getAccessToken();
     if (token == null) {
       throw Exception('Not authenticated');
     }
 
-    // For simplicity in this example, we'll simulate a successful upload
-    // In a real app, you'd use a package like image_picker to get an image file
-    // and then upload it with FormData
-
-    /* 
-    Example of real implementation:
-    
-    final request = http.MultipartRequest(
-      'POST',
-      Uri.parse('$baseUrl/book-library/thumbnails'),
-    );
-    
-    request.headers.addAll({
-      'Authorization': 'Bearer $token',
-    });
-    
-    request.files.add(await http.MultipartFile.fromPath(
-      'thumbnail',
-      imagePath,
-    ));
-    
-    final streamedResponse = await request.send();
-    final response = await http.Response.fromStream(streamedResponse);
-    
-    if (response.statusCode == 201) {
-      final data = jsonDecode(response.body);
-      return data['thumbnail_url'];
-    } else {
-      throw Exception('Failed to upload thumbnail');
+    try {
+      debugPrint('Starting thumbnail upload...');
+      debugPrint('Platform: ${kIsWeb ? 'Web' : 'Mobile'}');
+      debugPrint('File type: ${imageFile.runtimeType}');
+      
+      final request = http.MultipartRequest(
+        'POST',
+        Uri.parse('$baseUrl/book-library/thumbnails'),
+      );
+      
+      request.headers.addAll({
+        'Authorization': 'Bearer $token',
+      });
+      
+      if (kIsWeb) {
+        // For web, imageFile should be a Uint8List
+        if (imageFile is Uint8List) {
+          debugPrint('Web upload: Adding file with ${imageFile.length} bytes');
+          request.files.add(http.MultipartFile.fromBytes(
+            'thumbnail',
+            imageFile,
+            filename: 'thumbnail.jpg',
+          ));
+        } else {
+          throw Exception('Invalid file format for web upload. Expected Uint8List, got ${imageFile.runtimeType}');
+        }
+      } else {
+        // For mobile platforms, imageFile should be a file path string
+        if (imageFile is String) {
+          debugPrint('Mobile upload: Adding file from path: $imageFile');
+          request.files.add(await http.MultipartFile.fromPath(
+            'thumbnail',
+            imageFile,
+          ));
+        } else {
+          throw Exception('Invalid file format for mobile upload. Expected String, got ${imageFile.runtimeType}');
+        }
+      }
+      
+      debugPrint('Sending upload request...');
+      final streamedResponse = await request.send();
+      final response = await http.Response.fromStream(streamedResponse);
+      
+      debugPrint('Upload response status: ${response.statusCode}');
+      debugPrint('Upload response body: ${response.body}');
+      
+      if (response.statusCode == 201) {
+        final data = jsonDecode(response.body);
+        return data['thumbnail_url'];
+      } else {
+        throw Exception('Failed to upload thumbnail: ${response.body}');
+      }
+    } catch (e) {
+      debugPrint('Upload error: $e');
+      throw Exception('Error uploading thumbnail: $e');
     }
-    */
+  }
 
-    // Simulated response for now
-    return 'https://via.placeholder.com/150x200?text=Book+Cover';
+  // Upload PDF file for books/manuals
+  static Future<String> uploadPdf(dynamic pdfFile) async {
+    final token = await getAccessToken();
+    if (token == null) {
+      throw Exception('Not authenticated');
+    }
+
+    try {
+      debugPrint('Starting PDF upload...');
+      debugPrint('Platform: ${kIsWeb ? 'Web' : 'Mobile'}');
+      debugPrint('File type: ${pdfFile.runtimeType}');
+      
+      final request = http.MultipartRequest(
+        'POST',
+        Uri.parse('$baseUrl/book-library/upload-pdf'),
+      );
+      
+      request.headers.addAll({
+        'Authorization': 'Bearer $token',
+      });
+      
+      if (kIsWeb) {
+        // For web, pdfFile should be a Uint8List
+        if (pdfFile is Uint8List) {
+          debugPrint('Web upload: Adding PDF file with ${pdfFile.length} bytes');
+          request.files.add(http.MultipartFile.fromBytes(
+            'pdf',
+            pdfFile,
+            filename: 'document.pdf',
+          ));
+        } else {
+          throw Exception('Invalid file format for web upload. Expected Uint8List, got ${pdfFile.runtimeType}');
+        }
+      } else {
+        // For mobile platforms, pdfFile should be a file path string
+        if (pdfFile is String) {
+          debugPrint('Mobile upload: Adding PDF file from path: $pdfFile');
+          request.files.add(await http.MultipartFile.fromPath(
+            'pdf',
+            pdfFile,
+          ));
+        } else {
+          throw Exception('Invalid file format for mobile upload. Expected String, got ${pdfFile.runtimeType}');
+        }
+      }
+      
+      debugPrint('Sending PDF upload request...');
+      final streamedResponse = await request.send();
+      final response = await http.Response.fromStream(streamedResponse);
+      
+      debugPrint('PDF upload response status: ${response.statusCode}');
+      debugPrint('PDF upload response body: ${response.body}');
+      
+      if (response.statusCode == 201) {
+        final data = jsonDecode(response.body);
+        return data['pdf_url'];
+      } else {
+        throw Exception('Failed to upload PDF: ${response.body}');
+      }
+    } catch (e) {
+      debugPrint('PDF upload error: $e');
+      throw Exception('Error uploading PDF: $e');
+    }
   }
 
   // Add new book to library
@@ -272,8 +360,11 @@ class ApiService {
     required int stock,
     String? description,
     String? category,
+    String? type,
     int? publicationYear,
     String? thumbnailUrl,
+    String? bookClass,
+    String? pdfUrl,
   }) async {
     final token = await getAccessToken();
     if (token == null) {
@@ -293,8 +384,11 @@ class ApiService {
         'stock': stock,
         'description': description,
         'category': category,
+        'type': type,
         'publication_year': publicationYear,
         'thumbnail_url': thumbnailUrl,
+        'book_class': bookClass,
+        'pdf_file': pdfUrl,
       }),
     );
 
@@ -306,32 +400,49 @@ class ApiService {
   }
 
   // Get all books
-  static Future<List<dynamic>> getBooks({String? search}) async {
-    final queryParams = <String, String>{};
-    if (search != null && search.isNotEmpty) {
-      queryParams['search'] = search;
-    }
+  static Future<List<dynamic>> getBooks({String? search, String? category}) async {
+    try {
+      print('API Service: Getting books...');
+      print('API Service: Token: ${await getAccessToken()}');
+      
+      final token = await getAccessToken();
+      if (token == null) {
+        print('API Service: No token found');
+        throw Exception('Token not found');
+      }
 
-    final token = await getAccessToken();
-    if (token == null) {
-      throw Exception('Not authenticated');
-    }
+      final response = await http.get(
+        Uri.parse('$baseUrl/book-library/books'),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+        },
+      );
 
-    final uri = Uri.parse('$baseUrl/book-library/books').replace(
-      queryParameters: queryParams,
-    );
+      print('API Service: Response status: ${response.statusCode}');
+      print('API Service: Response body: ${response.body}');
 
-    final response = await http.get(
-      uri,
-      headers: {
-        'Authorization': 'Bearer $token',
-      },
-    );
-
-    if (response.statusCode == 200) {
-      return jsonDecode(response.body);
-    } else {
-      throw Exception('Failed to get books');
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        print('API Service: Decoded data: $data');
+        
+        if (data is List) {
+          print('API Service: Returning ${data.length} books');
+          return data;
+        } else if (data is Map && data.containsKey('results')) {
+          print('API Service: Returning ${data['results'].length} books from results');
+          return data['results'];
+        } else {
+          print('API Service: Unexpected data format: $data');
+          return [];
+        }
+      } else {
+        print('API Service: Error response: ${response.statusCode} - ${response.body}');
+        throw Exception('Failed to load books: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('API Service: Exception in getBooks: $e');
+      throw Exception('Failed to load books: $e');
     }
   }
 
@@ -924,6 +1035,86 @@ class ApiService {
       return jsonDecode(response.body);
     } else {
       throw Exception('Failed to delete book: ${response.body}');
+    }
+  }
+
+  // Update book details (for librarians)
+  static Future<Map<String, dynamic>> updateBook({
+    required int bookId,
+    String? name,
+    String? author,
+    String? category,
+    String? type,
+    String? description,
+    int? publicationYear,
+    String? thumbnailUrl,
+    int? stock,
+    int? inventory,
+    String? bookClass,
+    String? pdfUrl,
+  }) async {
+    final token = await getAccessToken();
+    if (token == null) {
+      throw Exception('Not authenticated');
+    }
+
+    final data = <String, dynamic>{};
+    if (name != null) data['name'] = name;
+    if (author != null) data['author'] = author;
+    if (category != null) data['category'] = category;
+    if (type != null) data['type'] = type;
+    if (description != null) data['description'] = description;
+    if (publicationYear != null) data['publication_year'] = publicationYear;
+    if (thumbnailUrl != null) data['thumbnail_url'] = thumbnailUrl;
+    if (stock != null) data['stock'] = stock;
+    if (inventory != null) data['inventory'] = inventory;
+    if (bookClass != null) data['book_class'] = bookClass;
+    if (pdfUrl != null) data['pdf_file'] = pdfUrl;
+
+    final response = await http.put(
+      Uri.parse('$baseUrl/book-library/book/$bookId'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      body: jsonEncode(data),
+    );
+
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body);
+    } else {
+      throw Exception('Failed to update book: ${response.body}');
+    }
+  }
+
+  // Cancel a book request (student)
+  static Future<void> cancelRequest({
+    required int requestId,
+    String? message,
+  }) async {
+    final token = await getAccessToken();
+    if (token == null) {
+      throw Exception('Not authenticated');
+    }
+    final url = '$baseUrl/book-library/cancel-request/$requestId/';
+    final response = await http.post(
+      Uri.parse(url),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      body: jsonEncode({
+        if (message != null && message.isNotEmpty) 'message': message,
+      }),
+    );
+    if (response.statusCode != 200 && response.statusCode != 201) {
+      try {
+        final errorData = jsonDecode(response.body);
+        if (errorData is Map && errorData.containsKey('error')) {
+          throw errorData['error'];
+        }
+      } catch (_) {}
+      throw Exception('Failed to cancel request: ${response.body}');
     }
   }
 }

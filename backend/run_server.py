@@ -26,6 +26,6 @@ if __name__ == '__main__':
     print("\nNote: Create admin accounts using 'python manage.py createsuperuser'")
     
     try:
-        execute_from_command_line(['manage.py', 'runserver', '0.0.0.0:8000'])
+        execute_from_command_line(['manage.py', 'runserver', '192.168.68.111:8000'])
     except KeyboardInterrupt:
         print("\nServer stopped.") 

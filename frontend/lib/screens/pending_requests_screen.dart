@@ -195,7 +195,7 @@ class _PendingRequestsScreenState extends State<PendingRequestsScreen>
       if (!mounted) return;
       NotificationService.showSuccess(
         context: context,
-        message: 'Cartea a fost marcată ca ridicată!',
+        message: 'Cartea/manualul a fost marcat ca ridicat!',
       );
       await _loadRequests();
     } catch (e) {
@@ -256,7 +256,7 @@ class _PendingRequestsScreenState extends State<PendingRequestsScreen>
               ),
               const SizedBox(width: 12),
               Text(
-                'Cereri de Cărți',
+                'Cereri de Cărți și Manuale',
                 style: Theme.of(context).textTheme.titleLarge?.copyWith(
                   fontWeight: FontWeight.w700,
                   letterSpacing: -0.5,
@@ -956,6 +956,40 @@ class _PendingRequestsScreenState extends State<PendingRequestsScreen>
                                 fontWeight: FontWeight.w500,
                               ),
                             ),
+                            // Class info for manuals
+                            if (request['book']['type'] == 'manual' && request['book']['book_class'] != null) ...[
+                              const SizedBox(height: 4),
+                              Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                decoration: BoxDecoration(
+                                  color: Theme.of(context).colorScheme.secondary.withOpacity(0.1),
+                                  borderRadius: BorderRadius.circular(12),
+                                  border: Border.all(
+                                    color: Theme.of(context).colorScheme.secondary.withOpacity(0.3),
+                                    width: 1,
+                                  ),
+                                ),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Icon(
+                                      Icons.school_rounded,
+                                      color: Theme.of(context).colorScheme.secondary,
+                                      size: 14,
+                                    ),
+                                    const SizedBox(width: 4),
+                                    Text(
+                                      'Clasa ${request['book']['book_class']}',
+                                      style: TextStyle(
+                                        color: Theme.of(context).colorScheme.secondary,
+                                        fontWeight: FontWeight.w600,
+                                        fontSize: 11,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
                             const SizedBox(height: 12),
                             // Request details in a more compact format
                             Row(

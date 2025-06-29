@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:file_picker/file_picker.dart';
 import '../services/api_service.dart';
 import '../services/notification_service.dart';
+import 'package:flutter/foundation.dart';
 
 class AddBookScreen extends StatefulWidget {
   const AddBookScreen({Key? key}) : super(key: key);
@@ -26,6 +28,9 @@ class _AddBookScreenState extends State<AddBookScreen>
   bool _isLoading = false;
   String? _errorMessage;
   String? _thumbnailUrl;
+  String _selectedType = 'carte'; // Default to 'carte'
+  String? _selectedClass; // For manuals only
+  String? _pdfUrl; // For PDF upload
 
   // Animation controllers
   late AnimationController _fadeController;
@@ -114,10 +119,13 @@ class _AddBookScreenState extends State<AddBookScreen>
           stock: int.parse(_stockController.text),
           description: _descriptionController.text,
           category: _categoryController.text,
+          type: _selectedType,
           publicationYear: _yearController.text.isNotEmpty
               ? int.parse(_yearController.text)
               : null,
           thumbnailUrl: _thumbnailUrl,
+          bookClass: _selectedClass,
+          pdfUrl: _pdfUrl,
         );
 
         if (!mounted) return;
@@ -125,7 +133,7 @@ class _AddBookScreenState extends State<AddBookScreen>
         // Show success message
         NotificationService.showSuccess(
           context: context,
-          message: 'Cartea a fost adăugată cu succes!',
+          message: 'Cartea/manualul a fost adăugat cu succes!',
         );
 
         // Clear the form
@@ -139,6 +147,7 @@ class _AddBookScreenState extends State<AddBookScreen>
         _yearController.clear();
         setState(() {
           _thumbnailUrl = null;
+          _pdfUrl = null;
         });
       } catch (e) {
         setState(() {
@@ -298,13 +307,26 @@ class _AddBookScreenState extends State<AddBookScreen>
     });
 
     try {
-      // For now, we'll simulate the upload process
-      // In a real app, you would upload the image file to your server
-      await Future.delayed(const Duration(seconds: 2)); // Simulate upload time
+      debugPrint('Processing selected image...');
+      debugPrint('Image path: ${image.path}');
+      debugPrint('Image name: ${image.name}');
+      debugPrint('Platform: ${kIsWeb ? 'Web' : 'Mobile'}');
       
-      // For demonstration, we'll use a placeholder URL
-      // In production, you would get the actual URL from your server
-      final url = 'https://via.placeholder.com/300x400/4A90E2/FFFFFF?text=Copertă+Carte';
+      String url;
+      
+      if (kIsWeb) {
+        // For web, read the file as bytes
+        debugPrint('Reading image as bytes for web...');
+        final bytes = await image.readAsBytes();
+        debugPrint('Image bytes length: ${bytes.length}');
+        url = await ApiService.uploadThumbnail(bytes);
+      } else {
+        // For mobile, use the file path
+        debugPrint('Using image path for mobile...');
+        url = await ApiService.uploadThumbnail(image.path);
+      }
+      
+      debugPrint('Upload successful, URL: $url');
       
       setState(() {
         _thumbnailUrl = url;
@@ -315,9 +337,194 @@ class _AddBookScreenState extends State<AddBookScreen>
         message: 'Coperta a fost încărcată cu succes!',
       );
     } catch (e) {
+      debugPrint('Error in _processSelectedImage: $e');
       NotificationService.showError(
         context: context,
         message: 'Eroare la încărcarea copertei: ${e.toString()}',
+      );
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
+  Future<void> _uploadPdf() async {
+    // Show popup with file picker options
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          title: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.secondary.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Icon(
+                  Icons.picture_as_pdf_rounded,
+                  color: Theme.of(context).colorScheme.secondary,
+                  size: 24,
+                ),
+              ),
+              const SizedBox(width: 12),
+              const Text('Adaugă PDF'),
+            ],
+          ),
+          content: const Text(
+            'Alegeți fișierul PDF pentru manual:',
+            style: TextStyle(fontSize: 16),
+          ),
+          actions: [
+            // File Picker Button
+            Container(
+              width: double.infinity,
+              margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              child: ElevatedButton.icon(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  _pickPdfFile();
+                },
+                icon: Icon(Icons.file_upload_rounded, color: Theme.of(context).colorScheme.onPrimary),
+                label: Text(
+                  'Alege fișier PDF',
+                  style: TextStyle(color: Theme.of(context).colorScheme.onPrimary, fontWeight: FontWeight.w600),
+                ),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Theme.of(context).colorScheme.secondary,
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  elevation: 2,
+                ),
+              ),
+            ),
+            // Cancel Button
+            Container(
+              width: double.infinity,
+              margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              child: TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: const Text(
+                  'Anulează',
+                  style: TextStyle(fontWeight: FontWeight.w600),
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> _pickPdfFile() async {
+    try {
+      FilePickerResult? result = await FilePicker.platform.pickFiles(
+        type: FileType.custom,
+        allowedExtensions: ['pdf'],
+        allowMultiple: false,
+      );
+      
+      if (result != null && result.files.isNotEmpty) {
+        final file = result.files.first;
+        
+        if (kIsWeb) {
+          // For web, we need to get the bytes
+          if (file.bytes != null) {
+            await _processSelectedPdfBytes(file.bytes!, file.name);
+          } else {
+            NotificationService.showError(
+              context: context,
+              message: 'Eroare la citirea fișierului PDF',
+            );
+          }
+        } else {
+          // For mobile, we use the file path
+          if (file.path != null) {
+            await _processSelectedPdfPath(file.path!);
+          } else {
+            NotificationService.showError(
+              context: context,
+              message: 'Eroare la accesarea fișierului PDF',
+            );
+          }
+        }
+      }
+    } catch (e) {
+      NotificationService.showError(
+        context: context,
+        message: 'Eroare la selectarea fișierului PDF: ${e.toString()}',
+      );
+    }
+  }
+
+  Future<void> _processSelectedPdfBytes(Uint8List bytes, String fileName) async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      debugPrint('Processing selected PDF bytes...');
+      debugPrint('PDF name: $fileName');
+      debugPrint('PDF bytes length: ${bytes.length}');
+      
+      final url = await ApiService.uploadPdf(bytes);
+      
+      debugPrint('PDF upload successful, URL: $url');
+      
+      setState(() {
+        _pdfUrl = url;
+      });
+
+      NotificationService.showSuccess(
+        context: context,
+        message: 'PDF-ul a fost încărcat cu succes!',
+      );
+    } catch (e) {
+      debugPrint('Error in _processSelectedPdfBytes: $e');
+      NotificationService.showError(
+        context: context,
+        message: 'Eroare la încărcarea PDF-ului: ${e.toString()}',
+      );
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
+  Future<void> _processSelectedPdfPath(String filePath) async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      debugPrint('Processing selected PDF from path...');
+      debugPrint('PDF path: $filePath');
+      
+      final url = await ApiService.uploadPdf(filePath);
+      
+      debugPrint('PDF upload successful, URL: $url');
+      
+      setState(() {
+        _pdfUrl = url;
+      });
+
+      NotificationService.showSuccess(
+        context: context,
+        message: 'PDF-ul a fost încărcat cu succes!',
+      );
+    } catch (e) {
+      debugPrint('Error in _processSelectedPdfPath: $e');
+      NotificationService.showError(
+        context: context,
+        message: 'Eroare la încărcarea PDF-ului: ${e.toString()}',
       );
     } finally {
       setState(() {
@@ -365,7 +572,7 @@ class _AddBookScreenState extends State<AddBookScreen>
               ),
               const SizedBox(width: 12),
               Text(
-                'Adaugă Carte Nouă',
+                'Adaugă Carte sau Manual Nou',
                 style: Theme.of(context).textTheme.titleLarge?.copyWith(
                   fontWeight: FontWeight.w700,
                   letterSpacing: -0.5,
@@ -467,7 +674,7 @@ class _AddBookScreenState extends State<AddBookScreen>
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
                                         Text(
-                                          'Informații Carte',
+                                          'Informații Carte/Manual',
                                           style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                                             fontWeight: FontWeight.w700,
                                             color: Theme.of(context).colorScheme.onSurface,
@@ -475,7 +682,7 @@ class _AddBookScreenState extends State<AddBookScreen>
                                         ),
                                         const SizedBox(height: 4),
                                         Text(
-                                          'Completează detaliile cărții pentru a o adăuga în catalog',
+                                          'Completează detaliile cărții/manualului pentru a le adăuga în catalog',
                                           style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                                             color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
                                             fontWeight: FontWeight.w500,
@@ -683,7 +890,7 @@ class _AddBookScreenState extends State<AddBookScreen>
           icon: Icons.title_rounded,
           validator: (value) {
             if (value == null || value.isEmpty) {
-              return 'Vă rugăm să introduceți titlul cărții';
+              return 'Vă rugăm să introduceți titlul cărții/manualului';
             }
             return null;
           },
@@ -701,6 +908,15 @@ class _AddBookScreenState extends State<AddBookScreen>
           },
         ),
         const SizedBox(height: 16.0),
+        _buildTypeDropdown(),
+        const SizedBox(height: 16.0),
+        _buildClassDropdown(),
+        const SizedBox(height: 16.0),
+        // Show PDF upload only for manuals
+        if (_selectedType == 'manual') ...[
+          _buildPdfUploadWidget(),
+          const SizedBox(height: 16.0),
+        ],
         _buildFormField(
           controller: _inventoryController,
           label: 'Număr inventar',
@@ -927,6 +1143,339 @@ class _AddBookScreenState extends State<AddBookScreen>
           ),
         ),
       ],
+    );
+  }
+
+  Widget _buildTypeDropdown() {
+    return Container(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            Theme.of(context).colorScheme.surface,
+            Theme.of(context).colorScheme.surface.withOpacity(0.8),
+          ],
+        ),
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Theme.of(context).colorScheme.shadow.withOpacity(0.05),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: DropdownButtonFormField<String>(
+        value: _selectedType,
+        decoration: InputDecoration(
+          labelText: 'Tip',
+          labelStyle: TextStyle(
+            color: Colors.grey[600],
+            fontWeight: FontWeight.w500,
+          ),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(16),
+            borderSide: BorderSide.none,
+          ),
+          filled: true,
+          fillColor: Colors.transparent,
+          prefixIcon: Container(
+            margin: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  Theme.of(context).colorScheme.primary.withOpacity(0.15),
+                  Theme.of(context).colorScheme.primary.withOpacity(0.05),
+                ],
+              ),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Icon(
+              Icons.book_rounded,
+              color: Theme.of(context).colorScheme.primary,
+              size: 20,
+            ),
+          ),
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 16,
+            vertical: 16,
+          ),
+        ),
+        items: [
+          DropdownMenuItem(
+            value: 'carte',
+            child: Row(
+              children: [
+                Icon(Icons.book_rounded, color: Theme.of(context).colorScheme.primary),
+                const SizedBox(width: 8),
+                const Text('Carte'),
+              ],
+            ),
+          ),
+          DropdownMenuItem(
+            value: 'manual',
+            child: Row(
+              children: [
+                Icon(Icons.menu_book_rounded, color: Theme.of(context).colorScheme.primary),
+                const SizedBox(width: 8),
+                const Text('Manual'),
+              ],
+            ),
+          ),
+        ],
+        onChanged: (String? newValue) {
+          setState(() {
+            _selectedType = newValue!;
+            // Reset class when type changes
+            if (_selectedType == 'carte') {
+              _selectedClass = null;
+            }
+          });
+        },
+        validator: (value) {
+          if (value == null || value.isEmpty) {
+            return 'Vă rugăm să selectați tipul';
+          }
+          return null;
+        },
+        style: TextStyle(
+          fontSize: 16,
+          color: Colors.grey[800],
+          fontWeight: FontWeight.w500,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildClassDropdown() {
+    if (_selectedType != 'manual') {
+      return const SizedBox.shrink();
+    }
+
+    return Container(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            Theme.of(context).colorScheme.surface,
+            Theme.of(context).colorScheme.surface.withOpacity(0.8),
+          ],
+        ),
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Theme.of(context).colorScheme.shadow.withOpacity(0.05),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: DropdownButtonFormField<String>(
+        value: _selectedClass,
+        decoration: InputDecoration(
+          labelText: 'Clasă *',
+          labelStyle: TextStyle(
+            color: Colors.grey[600],
+            fontWeight: FontWeight.w500,
+          ),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(16),
+            borderSide: BorderSide.none,
+          ),
+          filled: true,
+          fillColor: Colors.transparent,
+          prefixIcon: Container(
+            margin: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  Theme.of(context).colorScheme.secondary.withOpacity(0.15),
+                  Theme.of(context).colorScheme.secondary.withOpacity(0.05),
+                ],
+              ),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Icon(
+              Icons.school_rounded,
+              color: Theme.of(context).colorScheme.secondary,
+              size: 20,
+            ),
+          ),
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 16,
+            vertical: 16,
+          ),
+        ),
+        items: [
+          // Gimnaziu classes
+          const DropdownMenuItem(value: 'V', child: Text('V - Gimnaziu')),
+          const DropdownMenuItem(value: 'VI', child: Text('VI - Gimnaziu')),
+          const DropdownMenuItem(value: 'VII', child: Text('VII - Gimnaziu')),
+          const DropdownMenuItem(value: 'VIII', child: Text('VIII - Gimnaziu')),
+          // Liceu classes
+          const DropdownMenuItem(value: 'IX', child: Text('IX - Liceu')),
+          const DropdownMenuItem(value: 'X', child: Text('X - Liceu')),
+          const DropdownMenuItem(value: 'XI', child: Text('XI - Liceu')),
+          const DropdownMenuItem(value: 'XII', child: Text('XII - Liceu')),
+        ],
+        onChanged: (String? newValue) {
+          setState(() {
+            _selectedClass = newValue;
+          });
+        },
+        validator: (value) {
+          if (_selectedType == 'manual' && (value == null || value.isEmpty)) {
+            return 'Vă rugăm să selectați clasa pentru manual';
+          }
+          return null;
+        },
+        style: TextStyle(
+          fontSize: 16,
+          color: Colors.grey[800],
+          fontWeight: FontWeight.w500,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPdfUploadWidget() {
+    return Container(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            Theme.of(context).colorScheme.surface,
+            Theme.of(context).colorScheme.surface.withOpacity(0.8),
+          ],
+        ),
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Theme.of(context).colorScheme.shadow.withOpacity(0.08),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: InkWell(
+        onTap: _uploadPdf,
+        borderRadius: BorderRadius.circular(16),
+        child: Container(
+          width: double.infinity,
+          height: 120,
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.secondary.withOpacity(0.05),
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(
+              color: Theme.of(context).colorScheme.secondary.withOpacity(0.2),
+              width: 2,
+              style: BorderStyle.solid,
+            ),
+          ),
+          child: _pdfUrl != null
+              ? Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [
+                              Theme.of(context).colorScheme.secondary.withOpacity(0.15),
+                              Theme.of(context).colorScheme.secondary.withOpacity(0.05),
+                            ],
+                          ),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Icon(
+                          Icons.picture_as_pdf_rounded,
+                          size: 32,
+                          color: Theme.of(context).colorScheme.secondary,
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              'PDF încărcat',
+                              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                color: Theme.of(context).colorScheme.secondary,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              'Apasă pentru a schimba',
+                              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                color: Colors.grey[600],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Icon(
+                        Icons.check_circle_rounded,
+                        color: Theme.of(context).colorScheme.secondary,
+                        size: 24,
+                      ),
+                    ],
+                  ),
+                )
+              : Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [
+                              Theme.of(context).colorScheme.secondary.withOpacity(0.15),
+                              Theme.of(context).colorScheme.secondary.withOpacity(0.05),
+                            ],
+                          ),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Icon(
+                          Icons.picture_as_pdf_rounded,
+                          size: 32,
+                          color: Theme.of(context).colorScheme.secondary,
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              'Adaugă PDF',
+                              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                color: Theme.of(context).colorScheme.secondary,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              'Apasă pentru a încărca',
+                              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                color: Colors.grey[600],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Icon(
+                        Icons.add_rounded,
+                        color: Theme.of(context).colorScheme.secondary,
+                        size: 24,
+                      ),
+                    ],
+                  ),
+                ),
+        ),
+      ),
     );
   }
 }

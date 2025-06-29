@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import '../services/api_service.dart';
+import '../services/notification_service.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'dart:convert';
 import 'extension_requests_screen.dart';
 
@@ -139,6 +141,36 @@ class _ActiveLoansScreenState extends State<ActiveLoansScreen>
       setState(() {
         _processingAction = false;
       });
+    }
+  }
+
+  void _viewPdf(String pdfUrl) async {
+    try {
+      if (await canLaunch(pdfUrl)) {
+        await launch(pdfUrl);
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text('Nu s-a putut deschide PDF-ul.'),
+            backgroundColor: Theme.of(context).colorScheme.error,
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+          ),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Eroare la deschiderea PDF-ului: ${e.toString()}'),
+          backgroundColor: Theme.of(context).colorScheme.error,
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+        ),
+      );
     }
   }
 
@@ -888,6 +920,40 @@ class _ActiveLoansScreenState extends State<ActiveLoansScreen>
                                                   fontWeight: FontWeight.w500,
                                                 ),
                                                 ),
+                                                // Class info for manuals
+                                                if (book['type'] == 'manual' && book['book_class'] != null) ...[
+                                                  const SizedBox(height: 4),
+                                                  Container(
+                                                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                                    decoration: BoxDecoration(
+                                                      color: Theme.of(context).colorScheme.secondary.withOpacity(0.1),
+                                                      borderRadius: BorderRadius.circular(8),
+                                                      border: Border.all(
+                                                        color: Theme.of(context).colorScheme.secondary.withOpacity(0.3),
+                                                        width: 1,
+                                                      ),
+                                                    ),
+                                                    child: Row(
+                                                      mainAxisSize: MainAxisSize.min,
+                                                      children: [
+                                                        Icon(
+                                                          Icons.school_rounded,
+                                                          color: Theme.of(context).colorScheme.secondary,
+                                                          size: 12,
+                                                        ),
+                                                        const SizedBox(width: 3),
+                                                        Text(
+                                                          'Clasa ${book['book_class']}',
+                                                          style: TextStyle(
+                                                            color: Theme.of(context).colorScheme.secondary,
+                                                            fontWeight: FontWeight.w600,
+                                                            fontSize: 10,
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                ],
                                               ],
                                             ),
                                           ),

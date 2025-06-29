@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'providers/theme_provider.dart';
+import 'services/responsive_service.dart';
 import 'screens/login_screen.dart';
 import 'screens/register_screen.dart';
 import 'screens/success_screen.dart';
@@ -31,6 +32,9 @@ class MyApp extends StatelessWidget {
       create: (_) => ThemeProvider(),
       child: Consumer<ThemeProvider>(
         builder: (context, themeProvider, child) {
+          // Initialize responsive service
+          ResponsiveService.init(context);
+          
           return MaterialApp(
             title: 'Lenbrary App',
             theme: themeProvider.currentTheme,

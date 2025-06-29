@@ -30,7 +30,7 @@ class BookSerializer(serializers.ModelSerializer):
     class Meta:
         model = Book
         fields = ['id', 'name', 'inventory', 'thumbnail_url', 'author', 'stock', 
-                 'description', 'category', 'publication_year', 'available_copies']
+                 'description', 'category', 'type', 'publication_year', 'book_class', 'available_copies', 'pdf_file']
 
 class StudentSerializer(serializers.ModelSerializer):
     user = UserSerializer()

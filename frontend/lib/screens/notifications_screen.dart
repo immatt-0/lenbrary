@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
+import '../services/api_service.dart';
 import '../services/notification_service.dart';
+import '../services/responsive_service.dart';
+import '../widgets/responsive_button.dart';
+import '../widgets/responsive_text_field.dart';
 
 class NotificationsScreen extends StatefulWidget {
   const NotificationsScreen({Key? key}) : super(key: key);
@@ -9,7 +13,7 @@ class NotificationsScreen extends StatefulWidget {
 }
 
 class _NotificationsScreenState extends State<NotificationsScreen>
-    with TickerProviderStateMixin {
+    with TickerProviderStateMixin, ResponsiveWidget {
   final NotificationService _notificationService = NotificationService();
   
   // Animation controllers
@@ -145,12 +149,16 @@ class _NotificationsScreenState extends State<NotificationsScreen>
             Icon(
               _notificationService.getNotificationIcon(type),
               color: _notificationService.getNotificationColor(type),
+              size: getResponsiveIconSize(24),
             ),
-            const SizedBox(width: 8),
+            SizedBox(width: getResponsiveSpacing(8)),
             Expanded(
               child: Text(
                 _getNotificationTitle(type),
-                style: const TextStyle(fontSize: 18),
+                style: ResponsiveTextStyles.getResponsiveTitleStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
             ),
           ],
@@ -161,22 +169,25 @@ class _NotificationsScreenState extends State<NotificationsScreen>
           children: [
             Text(
               content,
-              style: const TextStyle(fontSize: 16),
+              style: ResponsiveTextStyles.getResponsiveBodyStyle(
+                fontSize: 16,
+              ),
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: getResponsiveSpacing(16)),
             Text(
               'Data: ${timestamp.day}/${timestamp.month}/${timestamp.year} ${timestamp.hour}:${timestamp.minute.toString().padLeft(2, '0')}',
-              style: TextStyle(
-                color: Colors.grey[600],
+              style: ResponsiveTextStyles.getResponsiveTextStyle(
                 fontSize: 14,
+                color: Colors.grey[600],
               ),
             ),
           ],
         ),
         actions: [
-          TextButton(
+          ResponsiveButton(
+            text: 'Închide',
             onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Închide'),
+            isOutlined: true,
           ),
         ],
       ),
@@ -202,6 +213,8 @@ class _NotificationsScreenState extends State<NotificationsScreen>
   
   @override
   Widget build(BuildContext context) {
+    ResponsiveService.init(context);
+    
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
@@ -214,7 +227,7 @@ class _NotificationsScreenState extends State<NotificationsScreen>
             mainAxisSize: MainAxisSize.min,
             children: [
               Container(
-                padding: const EdgeInsets.all(8),
+                padding: EdgeInsets.all(getResponsiveSpacing(8)),
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     colors: [
@@ -222,87 +235,68 @@ class _NotificationsScreenState extends State<NotificationsScreen>
                       Theme.of(context).colorScheme.primary.withOpacity(0.8),
                     ],
                   ),
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: getResponsiveBorderRadius(10),
                   boxShadow: [
                     BoxShadow(
                       color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
-                      blurRadius: 8,
-                      offset: const Offset(0, 2),
+                      blurRadius: getResponsiveSpacing(8),
+                      offset: Offset(0, getResponsiveSpacing(2)),
                     ),
                   ],
                 ),
                 child: Icon(
                   Icons.notifications_rounded,
                   color: Theme.of(context).colorScheme.onPrimary,
-                  size: 24,
+                  size: getResponsiveIconSize(24),
                 ),
               ),
-              const SizedBox(width: 12),
+              SizedBox(width: getResponsiveSpacing(12)),
               Text(
                 'Notificări',
-                style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                style: ResponsiveTextStyles.getResponsiveTitleStyle(
+                  fontSize: 20,
                   fontWeight: FontWeight.w700,
-                  letterSpacing: -0.5,
                 ),
               ),
-              if (_notificationService.unreadCount > 0) ...[
-                const SizedBox(width: 8),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: Colors.red,
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Text(
-                    '${_notificationService.unreadCount}',
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 12,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-              ],
             ],
           ),
         ),
-        actions: [
-          FadeTransition(
-            opacity: _fadeAnimation,
-            child: Container(
-              margin: const EdgeInsets.only(right: 8),
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: IconButton(
-                icon: Icon(
-                  Icons.refresh_rounded,
-                  color: Theme.of(context).colorScheme.primary,
-                ),
-                onPressed: _loadNotifications,
-                tooltip: 'Reîmprospătează',
-              ),
-            ),
+        automaticallyImplyLeading: false,
+        leading: Container(
+          margin: EdgeInsets.only(left: getResponsiveSpacing(8)),
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+            borderRadius: getResponsiveBorderRadius(10),
           ),
-          if (_notificationService.unreadCount > 0)
-            FadeTransition(
-              opacity: _fadeAnimation,
-              child: Container(
-                margin: const EdgeInsets.only(right: 8),
+          child: IconButton(
+            icon: Icon(
+              Icons.arrow_back_rounded,
+              color: Theme.of(context).colorScheme.primary,
+              size: getResponsiveIconSize(24),
+            ),
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            tooltip: 'Înapoi',
+          ),
+        ),
+        actions: [
+          if (_notificationService.notifications.isNotEmpty)
+            IconButton(
+              icon: Container(
+                padding: EdgeInsets.all(getResponsiveSpacing(8)),
                 decoration: BoxDecoration(
-                  color: Colors.red.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(10),
+                  color: Theme.of(context).colorScheme.secondary.withOpacity(0.1),
+                  borderRadius: getResponsiveBorderRadius(10),
                 ),
-                child: IconButton(
-                  icon: Icon(
-                    Icons.mark_email_read_rounded,
-                    color: Colors.red,
-                  ),
-                  onPressed: _markAllAsRead,
-                  tooltip: 'Marchează toate ca citite',
+                child: Icon(
+                  Icons.done_all_rounded,
+                  color: Theme.of(context).colorScheme.secondary,
+                  size: getResponsiveIconSize(20),
                 ),
               ),
+              onPressed: _markAllAsRead,
+              tooltip: 'Marchează toate ca citite',
             ),
         ],
       ),
@@ -331,7 +325,7 @@ class _NotificationsScreenState extends State<NotificationsScreen>
                         return Transform.scale(
                           scale: value,
                           child: Container(
-                            padding: const EdgeInsets.all(20),
+                            padding: EdgeInsets.all(getResponsiveSpacing(20)),
                             decoration: BoxDecoration(
                               color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
                               shape: BoxShape.circle,
@@ -346,12 +340,13 @@ class _NotificationsScreenState extends State<NotificationsScreen>
                         );
                       },
                     ),
-                    const SizedBox(height: 24),
+                    SizedBox(height: getResponsiveSpacing(24)),
                     FadeTransition(
                       opacity: _fadeAnimation,
                       child: Text(
                         'Se încarcă notificările...',
-                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        style: ResponsiveTextStyles.getResponsiveTitleStyle(
+                          fontSize: 16,
                           color: Theme.of(context).colorScheme.primary,
                         ),
                       ),
@@ -371,37 +366,39 @@ class _NotificationsScreenState extends State<NotificationsScreen>
                             return Transform.scale(
                               scale: value,
                               child: Container(
-                                padding: const EdgeInsets.all(20),
+                                padding: EdgeInsets.all(getResponsiveSpacing(20)),
                                 decoration: BoxDecoration(
                                   color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
                                   shape: BoxShape.circle,
                                 ),
                                 child: Icon(
                                   Icons.notifications_none_rounded,
-                                  size: 48,
+                                  size: getResponsiveIconSize(48),
                                   color: Theme.of(context).colorScheme.primary,
                                 ),
                               ),
                             );
                           },
                         ),
-                        const SizedBox(height: 16),
+                        SizedBox(height: getResponsiveSpacing(16)),
                         FadeTransition(
                           opacity: _fadeAnimation,
                           child: Text(
                             'Nu ai notificări',
-                            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                            style: ResponsiveTextStyles.getResponsiveTitleStyle(
+                              fontSize: 18,
                               color: Theme.of(context).colorScheme.primary.withOpacity(0.7),
                             ),
                             textAlign: TextAlign.center,
                           ),
                         ),
-                        const SizedBox(height: 8),
+                        SizedBox(height: getResponsiveSpacing(8)),
                         FadeTransition(
                           opacity: _fadeAnimation,
                           child: Text(
                             'Toate notificările tale vor apărea aici',
-                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            style: ResponsiveTextStyles.getResponsiveBodyStyle(
+                              fontSize: 14,
                               color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
                             ),
                             textAlign: TextAlign.center,
@@ -415,7 +412,7 @@ class _NotificationsScreenState extends State<NotificationsScreen>
                     child: SlideTransition(
                       position: _slideAnimation,
                       child: ListView.builder(
-                        padding: const EdgeInsets.all(16.0),
+                        padding: getResponsivePadding(all: 16.0),
                         itemCount: _notificationService.notifications.length,
                         itemBuilder: (context, index) {
                           final notification = _notificationService.notifications[index];
@@ -428,7 +425,7 @@ class _NotificationsScreenState extends State<NotificationsScreen>
                             tween: Tween(begin: 0.0, end: 1.0),
                             builder: (context, value, child) {
                               return Transform.translate(
-                                offset: Offset(0, 20 * (1 - value)),
+                                offset: Offset(0, getResponsiveSpacing(20) * (1 - value)),
                                 child: Opacity(
                                   opacity: value,
                                   child: _buildNotificationCard(notification, isRead, type, content),
@@ -446,7 +443,7 @@ class _NotificationsScreenState extends State<NotificationsScreen>
 
   Widget _buildNotificationCard(Map<String, dynamic> notification, bool isRead, String type, String content) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 12),
+      margin: EdgeInsets.only(bottom: getResponsiveSpacing(12)),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: isRead 
@@ -458,14 +455,14 @@ class _NotificationsScreenState extends State<NotificationsScreen>
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: getResponsiveBorderRadius(16),
         boxShadow: [
           BoxShadow(
             color: isRead 
                 ? Theme.of(context).colorScheme.shadow.withOpacity(0.05)
                 : Theme.of(context).colorScheme.primary.withOpacity(0.15),
-            blurRadius: isRead ? 8 : 12,
-            offset: const Offset(0, 4),
+            blurRadius: isRead ? getResponsiveSpacing(8) : getResponsiveSpacing(12),
+            offset: Offset(0, getResponsiveSpacing(4)),
             spreadRadius: isRead ? 0 : 2,
           ),
         ],
@@ -477,15 +474,15 @@ class _NotificationsScreenState extends State<NotificationsScreen>
         ),
       ),
       child: InkWell(
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: getResponsiveBorderRadius(16),
         onTap: () => _showNotificationDetails(notification),
         child: Padding(
-          padding: const EdgeInsets.all(16),
+          padding: getResponsivePadding(all: 16),
           child: Row(
             children: [
               // Notification icon
               Container(
-                padding: const EdgeInsets.all(12),
+                padding: EdgeInsets.all(getResponsiveSpacing(12)),
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     colors: [
@@ -493,15 +490,15 @@ class _NotificationsScreenState extends State<NotificationsScreen>
                       _notificationService.getNotificationColor(type).withOpacity(0.05),
                     ],
                   ),
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: getResponsiveBorderRadius(12),
                 ),
                 child: Icon(
                   _notificationService.getNotificationIcon(type),
                   color: _notificationService.getNotificationColor(type),
-                  size: 24,
+                  size: getResponsiveIconSize(24),
                 ),
               ),
-              const SizedBox(width: 16),
+              SizedBox(width: getResponsiveSpacing(16)),
               // Notification content
               Expanded(
                 child: Column(
@@ -512,7 +509,8 @@ class _NotificationsScreenState extends State<NotificationsScreen>
                         Expanded(
                           child: Text(
                             _getNotificationTitle(type),
-                            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                            style: ResponsiveTextStyles.getResponsiveTitleStyle(
+                              fontSize: 16,
                               fontWeight: isRead ? FontWeight.w600 : FontWeight.w700,
                               color: isRead ? Theme.of(context).colorScheme.onSurface.withOpacity(0.7) : Theme.of(context).colorScheme.onSurface,
                             ),
@@ -520,15 +518,15 @@ class _NotificationsScreenState extends State<NotificationsScreen>
                         ),
                         if (!isRead)
                           Container(
-                            width: 12,
-                            height: 12,
+                            width: getResponsiveSpacing(12),
+                            height: getResponsiveSpacing(12),
                             decoration: BoxDecoration(
                               color: Colors.blue,
                               shape: BoxShape.circle,
                               boxShadow: [
                                 BoxShadow(
                                   color: Colors.blue.withOpacity(0.3),
-                                  blurRadius: 4,
+                                  blurRadius: getResponsiveSpacing(4),
                                   spreadRadius: 1,
                                 ),
                               ],
@@ -536,49 +534,54 @@ class _NotificationsScreenState extends State<NotificationsScreen>
                           ),
                       ],
                     ),
-                    const SizedBox(height: 4),
+                    SizedBox(height: getResponsiveSpacing(4)),
                     Text(
                       content,
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      style: ResponsiveTextStyles.getResponsiveBodyStyle(
+                        fontSize: 14,
                         color: isRead ? Theme.of(context).colorScheme.onSurface.withOpacity(0.6) : Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
                         fontWeight: isRead ? FontWeight.w400 : FontWeight.w500,
                       ),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
-                    const SizedBox(height: 8),
+                    SizedBox(height: getResponsiveSpacing(8)),
                     Row(
                       children: [
                         Icon(
                           Icons.access_time_rounded,
-                          size: 14,
+                          size: getResponsiveIconSize(14),
                           color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
                         ),
-                        const SizedBox(width: 4),
+                        SizedBox(width: getResponsiveSpacing(4)),
                         Text(
                           _formatTimestamp(notification['timestamp']),
-                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          style: ResponsiveTextStyles.getResponsiveTextStyle(
+                            fontSize: 12,
                             color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
                             fontWeight: FontWeight.w500,
                           ),
                         ),
                         const Spacer(),
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                          padding: EdgeInsets.symmetric(
+                            horizontal: getResponsiveSpacing(8), 
+                            vertical: getResponsiveSpacing(4)
+                          ),
                           decoration: BoxDecoration(
                             color: isRead 
                                 ? Theme.of(context).colorScheme.surfaceVariant
                                 : Theme.of(context).colorScheme.primary.withOpacity(0.2),
-                            borderRadius: BorderRadius.circular(8),
+                            borderRadius: getResponsiveBorderRadius(8),
                           ),
                           child: Text(
                             isRead ? 'Citită' : 'Nouă',
-                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            style: ResponsiveTextStyles.getResponsiveTextStyle(
+                              fontSize: 10,
                               color: isRead 
                                   ? Theme.of(context).colorScheme.onSurfaceVariant
                                   : Theme.of(context).colorScheme.primary,
                               fontWeight: FontWeight.w600,
-                              fontSize: 10,
                             ),
                           ),
                         ),
@@ -587,10 +590,10 @@ class _NotificationsScreenState extends State<NotificationsScreen>
                   ],
                 ),
               ),
-              const SizedBox(width: 8),
+              SizedBox(width: getResponsiveSpacing(8)),
               // Arrow icon
               Container(
-                padding: const EdgeInsets.all(8),
+                padding: EdgeInsets.all(getResponsiveSpacing(8)),
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     colors: [
@@ -598,12 +601,12 @@ class _NotificationsScreenState extends State<NotificationsScreen>
                       Theme.of(context).colorScheme.primary.withOpacity(0.05),
                     ],
                   ),
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: getResponsiveBorderRadius(8),
                 ),
                 child: Icon(
                   Icons.arrow_forward_ios_rounded,
                   color: Theme.of(context).colorScheme.primary,
-                  size: 16,
+                  size: getResponsiveIconSize(16),
                 ),
               ),
             ],

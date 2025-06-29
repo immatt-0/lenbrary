@@ -5,7 +5,9 @@ from .views import list_exam_models, create_exam_model, delete_exam_model
 urlpatterns = [
     path('books', views.books, name='books'),
     path('book', views.book, name='book'),
+    path('book/<int:book_id>', views.update_book_details, name='update_book_details'),
     path('thumbnails', views.upload_thumbnail, name='upload_thumbnail'),
+    path('upload-pdf', views.upload_pdf, name='upload_pdf'),
     path('request-book', views.request_book, name='request_book'),
     path('my-books', views.my_books, name='my_books'),
     path('return-book/<int:borrowing_id>', views.return_book, name='return_book'),
@@ -51,4 +53,5 @@ urlpatterns = [
     path('invitation-codes', views.list_invitation_codes, name='list_invitation_codes'),
     path('invitation-codes/<int:code_id>/delete', views.delete_invitation_code, name='delete_invitation_code'),
     path('invitation-codes/cleanup', views.cleanup_expired_invitations, name='cleanup_expired_invitations'),
+    path('cancel-request/<int:borrowing_id>/', views.cancel_request, name='cancel_request'),
 ]

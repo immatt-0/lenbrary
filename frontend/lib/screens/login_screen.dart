@@ -2,6 +2,10 @@ import 'package:flutter/material.dart';
 import '../services/api_service.dart';
 import '../providers/theme_provider.dart';
 import 'package:provider/provider.dart';
+import '../services/notification_service.dart';
+import '../services/responsive_service.dart';
+import '../widgets/responsive_button.dart';
+import '../widgets/responsive_text_field.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -10,7 +14,7 @@ class LoginScreen extends StatefulWidget {
   State<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _LoginScreenState extends State<LoginScreen> with ResponsiveWidget {
   final _formKey = GlobalKey<FormState>();
   final _loginInputController = TextEditingController();
   final _passwordController = TextEditingController();
@@ -59,11 +63,16 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    ResponsiveService.init(context);
+    
     return Scaffold(
       floatingActionButton: Consumer<ThemeProvider>(
         builder: (context, themeProvider, child) {
           return Padding(
-            padding: const EdgeInsets.only(top: 16.0, right: 8.0),
+            padding: EdgeInsets.only(
+              top: getResponsiveSpacing(16.0), 
+              right: getResponsiveSpacing(8.0)
+            ),
             child: FloatingActionButton(
               onPressed: () => themeProvider.toggleTheme(),
               backgroundColor: Theme.of(context).colorScheme.primary,
@@ -71,7 +80,7 @@ class _LoginScreenState extends State<LoginScreen> {
               elevation: 8,
               child: Icon(
                 themeProvider.isDarkMode ? Icons.light_mode : Icons.dark_mode,
-                size: 24,
+                size: getResponsiveIconSize(24),
               ),
             ),
           );
@@ -93,12 +102,12 @@ class _LoginScreenState extends State<LoginScreen> {
           child: Center(
             child: SingleChildScrollView(
               child: Padding(
-                padding: const EdgeInsets.all(24.0),
+                padding: getResponsivePadding(all: 24.0),
                 child: Card(
                   child: ConstrainedBox(
-                    constraints: const BoxConstraints(maxWidth: 400),
+                    constraints: BoxConstraints(maxWidth: ResponsiveService.cardMaxWidth),
                     child: Padding(
-                      padding: const EdgeInsets.all(32.0),
+                      padding: getResponsivePadding(all: 32.0),
                       child: Form(
                         key: _formKey,
                         child: Column(
@@ -108,32 +117,30 @@ class _LoginScreenState extends State<LoginScreen> {
                             // Logo
                             Icon(
                               Icons.menu_book_rounded,
-                              size: 64,
+                              size: getResponsiveIconSize(64),
                               color: Theme.of(context).colorScheme.primary,
                             ),
-                            const SizedBox(height: 16.0),
+                            SizedBox(height: getResponsiveSpacing(16.0)),
 
                             // App title
-                            const Text(
+                            Text(
                               'Lenbrary',
-                              style: TextStyle(
+                              style: ResponsiveTextStyles.getResponsiveTitleStyle(
                                 fontSize: 32.0,
                                 fontWeight: FontWeight.w700,
-                                letterSpacing: -0.5,
                               ),
                               textAlign: TextAlign.center,
                             ),
-                            const SizedBox(height: 32.0),
+                            SizedBox(height: getResponsiveSpacing(32.0)),
 
                             // Username or Email field
-                            TextFormField(
+                            ResponsiveTextField(
                               controller: _loginInputController,
-                              decoration: const InputDecoration(
-                                labelText: 'Username sau Email',
-                                hintText:
-                                    'nume.prenume sau nume.prenume@nlenau.ro',
-                                prefixIcon: Icon(Icons.person_outline),
-                              ),
+                              labelText: 'Username sau Email',
+                              hintText: ResponsiveService.isSmallPhone 
+                                  ? 'nume.prenume'
+                                  : 'nume.prenume sau nume.prenume@nlenau.ro',
+                              prefixIcon: Icon(Icons.person_outline),
                               keyboardType: TextInputType.text,
                               validator: (value) {
                                 if (value == null || value.isEmpty) {
@@ -142,28 +149,24 @@ class _LoginScreenState extends State<LoginScreen> {
                                 return null;
                               },
                             ),
-                            const SizedBox(height: 16.0),
+                            SizedBox(height: getResponsiveSpacing(16.0)),
 
                             // Password field
-                            TextFormField(
+                            ResponsiveTextField(
                               controller: _passwordController,
-                              decoration: InputDecoration(
-                                labelText: 'Parolă',
-                                prefixIcon: const Icon(Icons.lock_outline),
-                                suffixIcon: IconButton(
-                                  icon: Icon(
-                                    _obscurePassword
-                                        ? Icons.visibility_outlined
-                                        : Icons.visibility_off_outlined,
-                                    color:
-                                        Theme.of(context).colorScheme.primary,
-                                  ),
-                                  onPressed: () {
-                                    setState(() {
-                                      _obscurePassword = !_obscurePassword;
-                                    });
-                                  },
+                              labelText: 'Parolă',
+                              prefixIcon: Icon(Icons.lock_outline),
+                              suffixIcon: IconButton(
+                                icon: Icon(
+                                  _obscurePassword
+                                      ? Icons.visibility_outlined
+                                      : Icons.visibility_off_outlined,
                                 ),
+                                onPressed: () {
+                                  setState(() {
+                                    _obscurePassword = !_obscurePassword;
+                                  });
+                                },
                               ),
                               obscureText: _obscurePassword,
                               validator: (value) {
@@ -173,22 +176,23 @@ class _LoginScreenState extends State<LoginScreen> {
                                 return null;
                               },
                             ),
-                            const SizedBox(height: 24.0),
+                            SizedBox(height: getResponsiveSpacing(24.0)),
 
                             // Error message
                             if (_errorMessage != null)
                               Container(
-                                padding: const EdgeInsets.all(12.0),
+                                padding: getResponsivePadding(all: 12.0),
                                 decoration: BoxDecoration(
                                   color: Theme.of(context)
                                       .colorScheme
                                       .error
                                       .withOpacity(0.1),
-                                  borderRadius: BorderRadius.circular(8),
+                                  borderRadius: getResponsiveBorderRadius(8),
                                 ),
                                 child: Text(
                                   _errorMessage!,
-                                  style: TextStyle(
+                                  style: ResponsiveTextStyles.getResponsiveTextStyle(
+                                    fontSize: 14,
                                     color: Theme.of(context).colorScheme.error,
                                   ),
                                   textAlign: TextAlign.center,
@@ -196,37 +200,28 @@ class _LoginScreenState extends State<LoginScreen> {
                               ),
 
                             if (_errorMessage != null)
-                              const SizedBox(height: 16.0),
+                              SizedBox(height: getResponsiveSpacing(16.0)),
 
                             // Login button
-                            ElevatedButton(
+                            ResponsiveButton(
+                              text: 'Autentificare',
                               onPressed: _isLoading ? null : _login,
-                              child: Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 12.0),
-                                child: _isLoading
-                                    ? const SizedBox(
-                                        height: 20.0,
-                                        width: 20.0,
-                                        child: CircularProgressIndicator(
-                                          strokeWidth: 2.0,
-                                          color: Colors.white,
-                                        ),
-                                      )
-                                    : const Text(
-                                        'Autentificare',
-                                        style: TextStyle(fontSize: 16),
-                                      ),
-                              ),
+                              isLoading: _isLoading,
                             ),
-                            const SizedBox(height: 16.0),
+                            SizedBox(height: getResponsiveSpacing(16.0)),
 
                             // Register link
                             TextButton(
                               onPressed: () {
                                 Navigator.pushNamed(context, '/register');
                               },
-                              child: const Text('Nu ai cont? Înregistrează-te'),
+                              child: Text(
+                                'Nu ai cont? Înregistrează-te',
+                                style: ResponsiveTextStyles.getResponsiveTextStyle(
+                                  fontSize: 14,
+                                  color: Theme.of(context).colorScheme.primary,
+                                ),
+                              ),
                             ),
                           ],
                         ),

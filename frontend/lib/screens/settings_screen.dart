@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import '../providers/theme_provider.dart';
+import '../services/api_service.dart';
 import '../services/notification_service.dart';
+import '../services/responsive_service.dart';
+import '../widgets/responsive_button.dart';
+import '../widgets/responsive_text_field.dart';
+import '../providers/theme_provider.dart';
+import 'package:provider/provider.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({Key? key}) : super(key: key);
@@ -10,8 +14,8 @@ class SettingsScreen extends StatefulWidget {
   State<SettingsScreen> createState() => _SettingsScreenState();
 }
 
-class _SettingsScreenState extends State<SettingsScreen>
-    with TickerProviderStateMixin {
+class _SettingsScreenState extends State<SettingsScreen> 
+    with TickerProviderStateMixin, ResponsiveWidget {
   bool _isLoading = true;
   
   // Animation controllers
@@ -73,13 +77,21 @@ class _SettingsScreenState extends State<SettingsScreen>
 
   @override
   Widget build(BuildContext context) {
+    ResponsiveService.init(context);
+    
     if (_isLoading) {
       return Scaffold(
         appBar: AppBar(
-          title: const Text('Setări'),
+          title: Text(
+            'Setări',
+            style: ResponsiveTextStyles.getResponsiveTitleStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
           elevation: 0,
         ),
-        body: const Center(
+        body: Center(
           child: CircularProgressIndicator(),
         ),
       );
@@ -96,7 +108,7 @@ class _SettingsScreenState extends State<SettingsScreen>
             mainAxisSize: MainAxisSize.min,
             children: [
               Container(
-                padding: const EdgeInsets.all(8),
+                padding: EdgeInsets.all(getResponsiveSpacing(8)),
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     colors: [
@@ -104,28 +116,27 @@ class _SettingsScreenState extends State<SettingsScreen>
                       Theme.of(context).colorScheme.primary.withOpacity(0.8),
                     ],
                   ),
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: getResponsiveBorderRadius(12),
                   boxShadow: [
                     BoxShadow(
                       color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
-                      blurRadius: 8,
-                      offset: const Offset(0, 2),
+                      blurRadius: getResponsiveSpacing(8),
+                      offset: Offset(0, getResponsiveSpacing(2)),
                     ),
                   ],
                 ),
                 child: Icon(
                   Icons.settings_rounded,
-                  size: 28,
+                  size: getResponsiveIconSize(28),
                   color: Theme.of(context).colorScheme.onPrimary,
                 ),
               ),
-              const SizedBox(width: 12),
-              const Text(
+              SizedBox(width: getResponsiveSpacing(12)),
+              Text(
                 'Setări',
-                style: TextStyle(
-                  fontSize: 26.0,
+                style: ResponsiveTextStyles.getResponsiveTitleStyle(
+                  fontSize: 26,
                   fontWeight: FontWeight.w800,
-                  letterSpacing: -0.5,
                 ),
               ),
             ],
@@ -134,14 +145,15 @@ class _SettingsScreenState extends State<SettingsScreen>
         centerTitle: true,
         leading: IconButton(
           icon: Container(
-            padding: const EdgeInsets.all(8),
+            padding: EdgeInsets.all(getResponsiveSpacing(8)),
             decoration: BoxDecoration(
               color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: getResponsiveBorderRadius(8),
             ),
             child: Icon(
               Icons.arrow_back_rounded,
               color: Theme.of(context).colorScheme.primary,
+              size: getResponsiveIconSize(24),
             ),
           ),
           onPressed: () => Navigator.pop(context),
@@ -165,21 +177,21 @@ class _SettingsScreenState extends State<SettingsScreen>
           child: SlideTransition(
             position: _slideAnimation,
             child: SingleChildScrollView(
-              padding: const EdgeInsets.all(24.0),
+              padding: getResponsivePadding(all: 24.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // App Settings Section
                   _buildSectionHeader('Setări aplicație', Icons.app_settings_alt_rounded),
-                  const SizedBox(height: 16.0),
+                  SizedBox(height: getResponsiveSpacing(16.0)),
                   
                   // Theme Toggle Card
                   _buildThemeToggleCard(),
-                  const SizedBox(height: 32.0),
+                  SizedBox(height: getResponsiveSpacing(32.0)),
                   
                   // About Section
                   _buildSectionHeader('Despre aplicație', Icons.info_rounded),
-                  const SizedBox(height: 16.0),
+                  SizedBox(height: getResponsiveSpacing(16.0)),
                   
                   // App Info Card
                   _buildAppInfoCard(),
@@ -196,21 +208,22 @@ class _SettingsScreenState extends State<SettingsScreen>
     return Row(
       children: [
         Container(
-          padding: const EdgeInsets.all(8),
+          padding: EdgeInsets.all(getResponsiveSpacing(8)),
           decoration: BoxDecoration(
             color: Theme.of(context).colorScheme.primary.withOpacity(0.05),
-            borderRadius: BorderRadius.circular(8),
+            borderRadius: getResponsiveBorderRadius(8),
           ),
           child: Icon(
             icon,
-            size: 20,
+            size: getResponsiveIconSize(20),
             color: Theme.of(context).colorScheme.primary.withOpacity(0.7),
           ),
         ),
-        const SizedBox(width: 12),
+        SizedBox(width: getResponsiveSpacing(12)),
         Text(
           title,
-          style: Theme.of(context).textTheme.titleMedium?.copyWith(
+          style: ResponsiveTextStyles.getResponsiveTitleStyle(
+            fontSize: 18,
             fontWeight: FontWeight.w600,
             color: Theme.of(context).colorScheme.onSurface,
           ),
@@ -234,18 +247,18 @@ class _SettingsScreenState extends State<SettingsScreen>
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: getResponsiveBorderRadius(20),
             boxShadow: [
               BoxShadow(
                 color: Theme.of(context).colorScheme.primary.withOpacity(0.06),
-                blurRadius: 24,
-                offset: const Offset(0, 10),
+                blurRadius: getResponsiveSpacing(24),
+                offset: Offset(0, getResponsiveSpacing(10)),
                 spreadRadius: 3,
               ),
               BoxShadow(
                 color: Colors.black.withOpacity(0.08),
-                blurRadius: 12,
-                offset: const Offset(0, 6),
+                blurRadius: getResponsiveSpacing(12),
+                offset: Offset(0, getResponsiveSpacing(6)),
               ),
             ],
             border: Border.all(
@@ -254,11 +267,11 @@ class _SettingsScreenState extends State<SettingsScreen>
             ),
           ),
           child: Padding(
-            padding: const EdgeInsets.all(24.0),
+            padding: getResponsivePadding(all: 24.0),
             child: Row(
               children: [
                 Container(
-                  padding: const EdgeInsets.all(12),
+                  padding: EdgeInsets.all(getResponsiveSpacing(12)),
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
                       colors: [
@@ -266,38 +279,39 @@ class _SettingsScreenState extends State<SettingsScreen>
                         isDarkMode ? Colors.purple[400]! : Colors.orange[400]!,
                       ],
                     ),
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: getResponsiveBorderRadius(12),
                     boxShadow: [
                       BoxShadow(
                         color: (isDarkMode ? Colors.purple : Colors.orange).withOpacity(0.3),
-                        blurRadius: 8,
-                        offset: const Offset(0, 2),
+                        blurRadius: getResponsiveSpacing(8),
+                        offset: Offset(0, getResponsiveSpacing(2)),
                       ),
                     ],
                   ),
                   child: Icon(
                     isDarkMode ? Icons.dark_mode_rounded : Icons.light_mode_rounded,
-                    size: 24,
+                    size: getResponsiveIconSize(24),
                     color: Colors.white,
                   ),
                 ),
-                const SizedBox(width: 16.0),
+                SizedBox(width: getResponsiveSpacing(16.0)),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
                         'Temă aplicație',
-                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        style: ResponsiveTextStyles.getResponsiveTitleStyle(
+                          fontSize: 18,
                           fontWeight: FontWeight.w700,
                           color: Theme.of(context).colorScheme.onSurface,
-                          letterSpacing: -0.2,
                         ),
                       ),
-                      const SizedBox(height: 4),
+                      SizedBox(height: getResponsiveSpacing(4)),
                       Text(
                         isDarkMode ? 'Temă întunecată activată' : 'Temă deschisă activată',
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        style: ResponsiveTextStyles.getResponsiveBodyStyle(
+                          fontSize: 14,
                           color: Theme.of(context).colorScheme.onSurface.withOpacity(0.8),
                           fontWeight: FontWeight.w500,
                         ),
@@ -338,18 +352,18 @@ class _SettingsScreenState extends State<SettingsScreen>
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: getResponsiveBorderRadius(20),
         boxShadow: [
           BoxShadow(
             color: Theme.of(context).colorScheme.primary.withOpacity(0.06),
-            blurRadius: 24,
-            offset: const Offset(0, 10),
+            blurRadius: getResponsiveSpacing(24),
+            offset: Offset(0, getResponsiveSpacing(10)),
             spreadRadius: 3,
           ),
           BoxShadow(
             color: Colors.black.withOpacity(0.08),
-            blurRadius: 12,
-            offset: const Offset(0, 6),
+            blurRadius: getResponsiveSpacing(12),
+            offset: Offset(0, getResponsiveSpacing(6)),
           ),
         ],
         border: Border.all(
@@ -358,14 +372,14 @@ class _SettingsScreenState extends State<SettingsScreen>
         ),
       ),
       child: Padding(
-        padding: const EdgeInsets.all(24.0),
+        padding: getResponsivePadding(all: 24.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
               children: [
                 Container(
-                  padding: const EdgeInsets.all(12),
+                  padding: EdgeInsets.all(getResponsiveSpacing(12)),
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
                       colors: [
@@ -373,37 +387,38 @@ class _SettingsScreenState extends State<SettingsScreen>
                         Theme.of(context).colorScheme.primary.withOpacity(0.8),
                       ],
                     ),
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: getResponsiveBorderRadius(12),
                     boxShadow: [
                       BoxShadow(
                         color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
-                        blurRadius: 8,
-                        offset: const Offset(0, 2),
+                        blurRadius: getResponsiveSpacing(8),
+                        offset: Offset(0, getResponsiveSpacing(2)),
                       ),
                     ],
                   ),
                   child: Icon(
                     Icons.menu_book_rounded,
-                    size: 24,
+                    size: getResponsiveIconSize(24),
                     color: Colors.white,
                   ),
                 ),
-                const SizedBox(width: 16.0),
+                SizedBox(width: getResponsiveSpacing(16.0)),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
                         'Lenbrary',
-                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                        style: ResponsiveTextStyles.getResponsiveTitleStyle(
+                          fontSize: 22,
                           fontWeight: FontWeight.w700,
                           color: Theme.of(context).colorScheme.onSurface,
-                          letterSpacing: -0.5,
                         ),
                       ),
                       Text(
                         'Sistem de gestionare bibliotecă',
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        style: ResponsiveTextStyles.getResponsiveBodyStyle(
+                          fontSize: 14,
                           color: Theme.of(context).colorScheme.onSurface.withOpacity(0.8),
                           fontWeight: FontWeight.w500,
                         ),
@@ -413,11 +428,11 @@ class _SettingsScreenState extends State<SettingsScreen>
                 ),
               ],
             ),
-            const SizedBox(height: 20),
+            SizedBox(height: getResponsiveSpacing(20)),
             _buildInfoRow('Versiune', '0.1.0'),
-            const SizedBox(height: 12),
+            SizedBox(height: getResponsiveSpacing(12)),
             _buildInfoRow('Dezvoltat de', 'Anghel Filip Neo & Burghiu Matei'),
-            const SizedBox(height: 12),
+            SizedBox(height: getResponsiveSpacing(12)),
             _buildInfoRow('An', '2024'),
           ],
         ),
@@ -431,14 +446,16 @@ class _SettingsScreenState extends State<SettingsScreen>
       children: [
         Text(
           label,
-          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+          style: ResponsiveTextStyles.getResponsiveBodyStyle(
+            fontSize: 14,
             color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
             fontWeight: FontWeight.w500,
           ),
         ),
         Text(
           value,
-          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+          style: ResponsiveTextStyles.getResponsiveBodyStyle(
+            fontSize: 14,
             color: Theme.of(context).colorScheme.onSurface,
             fontWeight: FontWeight.w600,
           ),

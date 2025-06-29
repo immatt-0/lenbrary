@@ -21,6 +21,7 @@ from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import authenticate
+from django.contrib.auth import get_user_model
 
 from .models import Book, Student, BookBorrowing, Message, Notification, ExamModel, EmailVerification, InvitationCode
 from .serializers import (
@@ -91,10 +92,23 @@ def register_user(request):
 def books(request):
     """Get all books or search books"""
     query = request.GET.get('search', '')
+    category = request.GET.get('category', '')
+    
+    books = Book.objects.all()
+    
     if query:
-        books = Book.objects.filter(name__icontains=query) | Book.objects.filter(author__icontains=query)
-    else:
-        books = Book.objects.all()
+        books = books.filter(
+            models.Q(name__icontains=query) | 
+            models.Q(author__icontains=query)
+        )
+    
+    if category == 'carti':
+        # Show all books with type 'carte'
+        books = books.filter(type='carte')
+    elif category == 'manuale':
+        # Show only books with type 'manual'
+        books = books.filter(type='manual')
+    
     serializer = BookSerializer(books, many=True)
     return Response(serializer.data)
 
@@ -115,7 +129,15 @@ def book(request):
         if not request.user.groups.filter(name='Librarians').exists():
             return Response({'error': 'Only librarians can add books'}, status=status.HTTP_403_FORBIDDEN)
             
-        serializer = BookSerializer(data=request.data)
+        # Ensure UTF-8 encoding for text fields
+        data = request.data.copy()
+        for field in ['name', 'author', 'category', 'description']:
+            if field in data and data[field]:
+                # Ensure the field is properly encoded as UTF-8
+                if isinstance(data[field], str):
+                    data[field] = data[field].encode('utf-8').decode('utf-8')
+            
+        serializer = BookSerializer(data=data)
         if serializer.is_valid():
             new_book = serializer.save()
             
@@ -158,6 +180,33 @@ def upload_thumbnail(request):
     saved_path = default_storage.save(path, ContentFile(file.read()))
     url = request.build_absolute_uri(settings.MEDIA_URL + saved_path)
     return Response({'thumbnail_url': url}, status=status.HTTP_201_CREATED)
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+@parser_classes([MultiPartParser])
+def upload_pdf(request):
+    """Upload PDF file for books/manuals"""
+    file = request.FILES.get('pdf')
+    if not file:
+        return Response({'error': 'No file uploaded'}, status=status.HTTP_400_BAD_REQUEST)
+
+    # Validate file type - only PDF
+    if not file.name.lower().endswith('.pdf'):
+        return Response({
+            'error': 'Only PDF files are allowed'
+        }, status=status.HTTP_400_BAD_REQUEST)
+    
+    # Validate file size (limit to 100MB for PDFs)
+    if file.size > 100 * 1024 * 1024:  # 100MB in bytes
+        return Response({
+            'error': 'File size must be less than 100MB'
+        }, status=status.HTTP_400_BAD_REQUEST)
+
+    filename = f"{uuid.uuid4().hex}_{file.name}"
+    path = os.path.join('books', filename)
+    saved_path = default_storage.save(path, ContentFile(file.read()))
+    url = request.build_absolute_uri(settings.MEDIA_URL + saved_path)
+    return Response({'pdf_url': url}, status=status.HTTP_201_CREATED)
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
@@ -1355,3 +1404,101 @@ def mark_all_notifications_read(request):
         Notification.objects.filter(user=user, for_librarians=False, is_read=False).update(is_read=True)
     
     return Response({'success': True})
+
+@api_view(['PUT'])
+@permission_classes([IsAuthenticated])
+@parser_classes([JSONParser])
+def update_book_details(request, book_id):
+    """Update book details (for librarians)"""
+    # Check if user is librarian
+    if not request.user.groups.filter(name='Librarians').exists():
+        return Response({'error': 'Only librarians can update books'}, status=status.HTTP_403_FORBIDDEN)
+    
+    book = get_object_or_404(Book, id=book_id)
+    
+    # Ensure UTF-8 encoding for text fields
+    data = request.data.copy()
+    for field in ['name', 'author', 'category', 'description']:
+        if field in data and data[field]:
+            # Ensure the field is properly encoded as UTF-8
+            if isinstance(data[field], str):
+                data[field] = data[field].encode('utf-8').decode('utf-8')
+    
+    # Update only the fields that are provided
+    if 'name' in data:
+        book.name = data['name']
+    if 'author' in data:
+        book.author = data['author']
+    if 'category' in data:
+        book.category = data['category']
+    if 'type' in data:
+        book.type = data['type']
+    if 'description' in data:
+        book.description = data['description']
+    if 'publication_year' in data:
+        book.publication_year = data['publication_year']
+    if 'thumbnail_url' in data:
+        book.thumbnail_url = data['thumbnail_url']
+    if 'stock' in data:
+        book.stock = data['stock']
+    if 'inventory' in data:
+        book.inventory = data['inventory']
+    if 'book_class' in data:
+        book.book_class = data['book_class']
+    if 'pdf_file' in data:
+        book.pdf_file = data['pdf_file']
+    
+    book.save()
+    
+    # Create notification for librarians
+    create_librarian_notification(
+        notification_type='book_updated',
+        message=f"Cartea '{book.name}' de {book.author} a fost actualizată",
+        book=book,
+        created_by=request.user
+    )
+    
+    serializer = BookSerializer(book)
+    return Response(serializer.data, status=status.HTTP_200_OK)
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+@parser_classes([JSONParser])
+def cancel_request(request, borrowing_id):
+    """Allow a student to cancel their own book request (IN_ASTEPTARE or APROBAT)"""
+    try:
+        student = request.user.student
+    except Exception:
+        return Response({'error': 'User is not a student'}, status=status.HTTP_403_FORBIDDEN)
+
+    borrowing = get_object_or_404(BookBorrowing, id=borrowing_id, student=student)
+
+    if borrowing.status not in ['IN_ASTEPTARE', 'APROBAT']:
+        return Response({'error': f'Cannot cancel request with status: {borrowing.status}'}, status=status.HTTP_400_BAD_REQUEST)
+
+    # Optional message
+    message = request.data.get('message', '').strip()
+    if message:
+        librarian = User.objects.filter(groups__name='Librarians').first()
+        if librarian:
+            Message.objects.create(
+                sender=request.user,
+                recipient=librarian,
+                borrowing=borrowing,
+                content=f'Mesaj la anulare: {message}'
+            )
+
+    borrowing.status = 'ANULATA'
+    borrowing.save()
+
+    # Notificare pentru student
+    create_user_notification(
+        user=request.user,
+        notification_type='request_cancelled',
+        message=f'Cererea ta pentru "{borrowing.book.name}" a fost anulată.',
+        book=borrowing.book,
+        borrowing=borrowing
+    )
+
+    serializer = BookBorrowingSerializer(borrowing)
+    return Response({'success': True, 'borrowing': serializer.data})

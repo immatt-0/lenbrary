@@ -6,6 +6,25 @@ from datetime import timedelta
 from .utils import get_display_name
 
 class Book(models.Model):
+    TYPE_CHOICES = [
+        ('carte', 'Carte'),
+        ('manual', 'Manual'),
+    ]
+    
+    # Class choices for manuals (gimnaziu and liceu)
+    CLASS_CHOICES = [
+        # Gimnaziu classes
+        ('V', 'V'),
+        ('VI', 'VI'),
+        ('VII', 'VII'),
+        ('VIII', 'VIII'),
+        # Liceu classes
+        ('IX', 'IX'),
+        ('X', 'X'),
+        ('XI', 'XI'),
+        ('XII', 'XII'),
+    ]
+    
     name = models.CharField(max_length=255)
     inventory = models.IntegerField()
     thumbnail_url = models.CharField(max_length=500, blank=True, null=True)
@@ -13,7 +32,10 @@ class Book(models.Model):
     stock = models.IntegerField()
     description = models.TextField(blank=True, null=True)
     category = models.CharField(max_length=100, blank=True, null=True)
+    type = models.CharField(max_length=10, choices=TYPE_CHOICES, default='carte')
     publication_year = models.IntegerField(blank=True, null=True)
+    book_class = models.CharField(max_length=10, choices=CLASS_CHOICES, blank=True, null=True, verbose_name='Clasă')
+    pdf_file = models.FileField(upload_to='books/', blank=True, null=True)  # PDF file for manuals
 
     def __str__(self):
         return self.name
@@ -68,6 +90,7 @@ class BookBorrowing(models.Model):
         ('RETURNAT', 'Returnat'),
         ('INTARZIAT', 'Întârziat'),
         ('RESPINS', 'Respins'),
+        ('ANULATA', 'Anulată'),  # New status for cancelled by user
     ]
     
     # Map old status values to new ones for backwards compatibility

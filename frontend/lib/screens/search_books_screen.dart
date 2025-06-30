@@ -53,13 +53,12 @@ class _SearchBooksScreenState extends State<SearchBooksScreen>
       setState(() {
         _selectedCategory = _tabController.index == 0 ? 'carte' : 'manual';
         _isLoading = true;
-      });
-      
-      // Clear search when changing tabs
-      _searchController.clear();
-      setState(() {
+        // Clear search when changing tabs
         _searchQuery = '';
       });
+      
+      // Clear search controller
+      _searchController.clear();
       
       // Apply filtering for the new tab
       _filterBooks();
@@ -71,57 +70,81 @@ class _SearchBooksScreenState extends State<SearchBooksScreen>
   }
 
   void _filterBooks() {
-    print('Filtering books...');
-    print('All books: ${_allBooks.length}');
-    print('Search query: "$_searchQuery"');
-    print('Selected category: $_selectedCategory');
-    
-    List<dynamic> filtered = _allBooks;
-    
-    // Filter by category (tab)
-    if (_selectedCategory.isNotEmpty) {
-      filtered = filtered.where((book) {
-        final bookType = book['type'] ?? 'carte';
-        print('Book: ${book['name']}, Type: $bookType, Selected: $_selectedCategory');
-        return bookType == _selectedCategory;
-      }).toList();
-      print('After category filter: ${filtered.length}');
-    }
-    
-    // Filter by search query
-    if (_searchQuery.isNotEmpty) {
-      filtered = filtered.where((book) {
-        final title = (book['name'] ?? '').toString().toLowerCase();
-        final author = (book['author'] ?? '').toString().toLowerCase();
-        final category = (book['category'] ?? '').toString().toLowerCase();
-        final bookClass = (book['book_class'] ?? '').toString().toLowerCase();
-        
-        final query = _searchQuery.toLowerCase();
-        
-        // Check if query matches title, author, or category
-        if (title.contains(query) || author.contains(query) || category.contains(query)) {
-          return true;
-        }
-        
-        // For manuals, also check class (both Roman and Arabic numerals)
-        if (book['type'] == 'manual' && bookClass.isNotEmpty) {
-          // Convert Roman numerals to Arabic for comparison
-          final arabicClass = _romanToArabic(bookClass.toUpperCase()).toString();
-          if (bookClass.contains(query) || arabicClass.contains(query)) {
-            return true;
+    try {
+      print('Filtering books...');
+      print('All books: ${_allBooks.length}');
+      print('Search query: "$_searchQuery"');
+      print('Selected category: $_selectedCategory');
+      
+      List<dynamic> filtered = _allBooks;
+      
+      // Filter by category (tab)
+      if (_selectedCategory.isNotEmpty) {
+        filtered = filtered.where((book) {
+          try {
+            final bookType = book['type'] ?? 'carte';
+            print('Book: ${book['name']}, Type: $bookType, Selected: $_selectedCategory');
+            return bookType == _selectedCategory;
+          } catch (e) {
+            print('Error filtering book by category: $e');
+            return false;
           }
-        }
-        
-        return false;
-      }).toList();
-      print('After search filter: ${filtered.length}');
+        }).toList();
+        print('After category filter: ${filtered.length}');
+      }
+      
+      // Filter by search query
+      if (_searchQuery.isNotEmpty) {
+        filtered = filtered.where((book) {
+          try {
+            final title = (book['name'] ?? '').toString().toLowerCase();
+            final author = (book['author'] ?? '').toString().toLowerCase();
+            final category = (book['category'] ?? '').toString().toLowerCase();
+            final bookClass = (book['book_class'] ?? '').toString().toLowerCase();
+            
+            final query = _searchQuery.toLowerCase();
+            
+            // Check if query matches title, author, or category
+            if (title.contains(query) || author.contains(query) || category.contains(query)) {
+              return true;
+            }
+            
+            // For manuals, also check class (both Roman and Arabic numerals)
+            if (book['type'] == 'manual' && bookClass.isNotEmpty) {
+              try {
+                // Convert Roman numerals to Arabic for comparison
+                final arabicClass = _romanToArabic(bookClass.toUpperCase()).toString();
+                if (bookClass.contains(query) || arabicClass.contains(query)) {
+                  return true;
+                }
+              } catch (e) {
+                // If conversion fails, just check the original class string
+                if (bookClass.contains(query)) {
+                  return true;
+                }
+              }
+            }
+            
+            return false;
+          } catch (e) {
+            print('Error filtering book by search query: $e');
+            return false;
+          }
+        }).toList();
+        print('After search filter: ${filtered.length}');
+      }
+      
+      setState(() {
+        _filteredResults = filtered;
+      });
+      
+      print('Final filtered results: ${_filteredResults.length}');
+    } catch (e) {
+      print('Error in _filterBooks: $e');
+      setState(() {
+        _filteredResults = [];
+      });
     }
-    
-    setState(() {
-      _filteredResults = filtered;
-    });
-    
-    print('Final filtered results: ${_filteredResults.length}');
   }
 
   Future<void> _loadBooks() async {
@@ -645,9 +668,7 @@ class _SearchBooksScreenState extends State<SearchBooksScreen>
   Widget _buildTabContent(String category) {
     print('Building tab content for category: $category');
     print('Filtered results: ${_filteredResults.length}');
-    for (var i = 0; i < _filteredResults.length; i++) {
-      print('Card $i: ${_filteredResults[i]['name']} | thumb: ${_filteredResults[i]['thumbnail_url']}');
-    }
+    
     // DO NOT update _selectedCategory or call _filterBooks here!
     // Just use the filtered list as is.
 
@@ -656,11 +677,12 @@ class _SearchBooksScreenState extends State<SearchBooksScreen>
         child: CircularProgressIndicator(),
       );
     }
+    // Only show the list if not loading and there are results
+    if (!_isLoading && _filteredResults.isEmpty) {
+      return Center(child: Text('Nu există cărți/manuale.'));
+    }
     if (_errorMessage != null) {
       return Center(child: Text(_errorMessage!));
-    }
-    if (_filteredResults.isEmpty) {
-      return Center(child: Text('Nu există cărți/manuale.'));
     }
     print('Rendering ListView with itemCount: ${_filteredResults.length}');
     try {
@@ -672,7 +694,11 @@ class _SearchBooksScreenState extends State<SearchBooksScreen>
         itemCount: _filteredResults.length,
         itemBuilder: (context, index) {
           print('Building item $index of ${_filteredResults.length}');
-          return _buildBookCard(_filteredResults[index]);
+          if (index < _filteredResults.length) {
+            return _buildBookCard(_filteredResults[index]);
+          } else {
+            return Container(); // Return empty container if index is out of bounds
+          }
         },
       );
     } catch (e, st) {
@@ -682,41 +708,74 @@ class _SearchBooksScreenState extends State<SearchBooksScreen>
   }
 
   Widget _buildBookCard(dynamic book) {
-    // Construct PDF URL like in exam models
-    final pdfUrl = book['pdf_file'] != null
-        ? (book['pdf_file'].toString().startsWith('http')
-            ? book['pdf_file']
-            : ApiService.baseUrl + book['pdf_file'])
-        : null;
-    // Construct thumbnail URL robustly
-    final thumbnailUrl = book['thumbnail_url'] != null
-        ? (book['thumbnail_url'].toString().startsWith('http')
-            ? book['thumbnail_url']
-            : ApiService.baseUrl + '/media/' + book['thumbnail_url'].toString().replaceAll(RegExp(r'^/?media/'), ''))
-        : null;
-    
-    return Container(
-      margin: EdgeInsets.only(bottom: getResponsiveSpacing(6)),
-      child: ResponsiveBookCard(
-        title: book['name'] ?? 'Carte necunoscută',
-        author: book['author'] ?? 'Autor necunoscut',
-        category: book['category'] ?? 'Fără categorie',
-        thumbnailUrl: thumbnailUrl,
-        bookClass: book['book_class'],
-        bookType: book['type'] ?? 'carte',
-        availableCopies: book['available_copies'],
-        totalCopies: book['inventory'],
-        onTap: () {
-          // Handle book tap if needed
-        },
-        onViewPdf: book['type'] == 'manual' && pdfUrl != null
-            ? () => _openPdf(pdfUrl)
-            : null,
-        onRequestBook: () => _showLoanDurationDialog(book['id']),
-        showActions: false,
-        isLoading: _isLoading,
-      ),
-    );
+    try {
+      // Validate book data
+      if (book == null) {
+        print('Book is null');
+        return Container(
+          margin: EdgeInsets.only(bottom: getResponsiveSpacing(6)),
+          child: Card(
+            child: Padding(
+              padding: EdgeInsets.all(getResponsiveSpacing(16)),
+              child: Text(
+                'Carte invalidă',
+                style: TextStyle(color: Theme.of(context).colorScheme.error),
+              ),
+            ),
+          ),
+        );
+      }
+
+      // Construct PDF URL like in exam models
+      final pdfUrl = book['pdf_file'] != null && book['pdf_file'].toString().isNotEmpty
+          ? (book['pdf_file'].toString().startsWith('http')
+              ? book['pdf_file']
+              : ApiService.baseUrl + book['pdf_file'])
+          : null;
+      // Construct thumbnail URL robustly
+      final thumbnailUrl = book['thumbnail_url'] != null && book['thumbnail_url'].toString().isNotEmpty
+          ? (book['thumbnail_url'].toString().startsWith('http')
+              ? book['thumbnail_url']
+              : ApiService.baseUrl + '/media/' + book['thumbnail_url'].toString().replaceAll(RegExp(r'^/?media/'), ''))
+          : null;
+      
+      return Container(
+        margin: EdgeInsets.only(bottom: getResponsiveSpacing(6)),
+        child: ResponsiveBookCard(
+          title: book['name']?.toString() ?? 'Carte necunoscută',
+          author: book['author']?.toString() ?? 'Autor necunoscut',
+          category: book['category']?.toString() ?? 'Fără categorie',
+          thumbnailUrl: thumbnailUrl,
+          bookClass: book['book_class']?.toString(),
+          bookType: book['type']?.toString() ?? 'carte',
+          availableCopies: book['available_copies'] is int ? book['available_copies'] : null,
+          totalCopies: null, // Only show available copies, not total
+          onTap: () {
+            // Handle book tap if needed
+          },
+          onViewPdf: book['type'] == 'manual' && pdfUrl != null
+              ? () => _openPdf(pdfUrl)
+              : null,
+          onRequestBook: (book['id'] != null) ? () => _showLoanDurationDialog(book['id']) : null,
+          showActions: false,
+          isLoading: _isLoading,
+        ),
+      );
+    } catch (e) {
+      print('Error building book card: $e');
+      return Container(
+        margin: EdgeInsets.only(bottom: getResponsiveSpacing(6)),
+        child: Card(
+          child: Padding(
+            padding: EdgeInsets.all(getResponsiveSpacing(16)),
+            child: Text(
+              'Eroare la afișarea cărții',
+              style: TextStyle(color: Theme.of(context).colorScheme.error),
+            ),
+          ),
+        ),
+      );
+    }
   }
 
   void _openPdf(String pdfUrl) async {
@@ -761,6 +820,8 @@ class _SearchBooksScreenState extends State<SearchBooksScreen>
 
 // Utility function to convert Roman numerals to Arabic numerals
 int _romanToArabic(String roman) {
+  if (roman.isEmpty) return 0;
+  
   final romanNumerals = {
     'I': 1,
     'V': 5,
@@ -775,7 +836,14 @@ int _romanToArabic(String roman) {
   int prevValue = 0;
 
   for (int i = roman.length - 1; i >= 0; i--) {
-    final currentValue = romanNumerals[roman[i]] ?? 0;
+    final currentChar = roman[i];
+    final currentValue = romanNumerals[currentChar] ?? 0;
+    
+    if (currentValue == 0) {
+      // Invalid character, skip it
+      continue;
+    }
+    
     if (currentValue >= prevValue) {
       result += currentValue;
     } else {

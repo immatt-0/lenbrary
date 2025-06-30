@@ -498,11 +498,11 @@ class _MyRequestsScreenState extends State<MyRequestsScreen>
             : ApiService.baseUrl + '/media/' + thumbnailRaw.replaceAll(RegExp(r'^/?media/'), ''))
         : null;
 
-    // Medium size: between original and very large
-    final thumbnailWidth = ResponsiveService.getSpacing(48);
-    final thumbnailHeight = ResponsiveService.getSpacing(64);
-    final borderRadius = ResponsiveService.getSpacing(14);
-    final cardPadding = ResponsiveService.getSpacing(16);
+    // Enhanced sizing for more professional look
+    final thumbnailWidth = ResponsiveService.getSpacing(52);
+    final thumbnailHeight = ResponsiveService.getSpacing(70);
+    final borderRadius = ResponsiveService.getSpacing(16);
+    final cardPadding = ResponsiveService.getSpacing(18);
 
     // Debug print for requests with missing/invalid fields
     if (request['status'] == null || book['name'] == null || book['author'] == null) {
@@ -532,196 +532,289 @@ class _MyRequestsScreenState extends State<MyRequestsScreen>
           : null,
       child: Container(
         margin: EdgeInsets.symmetric(
-          horizontal: ResponsiveService.getSpacing(10),
-          vertical: ResponsiveService.getSpacing(8),
+          horizontal: ResponsiveService.getSpacing(12),
+          vertical: ResponsiveService.getSpacing(10),
         ),
         child: Card(
-          elevation: 7,
-          shadowColor: Colors.black.withOpacity(0.11),
+          elevation: 8,
+          shadowColor: Colors.black.withOpacity(0.15),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(borderRadius),
           ),
           child: Container(
             decoration: BoxDecoration(
               gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
                 colors: [
                   Theme.of(context).colorScheme.surface,
-                  Theme.of(context).colorScheme.surface.withOpacity(0.8),
+                  Theme.of(context).colorScheme.surface.withOpacity(0.95),
                 ],
               ),
               borderRadius: BorderRadius.circular(borderRadius),
+              border: Border.all(
+                color: Theme.of(context).colorScheme.outline.withOpacity(0.1),
+                width: 1,
+              ),
             ),
             child: Padding(
               padding: EdgeInsets.all(cardPadding),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
+              child: Stack(
                 children: [
-                  // Thumbnail 4:3
-                  Builder(
-                    builder: (context) {
-                      if (thumbnailUrl == null) {
-                        return Container(
-                          width: thumbnailWidth,
-                          height: thumbnailHeight,
-                          alignment: Alignment.center,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(borderRadius),
-                            color: Theme.of(context).colorScheme.primary.withOpacity(0.08),
-                          ),
-                          child: Icon(
-                            bookType == 'manual' ? Icons.menu_book_rounded : Icons.book_rounded,
-                            size: 28,
-                            color: Theme.of(context).colorScheme.primary,
-                          ),
-                        );
-                      }
-                      return ClipRRect(
-                        borderRadius: BorderRadius.circular(borderRadius),
-                        child: Image.network(
-                          thumbnailUrl,
-                          width: thumbnailWidth,
-                          height: thumbnailHeight,
-                          fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) {
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Enhanced Thumbnail
+                      Builder(
+                        builder: (context) {
+                          if (thumbnailUrl == null) {
                             return Container(
                               width: thumbnailWidth,
                               height: thumbnailHeight,
                               alignment: Alignment.center,
                               decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(borderRadius),
-                                color: Theme.of(context).colorScheme.primary.withOpacity(0.08),
+                                borderRadius: BorderRadius.circular(borderRadius - 2),
+                                gradient: LinearGradient(
+                                  colors: [
+                                    Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                                    Theme.of(context).colorScheme.primary.withOpacity(0.05),
+                                  ],
+                                ),
+                                border: Border.all(
+                                  color: Theme.of(context).colorScheme.primary.withOpacity(0.2),
+                                  width: 1,
+                                ),
                               ),
                               child: Icon(
                                 bookType == 'manual' ? Icons.menu_book_rounded : Icons.book_rounded,
-                                size: 28,
+                                size: 30,
                                 color: Theme.of(context).colorScheme.primary,
                               ),
                             );
-                          },
-                        ),
-                      );
-                    },
-                  ),
-                  SizedBox(width: 14),
-                  // Book Info and Status
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          bookName,
-                          style: ResponsiveTextStyles.getResponsiveTitleStyle(
-                            fontSize: 17,
-                            fontWeight: FontWeight.bold,
-                            color: Theme.of(context).colorScheme.onSurface,
-                          ),
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        SizedBox(height: 5),
-                        Text(
-                          bookAuthor,
-                          style: ResponsiveTextStyles.getResponsiveTextStyle(
-                            fontSize: 14,
-                            color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
-                            fontWeight: FontWeight.w500,
-                          ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        SizedBox(height: 10),
-                        // Status Badge
-                        Container(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 5,
-                          ),
-                          decoration: BoxDecoration(
-                            color: _getStatusColor(status).withOpacity(0.11),
-                            borderRadius: BorderRadius.circular(13),
-                            border: Border.all(
-                              color: _getStatusColor(status).withOpacity(0.3),
-                              width: 1,
+                          }
+                          return Container(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(borderRadius - 2),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.1),
+                                  blurRadius: 4,
+                                  offset: Offset(0, 2),
+                                ),
+                              ],
                             ),
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Icon(
-                                _getStatusIcon(status),
-                                color: _getStatusColor(status),
-                                size: 15,
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(borderRadius - 2),
+                              child: Image.network(
+                                thumbnailUrl,
+                                width: thumbnailWidth,
+                                height: thumbnailHeight,
+                                fit: BoxFit.cover,
+                                errorBuilder: (context, error, stackTrace) {
+                                  return Container(
+                                    width: thumbnailWidth,
+                                    height: thumbnailHeight,
+                                    alignment: Alignment.center,
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(borderRadius - 2),
+                                      gradient: LinearGradient(
+                                        colors: [
+                                          Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                                          Theme.of(context).colorScheme.primary.withOpacity(0.05),
+                                        ],
+                                      ),
+                                      border: Border.all(
+                                        color: Theme.of(context).colorScheme.primary.withOpacity(0.2),
+                                        width: 1,
+                                      ),
+                                    ),
+                                    child: Icon(
+                                      bookType == 'manual' ? Icons.menu_book_rounded : Icons.book_rounded,
+                                      size: 30,
+                                      color: Theme.of(context).colorScheme.primary,
+                                    ),
+                                  );
+                                },
                               ),
-                              SizedBox(width: 7),
-                              Text(
-                                _getStatusText(status),
-                                style: ResponsiveTextStyles.getResponsiveTextStyle(
-                                  fontSize: 13,
-                                  color: _getStatusColor(status),
-                                  fontWeight: FontWeight.bold,
+                            ),
+                          );
+                        },
+                      ),
+                      SizedBox(width: ResponsiveService.getSpacing(16)),
+                      // Enhanced Book Info and Status
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // Book Title with enhanced styling
+                            Text(
+                              bookName,
+                              style: ResponsiveTextStyles.getResponsiveTitleStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w700,
+                                color: Theme.of(context).colorScheme.onSurface,
+                              ),
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            SizedBox(height: ResponsiveService.getSpacing(6)),
+                            // Author with refined styling
+                            Text(
+                              bookAuthor,
+                              style: ResponsiveTextStyles.getResponsiveTextStyle(
+                                fontSize: 15,
+                                color: Theme.of(context).colorScheme.onSurface.withOpacity(0.75),
+                                fontWeight: FontWeight.w500,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            SizedBox(height: ResponsiveService.getSpacing(12)),
+                            // Enhanced Status Badge
+                            Container(
+                              padding: EdgeInsets.symmetric(
+                                horizontal: ResponsiveService.getSpacing(14),
+                                vertical: ResponsiveService.getSpacing(6),
+                              ),
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                  colors: [
+                                    _getStatusColor(status).withOpacity(0.15),
+                                    _getStatusColor(status).withOpacity(0.08),
+                                  ],
+                                ),
+                                borderRadius: BorderRadius.circular(ResponsiveService.getSpacing(12)),
+                                border: Border.all(
+                                  color: _getStatusColor(status).withOpacity(0.3),
+                                  width: 1.5,
+                                ),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: _getStatusColor(status).withOpacity(0.1),
+                                    blurRadius: 4,
+                                    offset: Offset(0, 1),
+                                  ),
+                                ],
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(
+                                    _getStatusIcon(status),
+                                    color: _getStatusColor(status),
+                                    size: 16,
+                                  ),
+                                  SizedBox(width: ResponsiveService.getSpacing(8)),
+                                  Text(
+                                    _getStatusText(status),
+                                    style: ResponsiveTextStyles.getResponsiveTextStyle(
+                                      fontSize: 14,
+                                      color: _getStatusColor(status),
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            SizedBox(height: ResponsiveService.getSpacing(14)),
+                            // Enhanced Dates Section
+                            Container(
+                              padding: EdgeInsets.all(ResponsiveService.getSpacing(12)),
+                              decoration: BoxDecoration(
+                                color: Theme.of(context).colorScheme.surface.withOpacity(0.5),
+                                borderRadius: BorderRadius.circular(ResponsiveService.getSpacing(10)),
+                                border: Border.all(
+                                  color: Theme.of(context).colorScheme.outline.withOpacity(0.1),
+                                  width: 1,
                                 ),
                               ),
-                            ],
-                          ),
-                        ),
-                        SizedBox(height: 10),
-                        // Dates Section
-                        Row(
-                          children: [
-                            Icon(Icons.calendar_today_rounded, size: 13, color: Colors.blue),
-                            SizedBox(width: 5),
-                            Text(
-                              'Cerere: ',
-                              style: ResponsiveTextStyles.getResponsiveTextStyle(
-                                fontSize: 12,
-                                color: Colors.blue,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            Text(
-                              requestDate != null ? '${requestDate.day}/${requestDate.month}/${requestDate.year}' : 'N/A',
-                              style: ResponsiveTextStyles.getResponsiveTextStyle(
-                                fontSize: 12,
-                                color: Theme.of(context).colorScheme.onSurface,
-                              ),
-                            ),
-                            SizedBox(width: 10),
-                            Icon(Icons.event_available_rounded, size: 13, color: Colors.green),
-                            SizedBox(width: 5),
-                            Text(
-                              'Scadență: ',
-                              style: ResponsiveTextStyles.getResponsiveTextStyle(
-                                fontSize: 12,
-                                color: Colors.green,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            Text(
-                              dueDate != null ? '${dueDate.day}/${dueDate.month}/${dueDate.year}' : 'N/A',
-                              style: ResponsiveTextStyles.getResponsiveTextStyle(
-                                fontSize: 12,
-                                color: Theme.of(context).colorScheme.onSurface,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    children: [
+                                      Container(
+                                        padding: EdgeInsets.all(ResponsiveService.getSpacing(4)),
+                                        decoration: BoxDecoration(
+                                          color: Colors.blue.withOpacity(0.1),
+                                          borderRadius: BorderRadius.circular(ResponsiveService.getSpacing(6)),
+                                        ),
+                                        child: Icon(Icons.calendar_today_rounded, size: 14, color: Colors.blue),
+                                      ),
+                                      SizedBox(width: ResponsiveService.getSpacing(8)),
+                                      Text(
+                                        'Cerere: ',
+                                        style: ResponsiveTextStyles.getResponsiveTextStyle(
+                                          fontSize: 13,
+                                          color: Colors.blue,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                      Text(
+                                        requestDate != null ? '${requestDate.day}/${requestDate.month}/${requestDate.year}' : 'N/A',
+                                        style: ResponsiveTextStyles.getResponsiveTextStyle(
+                                          fontSize: 13,
+                                          color: Theme.of(context).colorScheme.onSurface,
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  SizedBox(height: ResponsiveService.getSpacing(8)),
+                                  Row(
+                                    children: [
+                                      Container(
+                                        padding: EdgeInsets.all(ResponsiveService.getSpacing(4)),
+                                        decoration: BoxDecoration(
+                                          color: Colors.green.withOpacity(0.1),
+                                          borderRadius: BorderRadius.circular(ResponsiveService.getSpacing(6)),
+                                        ),
+                                        child: Icon(Icons.event_available_rounded, size: 14, color: Colors.green),
+                                      ),
+                                      SizedBox(width: ResponsiveService.getSpacing(8)),
+                                      Text(
+                                        _isEstimatedDueDate(status) ? 'Data estimată: ' : 'Scadență: ',
+                                        style: ResponsiveTextStyles.getResponsiveTextStyle(
+                                          fontSize: 13,
+                                          color: Colors.green,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                      Text(
+                                        dueDate != null ? '${dueDate.day}/${dueDate.month}/${dueDate.year}' : 'N/A',
+                                        style: ResponsiveTextStyles.getResponsiveTextStyle(
+                                          fontSize: 13,
+                                          color: Theme.of(context).colorScheme.onSurface,
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
                               ),
                             ),
                           ],
                         ),
-                        // Cancel button for IN_ASTEPTARE and APROBAT
-                        if (status == 'IN_ASTEPTARE' || status == 'APROBAT') ...[
-                          SizedBox(height: 10),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: [
-                              IconButton(
-                                icon: Icon(Icons.delete_outline_rounded, color: Colors.red[700], size: 22),
-                                tooltip: 'Anulează cererea',
-                                onPressed: () => _showCancelDialog(context, request),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
+                  // Enhanced Cancel button positioned at top right
+                  if (status == 'IN_ASTEPTARE' || status == 'APROBAT')
+                    Positioned(
+                      top: 0,
+                      right: 0,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Colors.red.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(ResponsiveService.getSpacing(8)),
+                        ),
+                        child: IconButton(
+                          icon: Icon(Icons.delete_outline_rounded, color: Colors.red[700], size: 24),
+                          tooltip: 'Anulează cererea',
+                          onPressed: () => _showCancelDialog(context, request),
+                        ),
+                      ),
+                    ),
                 ],
               ),
             ),
@@ -872,16 +965,14 @@ class _ExtendLoanScreenState extends State<ExtendLoanScreen> with ResponsiveWidg
             context: context,
             message: 'Această carte a fost deja prelungită o dată și nu mai poate fi prelungită.',
           );
+          // If the error is about already extended, pop back
+          Navigator.pop(context, false);
         } else {
           NotificationService.showError(
             context: context,
             message: msg,
           );
         }
-      }
-      // If the error is about already extended, pop back
-      if (msg.toLowerCase().contains('already extended')) {
-        Navigator.pop(context, false);
       }
     } finally {
       if (mounted) setState(() => _isLoading = false);

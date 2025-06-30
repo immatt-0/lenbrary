@@ -243,7 +243,7 @@ class _ExamModelsScreenState extends State<ExamModelsScreen>
               ),
               SizedBox(width: getResponsiveSpacing(12)),
               Text(
-                'Modele de examene',
+                'Modele de Teste',
                 style: ResponsiveTextStyles.getResponsiveTitleStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.w700,
@@ -320,7 +320,7 @@ class _ExamModelsScreenState extends State<ExamModelsScreen>
                         ),
                         child: ResponsiveTextField(
                           controller: _searchController,
-                          hintText: '🔍 Caută modele de examene...',
+                          hintText: '🔍 Caută modele de teste...',
                           onChanged: (value) => setState(() => _searchQuery = value),
                         ),
                       ),
@@ -380,7 +380,7 @@ class _ExamModelsScreenState extends State<ExamModelsScreen>
                                     padding: const EdgeInsets.all(6),
                                     decoration: BoxDecoration(
                                       color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
-                                      borderRadius: BorderRadius.circular(6),
+                                      shape: BoxShape.circle,
                                     ),
                                     child: Icon(
                                       Icons.category_rounded,
@@ -475,7 +475,7 @@ class _ExamModelsScreenState extends State<ExamModelsScreen>
                                     padding: const EdgeInsets.all(6),
                                     decoration: BoxDecoration(
                                       color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
-                                      borderRadius: BorderRadius.circular(6),
+                                      shape: BoxShape.circle,
                                     ),
                                     child: Icon(
                                       Icons.subject_rounded,
@@ -492,7 +492,7 @@ class _ExamModelsScreenState extends State<ExamModelsScreen>
                                       children: [
                                         Icon(Icons.functions_rounded, color: _getCategoryColor('Matematica'), size: 16),
                                         const SizedBox(width: 6),
-                                        const Text('Matematică', style: TextStyle(fontSize: 14)),
+                                        const Text('Mate', style: TextStyle(fontSize: 14)),
                                       ],
                                     ),
                                   ),
@@ -596,7 +596,7 @@ class _ExamModelsScreenState extends State<ExamModelsScreen>
                                     ? 'Vom adăuga examenele de ${_getSpecialSubject(_searchController.text)} în viitor'
                                     : (_searchController.text.isNotEmpty || _selectedType != null || _selectedCategory != null
                                         ? 'Nu s-au găsit modele pentru căutarea ta'
-                                        : 'Nu există modele de examene disponibile'),
+                                        : 'Nu există modele de teste disponibile'),
                                 style: Theme.of(context).textTheme.titleLarge?.copyWith(
                                   color: Theme.of(context).colorScheme.primary.withOpacity(0.7),
                                   fontWeight: FontWeight.w600,
@@ -690,7 +690,7 @@ class _ExamModelsScreenState extends State<ExamModelsScreen>
                             typeColor.withOpacity(0.8),
                           ],
                         ),
-                        borderRadius: getResponsiveBorderRadius(12),
+                        shape: BoxShape.circle,
                         boxShadow: [
                           BoxShadow(
                             color: typeColor.withOpacity(0.3),
@@ -716,7 +716,7 @@ class _ExamModelsScreenState extends State<ExamModelsScreen>
                             categoryColor.withOpacity(0.8),
                           ],
                         ),
-                        borderRadius: getResponsiveBorderRadius(12),
+                        shape: BoxShape.circle,
                         boxShadow: [
                           BoxShadow(
                             color: categoryColor.withOpacity(0.3),

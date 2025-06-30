@@ -775,8 +775,8 @@ class _SuccessScreenState extends State<SuccessScreen>
                             // Exam Models Admin Button
                             _buildEnhancedMenuButton(
                               icon: Icons.description_rounded,
-                              title: 'Modele de examene',
-                              description: 'Gestionează modelele de examene',
+                              title: 'Modele de teste',
+                              description: 'Gestionează modelele de teste',
                               color: Colors.teal[600]!,
                               onTap: () {
                                 Navigator.pushNamed(context, '/admin-exam-models');

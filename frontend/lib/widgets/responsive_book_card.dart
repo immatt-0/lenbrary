@@ -212,7 +212,7 @@ class ResponsiveBookCard extends StatelessWidget {
                             ),
                         ],
                       ),
-                      if (availableCopies != null && totalCopies != null) ...[
+                      if (availableCopies != null) ...[
                         SizedBox(height: ResponsiveService.getSpacing(8)),
                         Container(
                           padding: EdgeInsets.symmetric(
@@ -238,7 +238,9 @@ class ResponsiveBookCard extends StatelessWidget {
                               ),
                               SizedBox(width: ResponsiveService.getSpacing(4)),
                               Text(
-                                '${availableCopies ?? 0}/${totalCopies ?? 0}',
+                                totalCopies != null 
+                                    ? '${availableCopies ?? 0}/${totalCopies ?? 0}'
+                                    : '${availableCopies ?? 0} disponibile',
                                 style: TextStyle(
                                   fontSize: categoryFontSize,
                                   fontWeight: FontWeight.w600,
@@ -252,65 +254,70 @@ class ResponsiveBookCard extends StatelessWidget {
                     ],
                   ),
                 ),
-                // Action buttons with better styling
-                if (onRequestBook != null)
+                // Action buttons with better styling - Vertical layout
+                if (onRequestBook != null || onViewPdf != null)
                   Padding(
                     padding: EdgeInsets.only(left: ResponsiveService.getSpacing(8)),
-                    child: Container(
-                      width: buttonSize,
-                      height: buttonSize,
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: [
-                            Theme.of(context).colorScheme.primary,
-                            Theme.of(context).colorScheme.primary.withOpacity(0.8),
-                          ],
-                        ),
-                        borderRadius: BorderRadius.circular(ResponsiveService.getSpacing(8)),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
-                            blurRadius: ResponsiveService.getSpacing(8),
-                            offset: Offset(0, ResponsiveService.getSpacing(2)),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        if (onRequestBook != null)
+                          Container(
+                            width: buttonSize,
+                            height: buttonSize,
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                colors: [
+                                  Theme.of(context).colorScheme.primary,
+                                  Theme.of(context).colorScheme.primary.withOpacity(0.8),
+                                ],
+                              ),
+                              borderRadius: BorderRadius.circular(ResponsiveService.getSpacing(8)),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
+                                  blurRadius: ResponsiveService.getSpacing(8),
+                                  offset: Offset(0, ResponsiveService.getSpacing(2)),
+                                ),
+                              ],
+                            ),
+                            child: IconButton(
+                              icon: Icon(Icons.bookmark_add_rounded, size: iconSize, color: Colors.white),
+                              onPressed: onRequestBook,
+                              tooltip: 'Solicită',
+                              padding: EdgeInsets.zero,
+                            ),
                           ),
-                        ],
-                      ),
-                      child: IconButton(
-                        icon: Icon(Icons.bookmark_add_rounded, size: iconSize, color: Colors.white),
-                        onPressed: onRequestBook,
-                        tooltip: 'Solicită',
-                        padding: EdgeInsets.zero,
-                      ),
-                    ),
-                  ),
-                if (onViewPdf != null)
-                  Padding(
-                    padding: EdgeInsets.only(left: ResponsiveService.getSpacing(8)),
-                    child: Container(
-                      width: buttonSize,
-                      height: buttonSize,
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: [
-                            Theme.of(context).colorScheme.secondary,
-                            Theme.of(context).colorScheme.secondary.withOpacity(0.8),
-                          ],
-                        ),
-                        borderRadius: BorderRadius.circular(ResponsiveService.getSpacing(8)),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Theme.of(context).colorScheme.secondary.withOpacity(0.3),
-                            blurRadius: ResponsiveService.getSpacing(8),
-                            offset: Offset(0, ResponsiveService.getSpacing(2)),
+                        if (onRequestBook != null && onViewPdf != null)
+                          SizedBox(height: ResponsiveService.getSpacing(6)),
+                        if (onViewPdf != null)
+                          Container(
+                            width: buttonSize,
+                            height: buttonSize,
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                colors: [
+                                  Theme.of(context).colorScheme.secondary,
+                                  Theme.of(context).colorScheme.secondary.withOpacity(0.8),
+                                ],
+                              ),
+                              borderRadius: BorderRadius.circular(ResponsiveService.getSpacing(8)),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Theme.of(context).colorScheme.secondary.withOpacity(0.3),
+                                  blurRadius: ResponsiveService.getSpacing(8),
+                                  offset: Offset(0, ResponsiveService.getSpacing(2)),
+                                ),
+                              ],
+                            ),
+                            child: IconButton(
+                              icon: Icon(Icons.picture_as_pdf_rounded, size: iconSize, color: Colors.white),
+                              onPressed: onViewPdf,
+                              tooltip: 'PDF',
+                              padding: EdgeInsets.zero,
+                            ),
                           ),
-                        ],
-                      ),
-                      child: IconButton(
-                        icon: Icon(Icons.picture_as_pdf_rounded, size: iconSize, color: Colors.white),
-                        onPressed: onViewPdf,
-                        tooltip: 'PDF',
-                        padding: EdgeInsets.zero,
-                      ),
+                      ],
                     ),
                   ),
               ],

@@ -221,7 +221,7 @@ class _ExamModelsAdminScreenState extends State<ExamModelsAdminScreen>
               ),
               SizedBox(width: getResponsiveSpacing(12)),
               Text(
-                'Modele de examene',
+                'Modele de teste',
                 style: ResponsiveTextStyles.getResponsiveTitleStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.w700,
@@ -320,7 +320,7 @@ class _ExamModelsAdminScreenState extends State<ExamModelsAdminScreen>
                         child: TextField(
                           controller: _searchController,
                           decoration: InputDecoration(
-                            hintText: '🔍 Caută modele de examene...',
+                            hintText: '🔍 Caută modele de teste...',
                             hintStyle: ResponsiveTextStyles.getResponsiveTextStyle(
                               fontSize: 16,
                               color: Theme.of(context).colorScheme.primary.withOpacity(0.6),
@@ -698,10 +698,10 @@ class _ExamModelsAdminScreenState extends State<ExamModelsAdminScreen>
                               SizedBox(height: getResponsiveSpacing(24)),
                               Text(
                                 _searchController.text.isNotEmpty && _isSpecialSubject(_searchController.text)
-                                    ? 'Vom adăuga examenele de ${_getSpecialSubject(_searchController.text)} în viitor'
+                                    ? 'Vom adăuga testele de ${_getSpecialSubject(_searchController.text)} în viitor'
                                     : (_searchController.text.isNotEmpty || _selectedType != null || _selectedCategory != null
                                         ? 'Nu s-au găsit modele pentru căutarea ta'
-                                        : 'Nu există modele de examene'),
+                                        : 'Nu există modele de teste'),
                                 style: Theme.of(context).textTheme.titleLarge?.copyWith(
                                   color: Theme.of(context).colorScheme.primary.withOpacity(0.7),
                                   fontWeight: FontWeight.w600,

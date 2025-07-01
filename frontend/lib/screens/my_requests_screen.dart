@@ -95,17 +95,20 @@ class _MyRequestsScreenState extends State<MyRequestsScreen>
         ),
         automaticallyImplyLeading: false,
         leading: Container(
-          margin: EdgeInsets.only(left: getResponsiveSpacing(8)),
+          margin: EdgeInsets.only(left: getResponsiveSpacing(20), top: getResponsiveSpacing(8), bottom: getResponsiveSpacing(8)),
+          padding: EdgeInsets.all(getResponsiveSpacing(2)),
           decoration: BoxDecoration(
             color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
-            borderRadius: getResponsiveBorderRadius(10),
+            borderRadius: getResponsiveBorderRadius(6),
           ),
           child: IconButton(
             icon: Icon(
               Icons.arrow_back_rounded,
               color: Theme.of(context).colorScheme.primary,
-              size: getResponsiveIconSize(24),
+              size: getResponsiveIconSize(20),
             ),
+            padding: EdgeInsets.zero,
+            constraints: BoxConstraints(),
             onPressed: () {
               Navigator.pop(context);
             },
@@ -718,81 +721,113 @@ class _MyRequestsScreenState extends State<MyRequestsScreen>
                             ),
                             SizedBox(height: ResponsiveService.getSpacing(14)),
                             // Enhanced Dates Section
-                            Container(
-                              padding: EdgeInsets.all(ResponsiveService.getSpacing(12)),
-                              decoration: BoxDecoration(
-                                color: Theme.of(context).colorScheme.surface.withOpacity(0.5),
-                                borderRadius: BorderRadius.circular(ResponsiveService.getSpacing(10)),
-                                border: Border.all(
-                                  color: Theme.of(context).colorScheme.outline.withOpacity(0.1),
-                                  width: 1,
-                                ),
-                              ),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
+                            if (status != 'ANULATA' && status != 'RESPINS')
+                              Row(
                                 children: [
-                                  Row(
-                                    children: [
-                                      Container(
-                                        padding: EdgeInsets.all(ResponsiveService.getSpacing(4)),
-                                        decoration: BoxDecoration(
-                                          color: Colors.blue.withOpacity(0.1),
-                                          borderRadius: BorderRadius.circular(ResponsiveService.getSpacing(6)),
-                                        ),
-                                        child: Icon(Icons.calendar_today_rounded, size: 14, color: Colors.blue),
+                                  Expanded(
+                                    child: Container(
+                                      margin: EdgeInsets.only(right: ResponsiveService.getSpacing(8)),
+                                      padding: EdgeInsets.symmetric(
+                                        horizontal: ResponsiveService.getSpacing(10),
+                                        vertical: ResponsiveService.getSpacing(10),
                                       ),
-                                      SizedBox(width: ResponsiveService.getSpacing(8)),
-                                      Text(
-                                        'Cerere: ',
-                                        style: ResponsiveTextStyles.getResponsiveTextStyle(
-                                          fontSize: 13,
-                                          color: Colors.blue,
-                                          fontWeight: FontWeight.w600,
+                                      decoration: BoxDecoration(
+                                        color: Colors.blue.withOpacity(0.08),
+                                        borderRadius: BorderRadius.circular(ResponsiveService.getSpacing(12)),
+                                        border: Border.all(
+                                          color: Colors.blue.withOpacity(0.18),
+                                          width: 1.2,
                                         ),
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: Colors.blue.withOpacity(0.07),
+                                            blurRadius: 6,
+                                            offset: Offset(0, 2),
+                                          ),
+                                        ],
                                       ),
-                                      Text(
-                                        requestDate != null ? '${requestDate.day}/${requestDate.month}/${requestDate.year}' : 'N/A',
-                                        style: ResponsiveTextStyles.getResponsiveTextStyle(
-                                          fontSize: 13,
-                                          color: Theme.of(context).colorScheme.onSurface,
-                                          fontWeight: FontWeight.w500,
-                                        ),
+                                      child: Row(
+                                        children: [
+                                          Icon(Icons.calendar_today_rounded, size: 18, color: Colors.blue),
+                                          SizedBox(width: ResponsiveService.getSpacing(8)),
+                                          Column(
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                'Cerere',
+                                                style: ResponsiveTextStyles.getResponsiveTextStyle(
+                                                  fontSize: 13,
+                                                  color: Colors.blue,
+                                                  fontWeight: FontWeight.w700,
+                                                ),
+                                              ),
+                                              Text(
+                                                requestDate != null ? '${requestDate.day}/${requestDate.month}/${requestDate.year-2000}' : 'N/A',
+                                                style: ResponsiveTextStyles.getResponsiveTextStyle(
+                                                  fontSize: 15,
+                                                  color: Theme.of(context).colorScheme.onSurface,
+                                                  fontWeight: FontWeight.w600,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ],
                                       ),
-                                    ],
+                                    ),
                                   ),
-                                  SizedBox(height: ResponsiveService.getSpacing(8)),
-                                  Row(
-                                    children: [
-                                      Container(
-                                        padding: EdgeInsets.all(ResponsiveService.getSpacing(4)),
-                                        decoration: BoxDecoration(
-                                          color: Colors.green.withOpacity(0.1),
-                                          borderRadius: BorderRadius.circular(ResponsiveService.getSpacing(6)),
-                                        ),
-                                        child: Icon(Icons.event_available_rounded, size: 14, color: Colors.green),
+                                  Expanded(
+                                    child: Container(
+                                      margin: EdgeInsets.only(left: ResponsiveService.getSpacing(8)),
+                                      padding: EdgeInsets.symmetric(
+                                        horizontal: ResponsiveService.getSpacing(10),
+                                        vertical: ResponsiveService.getSpacing(10),
                                       ),
-                                      SizedBox(width: ResponsiveService.getSpacing(8)),
-                                      Text(
-                                        _isEstimatedDueDate(status) ? 'Data estimată: ' : 'Scadență: ',
-                                        style: ResponsiveTextStyles.getResponsiveTextStyle(
-                                          fontSize: 13,
-                                          color: Colors.green,
-                                          fontWeight: FontWeight.w600,
+                                      decoration: BoxDecoration(
+                                        color: Colors.green.withOpacity(0.08),
+                                        borderRadius: BorderRadius.circular(ResponsiveService.getSpacing(12)),
+                                        border: Border.all(
+                                          color: Colors.green.withOpacity(0.18),
+                                          width: 1.2,
                                         ),
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: Colors.green.withOpacity(0.07),
+                                            blurRadius: 6,
+                                            offset: Offset(0, 2),
+                                          ),
+                                        ],
                                       ),
-                                      Text(
-                                        dueDate != null ? '${dueDate.day}/${dueDate.month}/${dueDate.year}' : 'N/A',
-                                        style: ResponsiveTextStyles.getResponsiveTextStyle(
-                                          fontSize: 13,
-                                          color: Theme.of(context).colorScheme.onSurface,
-                                          fontWeight: FontWeight.w500,
-                                        ),
+                                      child: Row(
+                                        children: [
+                                          Icon(Icons.event_available_rounded, size: 18, color: Colors.green),
+                                          SizedBox(width: ResponsiveService.getSpacing(8)),
+                                          Column(
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                _isEstimatedDueDate(status) ? 'Estimată' : 'Scadență',
+                                                style: ResponsiveTextStyles.getResponsiveTextStyle(
+                                                  fontSize: 13,
+                                                  color: Colors.green,
+                                                  fontWeight: FontWeight.w700,
+                                                ),
+                                              ),
+                                              Text(
+                                                dueDate != null ? '${dueDate.day}/${dueDate.month}/${dueDate.year-2000}' : 'N/A',
+                                                style: ResponsiveTextStyles.getResponsiveTextStyle(
+                                                  fontSize: 15,
+                                                  color: Theme.of(context).colorScheme.onSurface,
+                                                  fontWeight: FontWeight.w600,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ],
                                       ),
-                                    ],
+                                    ),
                                   ),
                                 ],
                               ),
-                            ),
                           ],
                         ),
                       ),

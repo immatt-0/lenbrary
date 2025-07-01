@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../services/api_service.dart';
 import '../services/notification_service.dart';
+import '../services/responsive_service.dart' show getResponsiveSpacing, getResponsiveBorderRadius, getResponsiveIconSize, ResponsiveWidget;
 
 class PendingRequestsScreen extends StatefulWidget {
   const PendingRequestsScreen({Key? key}) : super(key: key);
@@ -10,7 +11,7 @@ class PendingRequestsScreen extends StatefulWidget {
 }
 
 class _PendingRequestsScreenState extends State<PendingRequestsScreen>
-    with TickerProviderStateMixin {
+    with TickerProviderStateMixin, ResponsiveWidget {
   late TabController _tabController;
   bool _isLoading = true;
   List<dynamic> _pendingRequests = [];
@@ -268,16 +269,20 @@ class _PendingRequestsScreenState extends State<PendingRequestsScreen>
         leading: FadeTransition(
           opacity: _fadeAnimation,
           child: Container(
-            margin: const EdgeInsets.only(left: 8),
+            margin: EdgeInsets.only(left: getResponsiveSpacing(8)),
+            padding: EdgeInsets.zero,
             decoration: BoxDecoration(
               color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: getResponsiveBorderRadius(6),
             ),
             child: IconButton(
               icon: Icon(
                 Icons.arrow_back_rounded,
                 color: Theme.of(context).colorScheme.primary,
+                size: getResponsiveIconSize(20),
               ),
+              padding: EdgeInsets.zero,
+              constraints: BoxConstraints(),
               onPressed: () => Navigator.pop(context),
               tooltip: 'Înapoi',
             ),

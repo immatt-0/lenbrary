@@ -304,22 +304,6 @@ class _SuccessScreenState extends State<SuccessScreen>
             },
             tooltip: 'Setări',
           ),
-          IconButton(
-            icon: Container(
-              padding: EdgeInsets.all(getResponsiveSpacing(8)),
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.error.withOpacity(0.1),
-                borderRadius: getResponsiveBorderRadius(8),
-              ),
-              child: Icon(
-                Icons.logout_rounded,
-                color: Theme.of(context).colorScheme.error,
-                size: getResponsiveIconSize(24),
-              ),
-            ),
-            onPressed: _logout,
-            tooltip: 'Deconectare',
-          ),
         ],
       ),
       body: Container(
@@ -475,8 +459,8 @@ class _SuccessScreenState extends State<SuccessScreen>
                             // Exam Models Button
                             _buildEnhancedMenuButton(
                               icon: Icons.description_rounded,
-                              title: 'Modele de examene',
-                              description: 'Găsește modele de examene pentru studiu',
+                              title: 'Modele de teste',
+                              description: 'Găsește modele de teste pentru studiu',
                               color: Colors.purple[600]!,
                               onTap: () {
                                 Navigator.pushNamed(context, '/exam-models');
@@ -568,22 +552,6 @@ class _SuccessScreenState extends State<SuccessScreen>
               await Navigator.pushNamed(context, '/settings');
             },
             tooltip: 'Setări',
-          ),
-          IconButton(
-            icon: Container(
-              padding: EdgeInsets.all(getResponsiveSpacing(8)),
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.error.withOpacity(0.1),
-                borderRadius: getResponsiveBorderRadius(8),
-              ),
-              child: Icon(
-                Icons.logout_rounded,
-                color: Theme.of(context).colorScheme.error,
-                size: getResponsiveIconSize(24),
-              ),
-            ),
-            onPressed: _logout,
-            tooltip: 'Deconectare',
           ),
         ],
       ),

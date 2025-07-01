@@ -5,6 +5,7 @@ import '../services/notification_service.dart';
 import '../services/responsive_service.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../widgets/responsive_book_card.dart';
+import 'book_details_screen.dart';
 
 class SearchBooksScreen extends StatefulWidget {
   const SearchBooksScreen({Key? key}) : super(key: key);
@@ -408,40 +409,69 @@ class _SearchBooksScreenState extends State<SearchBooksScreen>
       length: 2,
       child: Scaffold(
         appBar: AppBar(
+          centerTitle: true,
           title: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
             children: [
-              Expanded(
-                child: Text(
-                  'Căutare Cărți',
-                  style: ResponsiveTextStyles.getResponsiveTitleStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w700,
-                    color: Theme.of(context).colorScheme.onSurface,
+              Container(
+                padding: EdgeInsets.all(getResponsiveSpacing(8)),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      Theme.of(context).colorScheme.primary,
+                      Theme.of(context).colorScheme.primary.withOpacity(0.8),
+                    ],
                   ),
-                  overflow: TextOverflow.ellipsis,
+                  borderRadius: getResponsiveBorderRadius(12),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
+                      blurRadius: getResponsiveSpacing(8),
+                      offset: Offset(0, getResponsiveSpacing(2)),
+                    ),
+                  ],
                 ),
+                child: Icon(
+                  Icons.menu_book_rounded,
+                  color: Theme.of(context).colorScheme.onPrimary,
+                  size: getResponsiveIconSize(24),
+                ),
+              ),
+              SizedBox(width: getResponsiveSpacing(12)),
+              Text(
+                'Căutare Cărți',
+                style: ResponsiveTextStyles.getResponsiveTitleStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w700,
+                  color: Theme.of(context).colorScheme.onSurface,
+                ),
+                overflow: TextOverflow.ellipsis,
               ),
             ],
           ),
           automaticallyImplyLeading: false,
           leading: Container(
-            margin: EdgeInsets.only(left: getResponsiveSpacing(8)),
-            decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
-              borderRadius: getResponsiveBorderRadius(10),
-            ),
-            child: IconButton(
-              icon: Icon(
-                Icons.arrow_back_rounded,
-                color: Theme.of(context).colorScheme.primary,
-                size: getResponsiveIconSize(24),
-              ),
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              tooltip: 'Înapoi',
-            ),
+          margin: EdgeInsets.only(left: getResponsiveSpacing(8)),
+          padding: EdgeInsets.zero,
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+            borderRadius: getResponsiveBorderRadius(6),
           ),
+          child: IconButton(
+            icon: Icon(
+              Icons.arrow_back_rounded,
+              color: Theme.of(context).colorScheme.primary,
+              size: getResponsiveIconSize(20),
+            ),
+            padding: EdgeInsets.zero,
+            constraints: BoxConstraints(),
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            tooltip: 'Înapoi',
+          ),
+        ),
           bottom: PreferredSize(
             preferredSize: Size.fromHeight(getResponsiveSpacing(120)),
             child: Container(
@@ -751,11 +781,13 @@ class _SearchBooksScreenState extends State<SearchBooksScreen>
           availableCopies: book['available_copies'] is int ? book['available_copies'] : null,
           totalCopies: null, // Only show available copies, not total
           onTap: () {
-            // Handle book tap if needed
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => BookDetailsScreen(book: book),
+              ),
+            );
           },
-          onViewPdf: book['type'] == 'manual' && pdfUrl != null
-              ? () => _openPdf(pdfUrl)
-              : null,
+          onViewPdf: null,
           onRequestBook: (book['id'] != null) ? () => _showLoanDurationDialog(book['id']) : null,
           showActions: false,
           isLoading: _isLoading,

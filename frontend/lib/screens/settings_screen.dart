@@ -195,6 +195,21 @@ class _SettingsScreenState extends State<SettingsScreen>
                   
                   // App Info Card
                   _buildAppInfoCard(),
+                  SizedBox(height: getResponsiveSpacing(32)),
+                  Center(
+                    child: ElevatedButton.icon(
+                      icon: Icon(Icons.logout_rounded, color: Colors.white),
+                      label: Text('Deconectare', style: TextStyle(fontWeight: FontWeight.bold)),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Theme.of(context).colorScheme.error,
+                        foregroundColor: Colors.white,
+                        padding: EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                        textStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                      ),
+                      onPressed: _logout,
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -462,5 +477,12 @@ class _SettingsScreenState extends State<SettingsScreen>
         ),
       ],
     );
+  }
+
+  void _logout() async {
+    await ApiService.logout();
+    if (mounted) {
+      Navigator.of(context).pushNamedAndRemoveUntil('/login', (route) => false);
+    }
   }
 } 

@@ -5,6 +5,10 @@ import '../services/api_service.dart';
 import '../services/notification_service.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
+import '../services/responsive_service.dart';
+import '../widgets/responsive_book_card.dart';
+import 'add_book_screen.dart';
+import 'edit_book_screen.dart';
 
 // Utility function to convert Roman numerals to Arabic numerals
 int _romanToArabic(String roman) {
@@ -193,16 +197,39 @@ class _EditBookDialogState extends State<EditBookDialog>
         pdfUrl: _pdfUrl,
       );
 
+      // Verify the update by fetching the book details again
+      final allBooks = await ApiService.getBooks();
+      final verifiedBook = allBooks.firstWhere((b) => b['id'] == widget.book['id'], orElse: () => null);
+      bool verified = false;
+      if (verifiedBook != null) {
+        verified =
+          (verifiedBook['name'] ?? '') == _nameController.text.trim() &&
+          (verifiedBook['author'] ?? '') == _authorController.text.trim() &&
+          (verifiedBook['category'] ?? '') == _categoryController.text.trim() &&
+          (verifiedBook['type'] ?? '') == _selectedType &&
+          (verifiedBook['description'] ?? '') == _descriptionController.text.trim() &&
+          (verifiedBook['publication_year']?.toString() ?? '') == _yearController.text.trim() &&
+          (verifiedBook['stock']?.toString() ?? '0') == (_stockController.text.trim().isEmpty ? '0' : _stockController.text.trim()) &&
+          (verifiedBook['inventory']?.toString() ?? '0') == (_inventoryController.text.trim().isEmpty ? '0' : _inventoryController.text.trim()) &&
+          (verifiedBook['book_class'] ?? '') == (_selectedClass ?? '') &&
+          (verifiedBook['pdf_file'] ?? '') == (_pdfUrl ?? '');
+      }
+
       if (!mounted) return;
 
-      // Return the updated book to the parent
-      Navigator.of(context).pop(updatedBook);
+      if (verified) {
+        NotificationService.showBookActionSuccess(
+          context: context,
+          message: 'Detaliile cărții/manualului au fost actualizate și verificate cu succes!',
+        );
+      } else {
+        NotificationService.showError(
+          context: context,
+          message: 'Actualizarea a fost trimisă, dar verificarea a eșuat. Vă rugăm să reîncercați sau să verificați manual.',
+        );
+      }
 
-      // Show success message
-      NotificationService.showBookActionSuccess(
-        context: context,
-        message: 'Detaliile cărții/manualului au fost actualizate cu succes!',
-      );
+      Navigator.of(context).pop(updatedBook);
     } catch (e) {
       if (!mounted) return;
 
@@ -282,6 +309,8 @@ class _EditBookDialogState extends State<EditBookDialog>
 
   @override
   Widget build(BuildContext context) {
+    ResponsiveService.init(context);
+    
     return FadeTransition(
       opacity: _fadeAnimation,
       child: ScaleTransition(
@@ -997,451 +1026,125 @@ class ManageBooksScreen extends StatefulWidget {
 }
 
 class _ManageBooksScreenState extends State<ManageBooksScreen>
-    with TickerProviderStateMixin {
+    with TickerProviderStateMixin, ResponsiveWidget {
   late TabController _tabController;
-  List<dynamic> _books = [];
-  List<dynamic> _filteredBooks = [];
+  final _searchController = TextEditingController();
   bool _isLoading = false;
+  List<dynamic> _allBooks = [];
+  List<dynamic> _filteredResults = [];
   String? _errorMessage;
-  bool _processingAction = false;
   String _searchQuery = '';
   String _selectedCategory = '';
   Timer? _debounceTimer;
-
-  // Search controller
-  late TextEditingController _searchController;
-
-  // Keep track of mounted state through async operations
-  bool _isMounted = true;
-
-  // Animation controllers
-  late AnimationController _fadeController;
-  late AnimationController _slideController;
-  late AnimationController _scaleController;
-  late Animation<double> _fadeAnimation;
-  late Animation<Offset> _slideAnimation;
-  late Animation<double> _scaleAnimation;
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
     _tabController.addListener(_onTabChanged);
-    _searchController = TextEditingController();
+    _selectedCategory = 'carte';
     _loadBooks();
-    
-    // Initialize animations
-    _fadeController = AnimationController(
-      duration: const Duration(milliseconds: 800),
-      vsync: this,
-    );
-    _slideController = AnimationController(
-      duration: const Duration(milliseconds: 600),
-      vsync: this,
-    );
-    _scaleController = AnimationController(
-      duration: const Duration(milliseconds: 500),
-      vsync: this,
-    );
-    
-    _fadeAnimation = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _fadeController,
-      curve: Curves.easeInOut,
-    ));
-    
-    _slideAnimation = Tween<Offset>(
-      begin: const Offset(0, 0.3),
-      end: Offset.zero,
-    ).animate(CurvedAnimation(
-      parent: _slideController,
-      curve: Curves.easeOutCubic,
-    ));
-    
-    _scaleAnimation = Tween<double>(
-      begin: 0.9,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _scaleController,
-      curve: Curves.elasticOut,
-    ));
-    
-    // Start animations
-    _fadeController.forward();
-    _slideController.forward();
-    _scaleController.forward();
   }
 
   @override
   void dispose() {
-    _isMounted = false;
     _searchController.dispose();
     _tabController.dispose();
     _debounceTimer?.cancel();
-    _fadeController.dispose();
-    _slideController.dispose();
-    _scaleController.dispose();
     super.dispose();
   }
 
   void _onTabChanged() {
     if (_tabController.indexIsChanging) {
       setState(() {
-        _selectedCategory = _tabController.index == 0 ? 'carti' : 'manuale';
-        _isLoading = true; // Show loading when switching tabs
+        _selectedCategory = _tabController.index == 0 ? 'carte' : 'manual';
+        _isLoading = true;
+        _searchQuery = '';
       });
-      _loadBooks();
+      _searchController.clear();
+      _filterBooks();
+      setState(() {
+        _isLoading = false;
+      });
     }
   }
 
-  void _filterBooks([String? query]) {
-    final searchQuery = query ?? _searchController.text.toLowerCase().trim();
-    setState(() {
-      _searchQuery = searchQuery;
-      if (searchQuery.isEmpty) {
-        _filteredBooks = _books;
-      } else {
-        _filteredBooks = _books.where((book) {
-          // First, ensure the book belongs to the current category
-          final bookType = book['type']?.toLowerCase() ?? '';
-          final currentCategory = _selectedCategory.toLowerCase();
-          
-          // If we're in "carti" tab, only show books with type "carte"
-          if (currentCategory == 'carti' && bookType != 'carte') {
-            return false;
-          }
-          
-          // If we're in "manuale" tab, only show books with type "manual"
-          if (currentCategory == 'manuale' && bookType != 'manual') {
-            return false;
-          }
-          
-          final name = book['name']?.toLowerCase() ?? '';
-          final author = book['author']?.toLowerCase() ?? '';
-          final category = book['category']?.toLowerCase() ?? '';
-          final bookClass = book['book_class']?.toString().toLowerCase() ?? '';
-          
-          // Check if search query matches name, author, or category
-          if (name.contains(searchQuery) || 
-              author.contains(searchQuery) || 
-              category.contains(searchQuery)) {
+  void _filterBooks() {
+    List<dynamic> filtered = _allBooks;
+    if (_selectedCategory.isNotEmpty) {
+      filtered = filtered.where((book) => (book['type'] ?? 'carte') == _selectedCategory).toList();
+    }
+    if (_searchQuery.isNotEmpty) {
+      filtered = filtered.where((book) {
+        final title = (book['name'] ?? '').toString().toLowerCase();
+        final author = (book['author'] ?? '').toString().toLowerCase();
+        final category = (book['category'] ?? '').toString().toLowerCase();
+        final bookClass = (book['book_class'] ?? '').toString().toLowerCase();
+        final query = _searchQuery.toLowerCase();
+        if (title.contains(query) || author.contains(query) || category.contains(query)) {
+          return true;
+        }
+        if (book['type'] == 'manual' && bookClass.isNotEmpty) {
+          final arabicClass = _romanToArabic(bookClass.toUpperCase()).toString();
+          if (bookClass.contains(query) || arabicClass.contains(query)) {
             return true;
           }
-          
-          // Check if search query matches book class (Roman or Arabic numerals)
-          // Only for manuals (when in manuale tab)
-          if (currentCategory == 'manuale' && bookClass.isNotEmpty && searchQuery.isNotEmpty) {
-            // Direct match
-            if (bookClass.contains(searchQuery)) {
-              return true;
-            }
-            
-            // Try to convert search query to Roman numeral if it's a number
-            if (RegExp(r'^\d+$').hasMatch(searchQuery)) {
-              final arabicNum = int.tryParse(searchQuery);
-              if (arabicNum != null) {
-                final romanNum = _arabicToRoman(arabicNum).toLowerCase();
-                if (bookClass.contains(romanNum)) {
-                  return true;
-                }
-              }
-            }
-            
-            // Try to convert search query to Arabic numeral if it looks like Roman numerals
-            if (RegExp(r'^[IVXLCDM]+$', caseSensitive: false).hasMatch(searchQuery.toUpperCase())) {
-              final arabicNum = _romanToArabic(searchQuery.toUpperCase());
-              if (arabicNum > 0) {
-                final arabicStr = arabicNum.toString();
-                if (bookClass.contains(arabicStr)) {
-                  return true;
-                }
-              }
-            }
-          }
-          
-          return false;
-        }).toList();
+        }
+        return false;
+      }).toList();
+    }
+    setState(() {
+      _filteredResults = filtered;
+    });
+  }
+
+  Future<void> _loadBooks() async {
+    setState(() {
+      _isLoading = true;
+    });
+    try {
+      final books = await ApiService.getBooks();
+      setState(() {
+        _allBooks = books;
+        _isLoading = false;
+      });
+      _filterBooks();
+    } catch (e) {
+      setState(() {
+        _allBooks = [];
+        _isLoading = false;
+        _errorMessage = e.toString();
+      });
+      _filterBooks();
+    }
+  }
+
+  void _onSearchChanged(String value) {
+    _debounceTimer?.cancel();
+    setState(() {
+      _searchQuery = value;
+    });
+    _debounceTimer = Timer(const Duration(milliseconds: 500), () {
+      if (mounted) {
+        _filterBooks();
       }
     });
   }
 
-  void _onSearchChanged(String value) {
-    // Cancel previous timer
-    _debounceTimer?.cancel();
-    
-    // Only do local filtering, no API calls during search
-    _filterBooks();
-  }
-
-  void _updateState(VoidCallback action) {
-    // Only update state if the widget is still mounted
-    if (_isMounted && mounted) {
-      setState(action);
-    }
-  }
-
-  Future<void> _loadBooks() async {
-    // Only show loading for initial load and tab changes
-    if (_books.isEmpty || _isLoading) {
-      _updateState(() {
-        _isLoading = true;
-        _errorMessage = null;
-      });
-    }
-
-    try {
-      final books = await ApiService.getBooks(
-        category: _selectedCategory.isEmpty ? null : _selectedCategory,
-      );
-
-      // Check mounted again after async operation
-      if (!_isMounted || !mounted) return;
-
-      _updateState(() {
-        _books = books;
-        _filteredBooks = books;
-        _isLoading = false;
-      });
-    } catch (e) {
-      // Check mounted again after async operation
-      if (!_isMounted || !mounted) return;
-
-      _updateState(() {
-        _errorMessage = e.toString();
-        _isLoading = false;
-      });
-    }
-  }
-
-  Future<void> _showUpdateDialog(dynamic book) async {
-    if (!_isMounted || !mounted) return;
-
-    // Show a separate stateful dialog widget
-    final result = await showDialog<dynamic>(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) => UpdateBookDialog(book: book),
-    );
-
-    // Update the book in our local list if we got a result back
-    if (result != null && mounted) {
-      _updateState(() {
-        for (int i = 0; i < _books.length; i++) {
-          if (_books[i]['id'] == result['id']) {
-            _books[i] = result;
-            break;
-          }
-        }
-      });
-
-      // Show success message
-      NotificationService.showBookActionSuccess(
-        context: context,
-        message: 'Stocul cărții/manualului a fost actualizat cu succes!',
-      );
-    }
-  }
-
-  Future<void> _showEditDialog(dynamic book) async {
-    if (!_isMounted || !mounted) return;
-
-    // Show a separate stateful dialog widget
-    final result = await showDialog<dynamic>(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) => EditBookDialog(book: book),
-    );
-
-    // Update the book in our local list if we got a result back
-    if (result != null && mounted) {
-      _updateState(() {
-        for (int i = 0; i < _books.length; i++) {
-          if (_books[i]['id'] == result['id']) {
-            _books[i] = result;
-            break;
-          }
-        }
-      });
-
-      // Show success message
-      NotificationService.showBookActionSuccess(
-        context: context,
-        message: 'Detaliile cărții/manualului au fost actualizate cu succes!',
-      );
-    }
-  }
-
-  Future<void> _showDeleteDialog(dynamic book) async {
-    if (!_isMounted || !mounted) return;
-
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-        ),
-        title: Row(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: Colors.red.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Icon(
-                Icons.warning_rounded,
-                color: Colors.red,
-                size: 24,
-              ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Text(
-                'Șterge carte/manual',
-                style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.w700,
-                  color: Colors.red,
-                ),
-              ),
-            ),
-          ],
-        ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Ești sigur că vrei să ștergi cartea/manualul "${book['name']}"?',
-              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            const SizedBox(height: 12),
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: Colors.red.withOpacity(0.05),
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(
-                  color: Colors.red.withOpacity(0.2),
-                ),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Icon(
-                        Icons.info_outline_rounded,
-                        color: Colors.red,
-                        size: 16,
-                      ),
-                      const SizedBox(width: 8),
-                      Text(
-                        'Atenție!',
-                        style: TextStyle(
-                          color: Colors.red,
-                          fontWeight: FontWeight.w700,
-                          fontSize: 14,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    'Această acțiune nu poate fi anulată. Cartea/manualul va fi ștearsă definitiv din catalog.',
-                    style: TextStyle(
-                      color: Colors.red[700],
-                      fontSize: 12,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(false),
-            child: const Text(
-              'Anulează',
-              style: TextStyle(fontWeight: FontWeight.w600),
-            ),
-          ),
-          ElevatedButton(
-            onPressed: () => Navigator.of(context).pop(true),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.red,
-              foregroundColor: Colors.white,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
-              ),
-            ),
-            child: const Text(
-              'Șterge',
-              style: TextStyle(fontWeight: FontWeight.w600),
-            ),
-          ),
-        ],
-      ),
-    );
-
-    if (confirmed == true && mounted) {
-      await _deleteBook(book);
-    }
-  }
-
-  Future<void> _deleteBook(dynamic book) async {
-    _updateState(() {
-      _processingAction = true;
-    });
-
-    try {
-      await ApiService.deleteBook(bookId: book['id']);
-      
-      // Remove the book from the local list
-      _updateState(() {
-        _books.removeWhere((b) => b['id'] == book['id']);
-        _filteredBooks.removeWhere((b) => b['id'] == book['id']);
-      });
-
-      // Show success message
-      NotificationService.showSuccess(
-        context: context,
-        message: 'Cartea/manualul "${book['name']}" a fost ștearsă cu succes!',
-      );
-    } catch (e) {
-      // Show error message
-      NotificationService.showError(
-        context: context,
-        message: 'Eroare la ștergerea cărții/manualului: ${e.toString()}',
-      );
-    } finally {
-      _updateState(() {
-        _processingAction = false;
-      });
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        elevation: 0,
-        backgroundColor: Colors.transparent,
-        centerTitle: true,
-        automaticallyImplyLeading: true,
-        title: FadeTransition(
-          opacity: _fadeAnimation,
-          child: Row(
+    ResponsiveService.init(context);
+    return DefaultTabController(
+      length: 2,
+      child: Scaffold(
+        appBar: AppBar(
+          centerTitle: true,
+          title: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             mainAxisSize: MainAxisSize.min,
             children: [
               Container(
-                padding: const EdgeInsets.all(8),
+                padding: EdgeInsets.all(getResponsiveSpacing(8)),
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     colors: [
@@ -1449,152 +1152,56 @@ class _ManageBooksScreenState extends State<ManageBooksScreen>
                       Theme.of(context).colorScheme.primary.withOpacity(0.8),
                     ],
                   ),
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: getResponsiveBorderRadius(12),
                   boxShadow: [
                     BoxShadow(
                       color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
-                      blurRadius: 8,
-                      offset: const Offset(0, 2),
+                      blurRadius: getResponsiveSpacing(8),
+                      offset: Offset(0, getResponsiveSpacing(2)),
                     ),
                   ],
                 ),
                 child: Icon(
-                  Icons.library_books_rounded,
+                  Icons.menu_book_rounded,
                   color: Theme.of(context).colorScheme.onPrimary,
-                  size: 24,
+                  size: getResponsiveIconSize(24),
                 ),
               ),
-              const SizedBox(width: 12),
+              SizedBox(width: getResponsiveSpacing(12)),
               Text(
-                'Gestionare Cărți și Manuale',
-                style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                'Administrare Cărți',
+                style: ResponsiveTextStyles.getResponsiveTitleStyle(
+                  fontSize: 18,
                   fontWeight: FontWeight.w700,
-                  letterSpacing: -0.5,
+                  color: Theme.of(context).colorScheme.onSurface,
                 ),
+                overflow: TextOverflow.ellipsis,
               ),
             ],
           ),
-        ),
-        actions: [
-          FadeTransition(
-            opacity: _fadeAnimation,
-            child: Container(
-              margin: const EdgeInsets.only(right: 8),
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: IconButton(
-                icon: Icon(
-                  Icons.refresh_rounded,
-                  color: Theme.of(context).colorScheme.primary,
-                ),
-            onPressed: _loadBooks,
-                tooltip: 'Reîmprospătează',
-              ),
-            ),
-          ),
-        ],
-        bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(120),
-          child: Container(
-            margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+          automaticallyImplyLeading: false,
+          leading: Container(
+            margin: EdgeInsets.only(left: getResponsiveSpacing(8)),
             decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  Theme.of(context).colorScheme.surface,
-                  Theme.of(context).colorScheme.surface.withOpacity(0.8),
-                ],
-              ),
-              borderRadius: BorderRadius.circular(20),
-              boxShadow: [
-                BoxShadow(
-                  color: Theme.of(context).colorScheme.shadow.withOpacity(0.08),
-                  blurRadius: 16,
-                  offset: const Offset(0, 6),
-                ),
-              ],
-              border: Border.all(
-                color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
-                width: 1,
-              ),
+              color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+              borderRadius: getResponsiveBorderRadius(10),
             ),
-            child: TabBar(
-              controller: _tabController,
-              indicator: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [
-                    Theme.of(context).colorScheme.primary,
-                    Theme.of(context).colorScheme.secondary,
-                  ],
-                ),
-                borderRadius: BorderRadius.circular(16),
-                boxShadow: [
-                  BoxShadow(
-                    color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
-                    blurRadius: 8,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
+            child: IconButton(
+              icon: Icon(
+                Icons.arrow_back_rounded,
+                color: Theme.of(context).colorScheme.primary,
+                size: getResponsiveIconSize(24),
               ),
-              labelColor: Colors.white,
-              unselectedLabelColor: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
-              labelStyle: const TextStyle(
-                fontWeight: FontWeight.w700,
-                fontSize: 15,
-                letterSpacing: 0.5,
-              ),
-              unselectedLabelStyle: const TextStyle(
-                fontWeight: FontWeight.w600,
-                fontSize: 15,
-                letterSpacing: 0.5,
-              ),
-              indicatorSize: TabBarIndicatorSize.tab,
-              dividerColor: Colors.transparent,
-              tabs: [
-                Tab(
-                  icon: Container(
-                    padding: const EdgeInsets.all(8),
-                    child: Icon(
-                      Icons.book_rounded,
-                      size: 24,
-                    ),
-                  ),
-                  text: 'Cărți',
-                ),
-                Tab(
-                  icon: Container(
-                    padding: const EdgeInsets.all(8),
-                    child: Icon(
-                      Icons.menu_book_rounded,
-                      size: 24,
-                    ),
-                  ),
-                  text: 'Manuale',
-                ),
-              ],
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              tooltip: 'Înapoi',
             ),
           ),
-        ),
-      ),
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              Theme.of(context).colorScheme.primary.withOpacity(0.08),
-              Theme.of(context).colorScheme.background,
-              Theme.of(context).colorScheme.secondary.withOpacity(0.03),
-            ],
-            stops: const [0.0, 0.5, 1.0],
-          ),
-        ),
-        child: Column(
-          children: [
-            // Search Bar - Always visible
-            Container(
-              margin: const EdgeInsets.all(16.0),
+          bottom: PreferredSize(
+            preferredSize: Size.fromHeight(getResponsiveSpacing(120)),
+            child: Container(
+              margin: getResponsivePadding(horizontal: 20, vertical: 24),
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   colors: [
@@ -1602,783 +1209,306 @@ class _ManageBooksScreenState extends State<ManageBooksScreen>
                     Theme.of(context).colorScheme.surface.withOpacity(0.8),
                   ],
                 ),
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: getResponsiveBorderRadius(20),
                 boxShadow: [
                   BoxShadow(
                     color: Theme.of(context).colorScheme.shadow.withOpacity(0.08),
-                    blurRadius: 12,
-                    offset: const Offset(0, 4),
+                    blurRadius: getResponsiveSpacing(16),
+                    offset: Offset(0, getResponsiveSpacing(6)),
                   ),
                 ],
-              ),
-              child: TextField(
-                controller: _searchController,
-                onChanged: _onSearchChanged,
-                decoration: InputDecoration(
-                  hintText: 'Caută după titlu, autor, categorie sau clasă...',
-                  hintStyle: TextStyle(
-                    color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
-                    fontSize: 16,
-                  ),
-                  prefixIcon: Container(
-                    margin: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [
-                          Theme.of(context).colorScheme.primary,
-                          Theme.of(context).colorScheme.primary.withOpacity(0.8),
-                        ],
-                      ),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Icon(
-                      Icons.search_rounded,
-                      color: Theme.of(context).colorScheme.onPrimary,
-                      size: 20,
-                    ),
-                  ),
-                  suffixIcon: _searchController.text.isNotEmpty
-                      ? IconButton(
-                          icon: Icon(
-                            Icons.clear_rounded,
-                            color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
-                          ),
-                          onPressed: () {
-                            _debounceTimer?.cancel();
-                            _searchController.clear();
-                            setState(() {
-                              _searchQuery = '';
-                              _filteredBooks = _books;
-                            });
-                          },
-                        )
-                      : null,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(16),
-                    borderSide: BorderSide.none,
-                  ),
-                  filled: true,
-                  fillColor: Colors.transparent,
-                  contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 20,
-                    vertical: 16,
-                  ),
-                ),
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Theme.of(context).colorScheme.onSurface,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            ),
-            // Search Results Count
-            if (_searchQuery.isNotEmpty)
-              Container(
-                margin: const EdgeInsets.only(bottom: 16),
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                decoration: BoxDecoration(
+                border: Border.all(
                   color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(
-                    color: Theme.of(context).colorScheme.primary.withOpacity(0.2),
-                  ),
+                  width: 1,
                 ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(
-                      Icons.search_rounded,
-                      size: 16,
-                      color: Theme.of(context).colorScheme.primary,
-                    ),
-                    const SizedBox(width: 8),
-                    Text(
-                      '${_filteredBooks.length} rezultat${_filteredBooks.length == 1 ? '' : 'e'} găsit${_filteredBooks.length == 1 ? '' : 'e'}',
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        color: Theme.of(context).colorScheme.primary,
-                        fontWeight: FontWeight.w600,
-                        fontSize: 14,
-                      ),
+              ),
+              child: TabBar(
+                controller: _tabController,
+                indicator: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      Theme.of(context).colorScheme.primary,
+                      Theme.of(context).colorScheme.secondary,
+                    ],
+                  ),
+                  borderRadius: getResponsiveBorderRadius(16),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
+                      blurRadius: getResponsiveSpacing(8),
+                      offset: Offset(0, getResponsiveSpacing(2)),
                     ),
                   ],
                 ),
-              ),
-            // Content Area
-            Expanded(
-              child: _isLoading
-                  ? Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          TweenAnimationBuilder<double>(
-                            duration: const Duration(milliseconds: 1000),
-                            tween: Tween(begin: 0.0, end: 1.0),
-                            builder: (context, value, child) {
-                              return Transform.scale(
-                                scale: value,
-                                child: Container(
-                                  padding: const EdgeInsets.all(20),
-                                  decoration: BoxDecoration(
-                                    color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
-                                    shape: BoxShape.circle,
-                                  ),
-                                  child: CircularProgressIndicator(
-                                    valueColor: AlwaysStoppedAnimation<Color>(
-                                      Theme.of(context).colorScheme.primary,
-                                    ),
-                                    strokeWidth: 3,
-                                  ),
-                                ),
-                              );
-                            },
-                          ),
-                          const SizedBox(height: 24),
-                          FadeTransition(
-                            opacity: _fadeAnimation,
-                            child: Text(
-                              'Se încarcă cărțile și manualele...',
-                              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                color: Theme.of(context).colorScheme.primary,
-                              ),
-                            ),
-                          ),
-                        ],
+                labelColor: Colors.white,
+                unselectedLabelColor: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+                labelStyle: ResponsiveTextStyles.getResponsiveTextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w700,
+                ),
+                unselectedLabelStyle: ResponsiveTextStyles.getResponsiveTextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w600,
+                ),
+                indicatorSize: TabBarIndicatorSize.tab,
+                dividerColor: Colors.transparent,
+                tabs: [
+                  Tab(
+                    icon: Container(
+                      padding: EdgeInsets.all(getResponsiveSpacing(8)),
+                      child: Icon(
+                        Icons.book_rounded,
+                        size: getResponsiveIconSize(24),
                       ),
-                    )
-                  : _errorMessage != null
-                      ? Center(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              TweenAnimationBuilder<double>(
-                                duration: const Duration(milliseconds: 600),
-                                tween: Tween(begin: 0.0, end: 1.0),
-                                builder: (context, value, child) {
-                                  return Transform.scale(
-                                    scale: value,
-                                    child: Container(
-                                      padding: const EdgeInsets.all(20),
-                                      decoration: BoxDecoration(
-                                        color: Theme.of(context).colorScheme.error.withOpacity(0.1),
-                                        shape: BoxShape.circle,
-                                      ),
-                                      child: Icon(
-                                        Icons.error_outline_rounded,
-                                        size: 48,
-                                        color: Theme.of(context).colorScheme.error,
-                                      ),
-                                    ),
-                                  );
-                                },
-                              ),
-                              const SizedBox(height: 16),
-                              FadeTransition(
-                                opacity: _fadeAnimation,
-                                child: Text(
-                                  _errorMessage!,
-                                  style: TextStyle(
-                                    color: Theme.of(context).colorScheme.error,
-                                  ),
-                                  textAlign: TextAlign.center,
+                    ),
+                    text: 'Cărți',
+                  ),
+                  Tab(
+                    icon: Container(
+                      padding: EdgeInsets.all(getResponsiveSpacing(8)),
+                      child: Icon(
+                        Icons.menu_book_rounded,
+                        size: getResponsiveIconSize(24),
+                      ),
+                    ),
+                    text: 'Manuale',
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+        body: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [
+                Theme.of(context).colorScheme.primary.withOpacity(0.08),
+                Theme.of(context).colorScheme.background,
+                Theme.of(context).colorScheme.secondary.withOpacity(0.03),
+              ],
+              stops: const [0.0, 0.5, 1.0],
+            ),
+          ),
+          child: Column(
+            children: [
+              Padding(
+                padding: getResponsivePadding(all: 16),
+                child: Container(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
+                        Theme.of(context).colorScheme.surface,
+                        Theme.of(context).colorScheme.surface.withOpacity(0.8),
+                      ],
+                    ),
+                    borderRadius: getResponsiveBorderRadius(25),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Theme.of(context).colorScheme.shadow.withOpacity(0.08),
+                        blurRadius: getResponsiveSpacing(12),
+                        offset: Offset(0, getResponsiveSpacing(4)),
+                      ),
+                    ],
+                    border: Border.all(
+                      color: Theme.of(context).colorScheme.primary.withOpacity(0.2),
+                      width: 1.5,
+                    ),
+                  ),
+                  child: TextField(
+                    controller: _searchController,
+                    decoration: InputDecoration(
+                      hintText: ResponsiveService.isSmallPhone 
+                          ? 'Caută cărți și manuale...'
+                          : 'Caută după titlu, autor, categorie sau clasă (ex: VIII sau 8)...',
+                      hintStyle: ResponsiveTextStyles.getResponsiveTextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                        color: Theme.of(context).colorScheme.primary.withOpacity(0.6),
+                      ),
+                      prefixIcon: Container(
+                        margin: EdgeInsets.all(getResponsiveSpacing(8)),
+                        padding: EdgeInsets.all(getResponsiveSpacing(10)),
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                          borderRadius: getResponsiveBorderRadius(12),
+                        ),
+                        child: Icon(
+                          Icons.search_rounded,
+                          color: Theme.of(context).colorScheme.primary,
+                          size: getResponsiveIconSize(24),
+                        ),
+                      ),
+                      suffixIcon: _searchController.text.isNotEmpty
+                          ? AnimatedContainer(
+                              duration: const Duration(milliseconds: 200),
+                              child: Container(
+                                margin: EdgeInsets.all(getResponsiveSpacing(8)),
+                                decoration: BoxDecoration(
+                                  color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                                  borderRadius: getResponsiveBorderRadius(10),
                                 ),
-                              ),
-                              const SizedBox(height: 16),
-                              FadeTransition(
-                                opacity: _fadeAnimation,
-                                child: ElevatedButton.icon(
-                                  onPressed: _loadBooks,
-                                  icon: const Icon(Icons.refresh_rounded),
-                                  label: const Text('Reîncearcă'),
-                                  style: ElevatedButton.styleFrom(
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 24,
-                                      vertical: 12,
-                                    ),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(12),
-                                    ),
+                                child: IconButton(
+                                  icon: Icon(
+                                    Icons.clear_rounded,
+                                    color: Theme.of(context).colorScheme.primary,
+                                    size: getResponsiveIconSize(20),
                                   ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        )
-                      : _filteredBooks.isEmpty
-                          ? Center(
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  TweenAnimationBuilder<double>(
-                                    duration: const Duration(milliseconds: 800),
-                                    tween: Tween(begin: 0.0, end: 1.0),
-                                    builder: (context, value, child) {
-                                      return Transform.scale(
-                                        scale: value,
-                                        child: Container(
-                                          padding: const EdgeInsets.all(20),
-                                          decoration: BoxDecoration(
-                                            color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
-                                            shape: BoxShape.circle,
-                                          ),
-                                          child: Icon(
-                                            Icons.library_books_rounded,
-                                            size: 48,
-                                            color: Theme.of(context).colorScheme.primary,
-                                          ),
-                                        ),
-                                      );
-                                    },
-                                  ),
-                                  const SizedBox(height: 16),
-                                  FadeTransition(
-                                    opacity: _fadeAnimation,
-                                    child: Text(
-                                      _searchQuery.isNotEmpty
-                                          ? 'Nu s-au găsit rezultate pentru "${_searchQuery}"'
-                                          : 'Nu există cărți sau manuale în această categorie',
-                                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                                        color: Theme.of(context).colorScheme.primary.withOpacity(0.7),
-                                      ),
-                                      textAlign: TextAlign.center,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            )
-                          : FadeTransition(
-                              opacity: _fadeAnimation,
-                              child: SlideTransition(
-                                position: _slideAnimation,
-                                child: ListView.builder(
-                                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                                  itemCount: _filteredBooks.length,
-                                  itemBuilder: (context, index) {
-                                    return TweenAnimationBuilder<double>(
-                                      duration: Duration(milliseconds: 400 + (index * 100)),
-                                      tween: Tween(begin: 0.0, end: 1.0),
-                                      builder: (context, value, child) {
-                                        return Transform.translate(
-                                          offset: Offset(0, 20 * (1 - value)),
-                                          child: Opacity(
-                                            opacity: value,
-                                            child: _buildBookCard(_filteredBooks[index]),
-                                          ),
-                                        );
-                                      },
-                                    );
+                                  onPressed: () {
+                                    _debounceTimer?.cancel();
+                                    _searchController.clear();
+                                    setState(() {
+                                      _searchQuery = '';
+                                    });
+                                    _filterBooks();
                                   },
                                 ),
                               ),
-                            ),
-            ),
-          ],
-        ),
-      ),
-      floatingActionButton: FadeTransition(
-        opacity: _fadeAnimation,
-        child: ScaleTransition(
-          scale: _scaleAnimation,
-          child: Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  Theme.of(context).colorScheme.primary,
-                  Theme.of(context).colorScheme.primary.withOpacity(0.8),
-                ],
-              ),
-              borderRadius: BorderRadius.circular(16),
-              boxShadow: [
-                BoxShadow(
-                  color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
-                  blurRadius: 12,
-                  offset: const Offset(0, 4),
+                            )
+                          : null,
+                      border: OutlineInputBorder(
+                        borderRadius: getResponsiveBorderRadius(25),
+                        borderSide: BorderSide.none,
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: getResponsiveBorderRadius(25),
+                        borderSide: BorderSide.none,
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: getResponsiveBorderRadius(25),
+                        borderSide: BorderSide(
+                          color: Theme.of(context).colorScheme.primary,
+                          width: 2,
+                        ),
+                      ),
+                      filled: true,
+                      fillColor: Colors.transparent,
+                      contentPadding: EdgeInsets.symmetric(
+                        horizontal: getResponsiveSpacing(20),
+                        vertical: getResponsiveSpacing(16),
+                      ),
+                    ),
+                    onChanged: (value) {
+                      _debounceTimer?.cancel();
+                      setState(() {
+                        _searchQuery = value;
+                      });
+                      _debounceTimer = Timer(const Duration(milliseconds: 500), () {
+                        if (mounted) {
+                          _filterBooks();
+                        }
+                      });
+                    },
+                  ),
                 ),
-              ],
-            ),
-            child: FloatingActionButton(
-        onPressed: () {
-          Navigator.pushNamed(context, '/add-book').then((_) {
-            if (_isMounted && mounted) {
-              _loadBooks();
-            }
-          });
-        },
-        tooltip: 'Adaugă carte',
-              backgroundColor: Colors.transparent,
-              elevation: 0,
-              child: Icon(
-                Icons.add_rounded,
-                color: Theme.of(context).colorScheme.onPrimary,
-                size: 28,
               ),
-            ),
+              Expanded(
+                child: TabBarView(
+                  controller: _tabController,
+                  children: [
+                    // Cărți Tab
+                    _buildTabContent('carte'),
+                    // Manuale Tab
+                    _buildTabContent('manual'),
+                  ],
+                ),
+              ),
+            ],
           ),
         ),
       ),
     );
   }
 
-  Widget _buildBookCard(dynamic book) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 16.0),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            Theme.of(context).colorScheme.surface,
-            Theme.of(context).colorScheme.surface.withOpacity(0.8),
-          ],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: Theme.of(context).colorScheme.shadow.withOpacity(0.08),
-            blurRadius: 16,
-            offset: const Offset(0, 6),
-            spreadRadius: 2,
-          ),
-          BoxShadow(
-            color: Theme.of(context).colorScheme.shadow.withOpacity(0.05),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
-        border: Border.all(
-          color: Theme.of(context).colorScheme.outline.withOpacity(0.2),
-          width: 1,
-        ),
+  Widget _buildTabContent(String category) {
+    if (_isLoading) {
+      return Center(
+        child: CircularProgressIndicator(),
+      );
+    }
+    if (!_isLoading && _filteredResults.isEmpty) {
+      return Center(child: Text('Nu există cărți/manuale.'));
+    }
+    if (_errorMessage != null) {
+      return Center(child: Text(_errorMessage!));
+    }
+    return ListView.builder(
+      padding: EdgeInsets.symmetric(
+        horizontal: getResponsiveSpacing(12),
+        vertical: getResponsiveSpacing(8),
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Book information with photo first
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Book cover image on the left
-                Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(12),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.1),
-                        blurRadius: 8,
-                        offset: const Offset(0, 4),
-                      ),
-                    ],
-                  ),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(12),
-                    child: SizedBox(
-                      width: 100,
-                      height: 150,
-                      child: book['thumbnail_url'] != null && book['thumbnail_url'].isNotEmpty
-                          ? Image.network(
-                      book['thumbnail_url'],
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) {
-                        return Container(
-                                  decoration: BoxDecoration(
-                                    gradient: LinearGradient(
-                                      colors: [
-                                        Colors.grey[300]!,
-                                        Colors.grey[200]!,
-                                      ],
-                                    ),
-                                  ),
-                                  child: const Center(
-                                    child: Icon(
-                                      Icons.image_not_supported,
-                                      size: 32,
-                                      color: Colors.grey,
-                                    ),
-                                  ),
-                                );
-                              },
-                            )
-                          : Container(
-                              decoration: BoxDecoration(
-                                gradient: LinearGradient(
-                                  colors: [
-                                    Colors.grey[300]!,
-                                    Colors.grey[200]!,
-                                  ],
-                                ),
-                              ),
-                              child: const Center(
-                                child: Icon(
-                                  Icons.image_not_supported,
-                                  size: 32,
-                                  color: Colors.grey,
-                                ),
-                              ),
-                            ),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 20),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Book title and author
-                      Container(
-                        padding: const EdgeInsets.all(16),
-                        decoration: BoxDecoration(
-                          color: Theme.of(context).colorScheme.surfaceVariant,
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(
-                            color: Theme.of(context).colorScheme.outline.withOpacity(0.2),
-                          ),
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              children: [
-                                Container(
-                                  padding: const EdgeInsets.all(8),
-                                  decoration: BoxDecoration(
-                                    gradient: LinearGradient(
-                                      colors: [
-                                        Theme.of(context).colorScheme.primary.withOpacity(0.15),
-                                        Theme.of(context).colorScheme.primary.withOpacity(0.05),
-                                      ],
-                                    ),
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                  child: Icon(
-                                    Icons.book_rounded,
-                                    color: Theme.of(context).colorScheme.primary,
-                                    size: 20,
-                                  ),
-                                ),
-                                const SizedBox(width: 12),
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        book['name'] ?? 'Carte necunoscută',
-                                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                          fontWeight: FontWeight.w700,
-                                          color: Theme.of(context).colorScheme.onSurfaceVariant,
-                                        ),
-                                      ),
-                                      const SizedBox(height: 4),
-                      Text(
-                                        book['author'] ?? '',
-                                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                          color: Theme.of(context).colorScheme.onSurfaceVariant,
-                                          fontWeight: FontWeight.w500,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(height: 12),
-                      // Category
-                      Container(
-                        padding: const EdgeInsets.all(16),
-                        decoration: BoxDecoration(
-                          color: Theme.of(context).colorScheme.surfaceVariant,
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(
-                            color: Theme.of(context).colorScheme.outline.withOpacity(0.2),
-                          ),
-                        ),
-                        child: Row(
-                          children: [
-                            Container(
-                              padding: const EdgeInsets.all(8),
-                              decoration: BoxDecoration(
-                                gradient: LinearGradient(
-                                  colors: [
-                                    Theme.of(context).colorScheme.secondary.withOpacity(0.15),
-                                    Theme.of(context).colorScheme.secondary.withOpacity(0.05),
-                                  ],
-                                ),
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              child: Icon(
-                                Icons.category_rounded,
-                                color: Theme.of(context).colorScheme.secondary,
-                                size: 20,
-                              ),
-                            ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    'Categorie',
-                                    style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                                      fontWeight: FontWeight.w600,
-                                      color: Theme.of(context).colorScheme.secondary,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 2),
-                      Text(
-                                    book['category'] ?? '',
-                                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                      color: Theme.of(context).colorScheme.onSurfaceVariant,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(height: 12),
-                      // Class (only for manuals)
-                      if (book['type'] == 'manual' && book['book_class'] != null) ...[
-                        Container(
-                          padding: const EdgeInsets.all(16),
-                          decoration: BoxDecoration(
-                            color: Theme.of(context).colorScheme.surfaceVariant,
-                            borderRadius: BorderRadius.circular(12),
-                            border: Border.all(
-                              color: Theme.of(context).colorScheme.outline.withOpacity(0.2),
-                            ),
-                          ),
-                          child: Row(
-                            children: [
-                              Container(
-                                padding: const EdgeInsets.all(8),
-                                decoration: BoxDecoration(
-                                  gradient: LinearGradient(
-                                    colors: [
-                                      Theme.of(context).colorScheme.secondary.withOpacity(0.15),
-                                      Theme.of(context).colorScheme.secondary.withOpacity(0.05),
-                                    ],
-                                  ),
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                child: Icon(
-                                  Icons.school_rounded,
-                                  color: Theme.of(context).colorScheme.secondary,
-                                  size: 20,
-                                ),
-                              ),
-                              const SizedBox(width: 12),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      'Clasă',
-                                      style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                                        fontWeight: FontWeight.w600,
-                                        color: Theme.of(context).colorScheme.secondary,
-                                      ),
-                                    ),
-                                    const SizedBox(height: 2),
-                                    Text(
-                                      book['book_class'] ?? '',
-                                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                        color: Theme.of(context).colorScheme.onSurfaceVariant,
-                                        fontWeight: FontWeight.w500,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(height: 12),
-                      ],
-                      // Stock information
-                      Container(
-                        padding: const EdgeInsets.all(16),
-                        decoration: BoxDecoration(
-                          color: Theme.of(context).colorScheme.surfaceVariant,
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(
-                            color: Theme.of(context).colorScheme.outline.withOpacity(0.2),
-                          ),
-                        ),
-                        child: Row(
-                          children: [
-                            Container(
-                              padding: const EdgeInsets.all(8),
-                              decoration: BoxDecoration(
-                                gradient: LinearGradient(
-                                  colors: [
-                                    Theme.of(context).colorScheme.tertiary.withOpacity(0.15),
-                                    Theme.of(context).colorScheme.tertiary.withOpacity(0.05),
-                                  ],
-                                ),
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              child: Icon(
-                                Icons.inventory_rounded,
-                                color: Theme.of(context).colorScheme.tertiary,
-                                size: 20,
-                              ),
-                            ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                      Text(
-                                    'Stoc',
-                                    style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                                      fontWeight: FontWeight.w600,
-                                      color: Theme.of(context).colorScheme.tertiary,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 2),
-                      Text(
-                                    '${book['stock'] ?? 0} exemplare',
-                                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                      color: Theme.of(context).colorScheme.onSurfaceVariant,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
+      itemCount: _filteredResults.length,
+      itemBuilder: (context, index) {
+        if (index < _filteredResults.length) {
+          return _buildBookCard(_filteredResults[index]);
+        } else {
+          return Container();
+        }
+      },
+    );
+  }
 
-            // Actions
-            Padding(
-              padding: const EdgeInsets.only(top: 20.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  // Delete button
-                  Container(
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [
-                          Colors.red,
-                          Colors.red.withOpacity(0.8),
-                        ],
-                      ),
-                      borderRadius: BorderRadius.circular(12),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.red.withOpacity(0.3),
-                          blurRadius: 8,
-                          offset: const Offset(0, 2),
-                        ),
-                      ],
-                    ),
-                    child: ElevatedButton.icon(
-                      onPressed: _processingAction
-                          ? null
-                          : () => _showDeleteDialog(book),
-                      icon: const Icon(Icons.delete_rounded),
-                      label: const Text('Șterge'),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.transparent,
-                        foregroundColor: Colors.white,
-                        elevation: 0,
-                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  // Edit button
-                  Container(
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [
-                          Theme.of(context).colorScheme.secondary,
-                          Theme.of(context).colorScheme.secondary.withOpacity(0.8),
-                        ],
-                      ),
-                      borderRadius: BorderRadius.circular(12),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Theme.of(context).colorScheme.secondary.withOpacity(0.3),
-                          blurRadius: 8,
-                          offset: const Offset(0, 2),
-                        ),
-                      ],
-                    ),
-                    child: ElevatedButton.icon(
-                      onPressed: _processingAction
-                          ? null
-                          : () => _showEditDialog(book),
-                      icon: const Icon(Icons.edit_rounded),
-                      label: const Text('Editează'),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.transparent,
-                        foregroundColor: Theme.of(context).colorScheme.onSecondary,
-                        elevation: 0,
-                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  // Stock management button
-                  Container(
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [
-                          Theme.of(context).colorScheme.primary,
-                          Theme.of(context).colorScheme.primary.withOpacity(0.8),
-                        ],
-                      ),
-                      borderRadius: BorderRadius.circular(12),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
-                          blurRadius: 8,
-                          offset: const Offset(0, 2),
-                        ),
-                      ],
-                    ),
-                    child: ElevatedButton.icon(
-                      onPressed: _processingAction
-                          ? null
-                          : () => _showUpdateDialog(book),
-                      icon: const Icon(Icons.inventory_rounded),
-                      label: const Text('Gestionare stoc'),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.transparent,
-                        foregroundColor: Theme.of(context).colorScheme.onPrimary,
-                        elevation: 0,
-                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
+  Widget _buildBookCard(dynamic book) {
+    return ResponsiveBookCard(
+      title: book['name'] ?? 'Carte necunoscută',
+      author: book['author'] ?? 'Autor necunoscut',
+      category: book['category'] ?? 'Necategorizat',
+      bookType: book['type'] ?? 'Carte',
+      bookClass: book['book_class'],
+      thumbnailUrl: getFullThumbnailUrl(book['thumbnail_url']),
+      availableCopies: book['stock'],
+      totalCopies: book['inventory'],
+      showActions: false,
+      onTap: () {
+        Navigator.of(context).push(MaterialPageRoute(
+          builder: (context) => EditBookScreen(book: book),
+        ));
+      },
+    );
+  }
+
+  Future<void> _showEditBookDialog(dynamic book) async {
+    final result = await showDialog(
+      context: context,
+      builder: (context) => EditBookDialog(book: book),
+    );
+    if (result != null) {
+      _loadBooks();
+    }
+  }
+
+  // Helper to show AddBookScreen as a dialog
+  Future<void> _showAddBookDialog() async {
+    final result = await showDialog(
+      context: context,
+      builder: (context) => Dialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        child: Container(
+          width: ResponsiveService.dialogWidth,
+          height: ResponsiveService.dialogHeight,
+          child: AddBookScreen(),
         ),
       ),
     );
+    if (result != null) {
+      _loadBooks();
+    }
+  }
+
+  // Helper to build a full thumbnail URL
+  String? getFullThumbnailUrl(String? thumbnailUrl) {
+    if (thumbnailUrl == null || thumbnailUrl.isEmpty) return null;
+    if (thumbnailUrl.startsWith('http')) return thumbnailUrl;
+    String cleanPath = thumbnailUrl.replaceFirst(RegExp(r'^/+'), '');
+    return '${ApiService.baseUrl}/media/$cleanPath';
+  }
+
+  // Helper to build a full PDF URL
+  String? getFullPdfUrl(String? pdfUrl) {
+    if (pdfUrl == null || pdfUrl.isEmpty) return null;
+    if (pdfUrl.startsWith('http')) return pdfUrl;
+    String cleanPath = pdfUrl.replaceFirst(RegExp(r'^(\/)?(media\/)+'), '');
+    return '${ApiService.baseUrl}/media/$cleanPath';
   }
 }

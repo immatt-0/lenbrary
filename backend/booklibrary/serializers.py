@@ -26,11 +26,20 @@ class UserSerializer(serializers.ModelSerializer):
 
 class BookSerializer(serializers.ModelSerializer):
     available_copies = serializers.IntegerField(read_only=True)
+    pdf_file = serializers.SerializerMethodField()
     
     class Meta:
         model = Book
         fields = ['id', 'name', 'inventory', 'thumbnail_url', 'author', 'stock', 
                  'description', 'category', 'type', 'publication_year', 'book_class', 'available_copies', 'pdf_file']
+
+    def get_pdf_file(self, obj):
+        request = self.context.get('request')
+        if obj.pdf_file:
+            if request is not None:
+                return request.build_absolute_uri(obj.pdf_file.url)
+            return obj.pdf_file.url
+        return None
 
 class StudentSerializer(serializers.ModelSerializer):
     user = UserSerializer()

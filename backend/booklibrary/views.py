@@ -13,6 +13,7 @@ from django.core.mail import send_mail
 from django.urls import reverse
 from django.http import HttpResponse
 import logging
+import urllib.parse
 
 from rest_framework.decorators import api_view, parser_classes, permission_classes
 from rest_framework.response import Response
@@ -133,10 +134,26 @@ def book(request):
         data = request.data.copy()
         for field in ['name', 'author', 'category', 'description']:
             if field in data and data[field]:
-                # Ensure the field is properly encoded as UTF-8
-                if isinstance(data[field], str):
-                    data[field] = data[field].encode('utf-8').decode('utf-8')
-            
+                pass  # No need to re-encode; Django handles Unicode natively
+
+        # Defensive fix: strip full URL and /media/ from media fields
+        for media_field in ['pdf_file', 'thumbnail_url']:
+            if media_field in data and data[media_field]:
+                value = data[media_field]
+                logging.warning(f"RAW {media_field}: {value}")
+                value = urllib.parse.unquote(value)
+                logging.warning(f"DECODED {media_field}: {value}")
+                # If it's a full URL, extract only the part after /media/
+                if '/media/' in value:
+                    data[media_field] = value.split('/media/', 1)[-1]
+                    logging.warning(f"EXTRACTED {media_field}: {data[media_field]}")
+                # If it starts with http or https, try to extract the path
+                elif value.startswith('http://') or value.startswith('https://'):
+                    idx = value.find('/media/')
+                    if idx != -1:
+                        data[media_field] = value[idx + 7:]
+                        logging.warning(f"EXTRACTED2 {media_field}: {data[media_field]}")
+
         serializer = BookSerializer(data=data)
         if serializer.is_valid():
             new_book = serializer.save()
@@ -1407,7 +1424,7 @@ def mark_all_notifications_read(request):
 
 @api_view(['PUT'])
 @permission_classes([IsAuthenticated])
-@parser_classes([JSONParser])
+@parser_classes([MultiPartParser, FormParser, JSONParser])
 def update_book_details(request, book_id):
     """Update book details (for librarians)"""
     # Check if user is librarian
@@ -1416,13 +1433,8 @@ def update_book_details(request, book_id):
     
     book = get_object_or_404(Book, id=book_id)
     
-    # Ensure UTF-8 encoding for text fields
+    # Use request.data for form fields, request.FILES for files
     data = request.data.copy()
-    for field in ['name', 'author', 'category', 'description']:
-        if field in data and data[field]:
-            # Ensure the field is properly encoded as UTF-8
-            if isinstance(data[field], str):
-                data[field] = data[field].encode('utf-8').decode('utf-8')
     
     # Update only the fields that are provided
     if 'name' in data:
@@ -1445,8 +1457,13 @@ def update_book_details(request, book_id):
         book.inventory = data['inventory']
     if 'book_class' in data:
         book.book_class = data['book_class']
-    if 'pdf_file' in data:
-        book.pdf_file = data['pdf_file']
+    
+    # Handle pdf_file upload
+    if 'pdf_file' in request.FILES:
+        book.pdf_file = request.FILES['pdf_file']
+    elif 'pdf_file' in data and (data['pdf_file'] is None or data['pdf_file'] == '' or data['pdf_file'] == 'null'):
+        # Allow deletion of PDF
+        book.pdf_file = None
     
     book.save()
     

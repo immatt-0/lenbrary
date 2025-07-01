@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../services/api_service.dart';
 import '../services/notification_service.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../services/responsive_service.dart' show getResponsiveSpacing, getResponsiveBorderRadius, getResponsiveIconSize, ResponsiveWidget;
 
 class LoanHistoryScreen extends StatefulWidget {
   const LoanHistoryScreen({Key? key}) : super(key: key);
@@ -11,7 +12,7 @@ class LoanHistoryScreen extends StatefulWidget {
 }
 
 class _LoanHistoryScreenState extends State<LoanHistoryScreen>
-    with TickerProviderStateMixin {
+    with TickerProviderStateMixin, ResponsiveWidget {
   List<dynamic> _loanHistory = [];
   List<dynamic> _filteredLoanHistory = [];
   bool _isLoading = false;
@@ -292,16 +293,20 @@ class _LoanHistoryScreenState extends State<LoanHistoryScreen>
         ),
         automaticallyImplyLeading: false,
         leading: Container(
-          margin: const EdgeInsets.only(left: 8),
+          margin: EdgeInsets.only(left: getResponsiveSpacing(8)),
+          padding: EdgeInsets.zero,
           decoration: BoxDecoration(
             color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
-            borderRadius: BorderRadius.circular(10),
+            borderRadius: getResponsiveBorderRadius(6),
           ),
           child: IconButton(
             icon: Icon(
               Icons.arrow_back_rounded,
               color: Theme.of(context).colorScheme.primary,
+              size: getResponsiveIconSize(20),
             ),
+            padding: EdgeInsets.zero,
+            constraints: BoxConstraints(),
             onPressed: () => Navigator.pop(context),
             tooltip: 'Înapoi',
           ),

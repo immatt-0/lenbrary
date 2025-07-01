@@ -4,6 +4,7 @@ import '../services/notification_service.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'dart:convert';
 import 'extension_requests_screen.dart';
+import '../services/responsive_service.dart' show getResponsiveSpacing, getResponsiveBorderRadius, getResponsiveIconSize, ResponsiveWidget;
 
 class ActiveLoansScreen extends StatefulWidget {
   const ActiveLoansScreen({Key? key}) : super(key: key);
@@ -13,7 +14,7 @@ class ActiveLoansScreen extends StatefulWidget {
 }
 
 class _ActiveLoansScreenState extends State<ActiveLoansScreen>
-    with TickerProviderStateMixin {
+    with TickerProviderStateMixin, ResponsiveWidget {
   bool _isLoading = true;
   List<dynamic> _activeLoans = [];
   List<dynamic> _filteredActiveLoans = [];
@@ -243,16 +244,20 @@ class _ActiveLoansScreenState extends State<ActiveLoansScreen>
         leading: FadeTransition(
           opacity: _fadeAnimation,
           child: Container(
-            margin: const EdgeInsets.only(left: 8),
+            margin: EdgeInsets.only(left: getResponsiveSpacing(8)),
+            padding: EdgeInsets.zero,
             decoration: BoxDecoration(
               color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: getResponsiveBorderRadius(6),
             ),
             child: IconButton(
               icon: Icon(
                 Icons.arrow_back_rounded,
                 color: Theme.of(context).colorScheme.primary,
+                size: getResponsiveIconSize(20),
               ),
+              padding: EdgeInsets.zero,
+              constraints: BoxConstraints(),
               onPressed: () => Navigator.pushReplacementNamed(context, '/success'),
               tooltip: 'Înapoi',
             ),

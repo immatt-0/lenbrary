@@ -352,6 +352,27 @@ class ApiService {
     }
   }
 
+  // Helper to extract relative media path from a full URL or URL-encoded string
+  static String extractRelativeMediaPath(String url) {
+    try {
+      final decoded = Uri.decodeFull(url);
+      final uri = Uri.parse(decoded);
+      final path = uri.path;
+      final idx = path.indexOf('/media/');
+      if (idx != -1) {
+        return path.substring(idx + 7); // 7 = length of '/media/'
+      }
+      return path;
+    } catch (e) {
+      // Fallback: try to find /media/ in the raw string
+      final idx = url.indexOf('/media/');
+      if (idx != -1) {
+        return url.substring(idx + 7);
+      }
+      return url;
+    }
+  }
+
   // Add new book to library
   static Future<Map<String, dynamic>> addBook({
     required String name,
@@ -371,6 +392,12 @@ class ApiService {
       throw Exception('Not authenticated');
     }
 
+    // Ensure only relative paths are sent for media fields
+    final String? safeThumbnailUrl =
+        thumbnailUrl != null ? extractRelativeMediaPath(thumbnailUrl) : null;
+    final String? safePdfUrl =
+        pdfUrl != null ? extractRelativeMediaPath(pdfUrl) : null;
+
     final response = await http.post(
       Uri.parse('$baseUrl/book-library/book'),
       headers: {
@@ -386,9 +413,9 @@ class ApiService {
         'category': category,
         'type': type,
         'publication_year': publicationYear,
-        'thumbnail_url': thumbnailUrl,
+        'thumbnail_url': safeThumbnailUrl,
         'book_class': bookClass,
-        'pdf_file': pdfUrl,
+        'pdf_file': safePdfUrl,
       }),
     );
 
@@ -531,15 +558,22 @@ class ApiService {
   }
 
   // Update the original requestBook method to create a notification
-  static Future<Map<String, dynamic>> requestBook(
-      {required int bookId, int loanDurationDays = 14}) async {
+  static Future<Map<String, dynamic>> requestBook({
+    required int bookId,
+    int loanDurationDays = 14,
+    String? message,
+  }) async {
+    final Map<String, dynamic> body = {
+      'book_id': bookId,
+      'loan_duration_days': loanDurationDays,
+    };
+    if (message != null && message.trim().isNotEmpty) {
+      body['message'] = message.trim();
+    }
     final response = await _makeRequest(
       'POST',
       '/book-library/request-book',
-      body: {
-        'book_id': bookId,
-        'loan_duration_days': loanDurationDays,
-      },
+      body: body,
     );
     return response;
   }
@@ -1074,11 +1108,14 @@ class ApiService {
     final response = await http.put(
       Uri.parse('$baseUrl/book-library/book/$bookId'),
       headers: {
-        'Content-Type': 'application/json',
+        'Content-Type': 'application/json; charset=utf-8',
         'Authorization': 'Bearer $token',
       },
       body: jsonEncode(data),
     );
+
+    print('Sent data: ' + jsonEncode(data));
+    print('Response body: ' + utf8.decode(response.bodyBytes));
 
     if (response.statusCode == 200) {
       return jsonDecode(response.body);
@@ -1116,5 +1153,10 @@ class ApiService {
       } catch (_) {}
       throw Exception('Failed to cancel request: ${response.body}');
     }
+  }
+
+  // Add this to ApiService:
+  static Future<void> logout() async {
+    await clearTokens();
   }
 }

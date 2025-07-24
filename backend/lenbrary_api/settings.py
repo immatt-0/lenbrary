@@ -67,10 +67,12 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.AllowAny',
     ],
     'DEFAULT_RENDERER_CLASSES': [
-        'rest_framework.renderers.JSONRenderer',
+        'booklibrary.renderers.UnicodeJSONRenderer',
         'rest_framework.renderers.BrowsableAPIRenderer',
     ],
-    'TEST_REQUEST_DEFAULT_FORMAT': 'json'
+    'TEST_REQUEST_DEFAULT_FORMAT': 'json',
+    'UNICODE_JSON': False,
+    'COMPACT_JSON': False,
 }
 
 # JWT settings
@@ -163,13 +165,17 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'ro'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Europe/Bucharest'
 
 USE_I18N = True
 
 USE_TZ = True
+
+# Ensure proper UTF-8 encoding
+DEFAULT_CHARSET = 'utf-8'
+FILE_CHARSET = 'utf-8'
 
 
 # Static files (CSS, JavaScript, Images)

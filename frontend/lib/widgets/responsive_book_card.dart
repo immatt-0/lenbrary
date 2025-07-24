@@ -43,7 +43,7 @@ class ResponsiveBookCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Bigger sizes for better visibility and centering
-    final cardPadding = ResponsiveService.getSpacing(20);
+    final cardPadding = ResponsiveService.getSpacing(24); // Increased from 20
     final titleFontSize = ResponsiveService.getFontSize(22);
     final authorFontSize = ResponsiveService.getFontSize(17);
     final categoryFontSize = ResponsiveService.getFontSize(16);
@@ -51,14 +51,14 @@ class ResponsiveBookCard extends StatelessWidget {
     final iconSize = ResponsiveService.getIconSize(22);
     final buttonSize = ResponsiveService.getSpacing(52);
     final borderRadius = ResponsiveService.getSpacing(18);
-    final thumbnailWidth = ResponsiveService.getSpacing(60);
-    final thumbnailHeight = ResponsiveService.getSpacing(80);
+    final thumbnailWidth = ResponsiveService.getSpacing(90); // Increased from 60
+    final thumbnailHeight = ResponsiveService.getSpacing(120); // Increased from 80
     final descriptionFontSize = ResponsiveService.getFontSize(13);
 
     return Container(
       margin: EdgeInsets.symmetric(
         horizontal: ResponsiveService.getSpacing(14),
-        vertical: ResponsiveService.getSpacing(10),
+        vertical: ResponsiveService.getSpacing(12), // Increased from 10
       ),
       child: onTap != null
           ? InkWell(
@@ -88,7 +88,7 @@ class ResponsiveBookCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(borderRadius),
         ),
         child: Padding(
-          padding: EdgeInsets.all(ResponsiveService.getSpacing(20)),
+          padding: EdgeInsets.all(ResponsiveService.getSpacing(24)), // Increased from 20
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
@@ -105,7 +105,7 @@ class ResponsiveBookCard extends StatelessWidget {
                       ),
                       child: Icon(
                         bookType == 'manual' ? Icons.menu_book_rounded : Icons.book_rounded,
-                        size: 24,
+                        size: 32, // Increased from 24
                         color: Theme.of(context).colorScheme.primary,
                       ),
                     );
@@ -128,7 +128,7 @@ class ResponsiveBookCard extends StatelessWidget {
                           ),
                           child: Icon(
                             bookType == 'manual' ? Icons.menu_book_rounded : Icons.book_rounded,
-                            size: 24,
+                            size: 32, // Increased from 24
                             color: Theme.of(context).colorScheme.primary,
                           ),
                         );
@@ -137,7 +137,7 @@ class ResponsiveBookCard extends StatelessWidget {
                   );
                 },
               ),
-              SizedBox(width: 8),
+              SizedBox(width: 12), // Increased from 8
               // Book details with better spacing
               Expanded(
                 child: Column(

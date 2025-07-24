@@ -3,7 +3,6 @@ import '../services/api_service.dart';
 import '../services/notification_service.dart';
 import '../services/responsive_service.dart';
 import '../widgets/responsive_button.dart';
-import '../widgets/responsive_text_field.dart';
 
 class MyRequestsScreen extends StatefulWidget {
   const MyRequestsScreen({Key? key}) : super(key: key);
@@ -123,7 +122,7 @@ class _MyRequestsScreenState extends State<MyRequestsScreen>
             end: Alignment.bottomCenter,
             colors: [
               Theme.of(context).colorScheme.primary.withOpacity(0.08),
-              Theme.of(context).colorScheme.background,
+              Theme.of(context).colorScheme.surface,
               Theme.of(context).colorScheme.secondary.withOpacity(0.03),
             ],
             stops: const [0.0, 0.5, 1.0],
@@ -328,141 +327,6 @@ class _MyRequestsScreenState extends State<MyRequestsScreen>
     }
   }
 
-  String _getDueDateLabel(String status) {
-    switch (status) {
-      case 'IN_ASTEPTARE':
-        return 'Data estimată';
-      case 'APROBAT':
-        return 'Data estimată';
-      case 'GATA_RIDICARE':
-        return 'Data estimată';
-      case 'IMPRUMUTAT':
-        return 'Data returnării';
-      case 'RETURNAT':
-        return 'Data returnării';
-      case 'INTARZIAT':
-        return 'Data returnării';
-      case 'RESPINS':
-        return 'Data returnării';
-      default:
-        return 'Data';
-    }
-  }
-
-  String _getFullDueDateLabel(String status) {
-    switch (status) {
-      case 'IN_ASTEPTARE':
-        return 'Data returnării estimată';
-      case 'APROBAT':
-        return 'Data returnării estimată';
-      case 'GATA_RIDICARE':
-        return 'Data returnării estimată';
-      case 'IMPRUMUTAT':
-        return 'Data returnării';
-      case 'RETURNAT':
-        return 'Data returnării';
-      case 'INTARZIAT':
-        return 'Data returnării';
-      case 'RESPINS':
-        return 'Data returnării';
-      default:
-        return 'Data';
-    }
-  }
-
-  Future<void> _showExtensionDialog(BuildContext context, Map<String, dynamic> request) async {
-    int selectedDays = 7; // Default extension period
-    final TextEditingController messageController = TextEditingController();
-
-    return showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Solicită prelungire împrumut'),
-          content: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Carte: ${request['book']['name']}',
-                  style: Theme.of(context).textTheme.titleMedium,
-                ),
-                const SizedBox(height: 16),
-                const Text('Perioada de prelungire:'),
-                const SizedBox(height: 8),
-                DropdownButtonFormField<int>(
-                  value: selectedDays,
-                  decoration: const InputDecoration(
-                    border: OutlineInputBorder(),
-                    contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                  ),
-                  items: [7, 14, 21, 30].map((days) {
-                    return DropdownMenuItem<int>(
-                      value: days,
-                      child: Text('$days zile'),
-                    );
-                  }).toList(),
-                  onChanged: (value) {
-                    if (value != null) {
-                      selectedDays = value;
-                    }
-                  },
-                ),
-                const SizedBox(height: 16),
-                const Text('Mesaj (opțional):'),
-                const SizedBox(height: 8),
-                TextField(
-                  controller: messageController,
-                  decoration: const InputDecoration(
-                    border: OutlineInputBorder(),
-                    hintText: 'Adaugă un mesaj pentru bibliotecar...',
-                    contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                  ),
-                  maxLines: 3,
-                ),
-              ],
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text('Anulează'),
-            ),
-            ElevatedButton(
-              onPressed: () async {
-                try {
-                  await ApiService.requestLoanExtension(
-                    borrowingId: request['id'],
-                    requestedDays: selectedDays,
-                    message: messageController.text.trim(),
-                  );
-                  if (mounted) {
-                    Navigator.of(context).pop();
-                    NotificationService.showSuccess(
-                      context: context,
-                      message: 'Cererea de prelungire a fost trimisă cu succes!',
-                    );
-                    await _loadRequests(); // Refresh the list
-                  }
-                } catch (e) {
-                  if (mounted) {
-                    Navigator.of(context).pop();
-                    NotificationService.showError(
-                      context: context,
-                      message: 'Eroare la trimiterea cererii: ${e.toString()}',
-                    );
-                  }
-                }
-              },
-              child: const Text('Trimite cererea'),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
   bool _isEstimatedDueDate(String status) {
     return status == 'IN_ASTEPTARE' || status == 'APROBAT' || status == 'GATA_RIDICARE';
   }
@@ -498,12 +362,12 @@ class _MyRequestsScreenState extends State<MyRequestsScreen>
     final thumbnailUrl = (thumbnailRaw != null && thumbnailRaw.isNotEmpty)
         ? (thumbnailRaw.startsWith('http')
             ? thumbnailRaw
-            : ApiService.baseUrl + '/media/' + thumbnailRaw.replaceAll(RegExp(r'^/?media/'), ''))
+            : '${ApiService.baseUrl}/media/${thumbnailRaw.replaceAll(RegExp(r'^/?media/'), '')}')
         : null;
 
     // Enhanced sizing for more professional look
-    final thumbnailWidth = ResponsiveService.getSpacing(52);
-    final thumbnailHeight = ResponsiveService.getSpacing(70);
+    final thumbnailWidth = ResponsiveService.getSpacing(56);
+    final thumbnailHeight = ResponsiveService.getSpacing(76);
     final borderRadius = ResponsiveService.getSpacing(16);
     final cardPadding = ResponsiveService.getSpacing(18);
 
@@ -538,320 +402,496 @@ class _MyRequestsScreenState extends State<MyRequestsScreen>
           horizontal: ResponsiveService.getSpacing(12),
           vertical: ResponsiveService.getSpacing(10),
         ),
-        child: Card(
-          elevation: 8,
-          shadowColor: Colors.black.withOpacity(0.15),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(borderRadius),
-          ),
-          child: Container(
+        child: Material(
+          elevation: 0,
+          borderRadius: BorderRadius.circular(borderRadius),
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 200),
+            curve: Curves.easeInOut,
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
                 colors: [
                   Theme.of(context).colorScheme.surface,
-                  Theme.of(context).colorScheme.surface.withOpacity(0.95),
+                  Theme.of(context).colorScheme.surface.withOpacity(0.97),
                 ],
               ),
               borderRadius: BorderRadius.circular(borderRadius),
               border: Border.all(
-                color: Theme.of(context).colorScheme.outline.withOpacity(0.1),
-                width: 1,
+                color: _getStatusColor(status).withOpacity(0.15),
+                width: 1.5,
               ),
+              boxShadow: [
+                BoxShadow(
+                  color: _getStatusColor(status).withOpacity(0.08),
+                  blurRadius: 12,
+                  offset: const Offset(0, 4),
+                  spreadRadius: 1,
+                ),
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.05),
+                  blurRadius: 6,
+                  offset: const Offset(0, 2),
+                ),
+              ],
             ),
-            child: Padding(
-              padding: EdgeInsets.all(cardPadding),
-              child: Stack(
-                children: [
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+            child: Stack(
+              children: [
+                // Status indicator stripe on the left
+                Positioned(
+                  left: 0,
+                  top: 0,
+                  bottom: 0,
+                  child: Container(
+                    width: 5,
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [
+                          _getStatusColor(status),
+                          _getStatusColor(status).withOpacity(0.7),
+                        ],
+                      ),
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(borderRadius),
+                        bottomLeft: Radius.circular(borderRadius),
+                      ),
+                    ),
+                  ),
+                ),
+                // Main content
+                Padding(
+                  padding: EdgeInsets.all(cardPadding),
+                  child: Column(
                     children: [
-                      // Enhanced Thumbnail
-                      Builder(
-                        builder: (context) {
-                          if (thumbnailUrl == null) {
-                            return Container(
-                              width: thumbnailWidth,
-                              height: thumbnailHeight,
-                              alignment: Alignment.center,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(borderRadius - 2),
-                                gradient: LinearGradient(
-                                  colors: [
-                                    Theme.of(context).colorScheme.primary.withOpacity(0.1),
-                                    Theme.of(context).colorScheme.primary.withOpacity(0.05),
-                                  ],
-                                ),
-                                border: Border.all(
-                                  color: Theme.of(context).colorScheme.primary.withOpacity(0.2),
-                                  width: 1,
-                                ),
-                              ),
-                              child: Icon(
-                                bookType == 'manual' ? Icons.menu_book_rounded : Icons.book_rounded,
-                                size: 30,
-                                color: Theme.of(context).colorScheme.primary,
-                              ),
-                            );
-                          }
-                          return Container(
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Enhanced Thumbnail with shimmer effect
+                          Container(
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(borderRadius - 2),
                               boxShadow: [
                                 BoxShadow(
-                                  color: Colors.black.withOpacity(0.1),
-                                  blurRadius: 4,
-                                  offset: Offset(0, 2),
+                                  color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                                  blurRadius: 8,
+                                  offset: const Offset(0, 2),
                                 ),
                               ],
                             ),
                             child: ClipRRect(
                               borderRadius: BorderRadius.circular(borderRadius - 2),
-                              child: Image.network(
-                                thumbnailUrl,
-                                width: thumbnailWidth,
-                                height: thumbnailHeight,
-                                fit: BoxFit.cover,
-                                errorBuilder: (context, error, stackTrace) {
-                                  return Container(
-                                    width: thumbnailWidth,
-                                    height: thumbnailHeight,
-                                    alignment: Alignment.center,
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(borderRadius - 2),
-                                      gradient: LinearGradient(
-                                        colors: [
-                                          Theme.of(context).colorScheme.primary.withOpacity(0.1),
-                                          Theme.of(context).colorScheme.primary.withOpacity(0.05),
-                                        ],
+                              child: thumbnailUrl == null
+                                  ? Container(
+                                      width: thumbnailWidth,
+                                      height: thumbnailHeight,
+                                      decoration: BoxDecoration(
+                                        gradient: LinearGradient(
+                                          begin: Alignment.topLeft,
+                                          end: Alignment.bottomRight,
+                                          colors: [
+                                            Theme.of(context).colorScheme.primary.withOpacity(0.12),
+                                            Theme.of(context).colorScheme.primary.withOpacity(0.06),
+                                          ],
+                                        ),
+                                        border: Border.all(
+                                          color: Theme.of(context).colorScheme.primary.withOpacity(0.2),
+                                          width: 1,
+                                        ),
+                                        borderRadius: BorderRadius.circular(borderRadius - 2),
                                       ),
-                                      border: Border.all(
-                                        color: Theme.of(context).colorScheme.primary.withOpacity(0.2),
-                                        width: 1,
+                                      child: Center(
+                                        child: Icon(
+                                          bookType == 'manual' ? Icons.menu_book_rounded : Icons.book_rounded,
+                                          size: ResponsiveService.getSpacing(32),
+                                          color: Theme.of(context).colorScheme.primary,
+                                        ),
                                       ),
+                                    )
+                                  : Image.network(
+                                      thumbnailUrl,
+                                      width: thumbnailWidth,
+                                      height: thumbnailHeight,
+                                      fit: BoxFit.cover,
+                                      errorBuilder: (context, error, stackTrace) {
+                                        return Container(
+                                          width: thumbnailWidth,
+                                          height: thumbnailHeight,
+                                          decoration: BoxDecoration(
+                                            gradient: LinearGradient(
+                                              begin: Alignment.topLeft,
+                                              end: Alignment.bottomRight,
+                                              colors: [
+                                                Theme.of(context).colorScheme.primary.withOpacity(0.12),
+                                                Theme.of(context).colorScheme.primary.withOpacity(0.06),
+                                              ],
+                                            ),
+                                            border: Border.all(
+                                              color: Theme.of(context).colorScheme.primary.withOpacity(0.2),
+                                              width: 1,
+                                            ),
+                                            borderRadius: BorderRadius.circular(borderRadius - 2),
+                                          ),
+                                          child: Center(
+                                            child: Icon(
+                                              bookType == 'manual' ? Icons.menu_book_rounded : Icons.book_rounded,
+                                              size: ResponsiveService.getSpacing(32),
+                                              color: Theme.of(context).colorScheme.primary,
+                                            ),
+                                          ),
+                                        );
+                                      },
                                     ),
-                                    child: Icon(
-                                      bookType == 'manual' ? Icons.menu_book_rounded : Icons.book_rounded,
-                                      size: 30,
-                                      color: Theme.of(context).colorScheme.primary,
-                                    ),
-                                  );
-                                },
-                              ),
                             ),
-                          );
-                        },
+                          ),
+                          SizedBox(width: ResponsiveService.getSpacing(16)),
+                          // Enhanced Book Info and Status
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                // Book Title with enhanced styling
+                                Text(
+                                  bookName,
+                                  style: ResponsiveTextStyles.getResponsiveTitleStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w700,
+                                    color: Theme.of(context).colorScheme.onSurface,
+                                  ),
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                                SizedBox(height: ResponsiveService.getSpacing(6)),
+                                // Author with refined styling
+                                Text(
+                                  bookAuthor,
+                                  style: ResponsiveTextStyles.getResponsiveTextStyle(
+                                    fontSize: 15,
+                                    color: Theme.of(context).colorScheme.onSurface.withOpacity(0.75),
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                                SizedBox(height: ResponsiveService.getSpacing(12)),
+                                // Enhanced Status Badge with improved design
+                                Container(
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: ResponsiveService.getSpacing(14),
+                                    vertical: ResponsiveService.getSpacing(8),
+                                  ),
+                                  decoration: BoxDecoration(
+                                    gradient: LinearGradient(
+                                      colors: [
+                                        _getStatusColor(status).withOpacity(0.18),
+                                        _getStatusColor(status).withOpacity(0.12),
+                                      ],
+                                    ),
+                                    borderRadius: BorderRadius.circular(ResponsiveService.getSpacing(14)),
+                                    border: Border.all(
+                                      color: _getStatusColor(status).withOpacity(0.35),
+                                      width: 1.5,
+                                    ),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: _getStatusColor(status).withOpacity(0.1),
+                                        blurRadius: 6,
+                                        offset: const Offset(0, 2),
+                                      ),
+                                    ],
+                                  ),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Icon(
+                                        _getStatusIcon(status),
+                                        color: _getStatusColor(status),
+                                        size: ResponsiveService.getSpacing(16),
+                                      ),
+                                      SizedBox(width: ResponsiveService.getSpacing(8)),
+                                      Text(
+                                        _getStatusText(status),
+                                        style: ResponsiveTextStyles.getResponsiveTextStyle(
+                                          fontSize: 14,
+                                          color: _getStatusColor(status),
+                                          fontWeight: FontWeight.w700,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
                       ),
-                      SizedBox(width: ResponsiveService.getSpacing(16)),
-                      // Enhanced Book Info and Status
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                      // Enhanced Dates Section with better layout
+                      if (status != 'ANULATA' && status != 'RESPINS') ...[
+                        SizedBox(height: ResponsiveService.getSpacing(16)),
+                        Row(
                           children: [
-                            // Book Title with enhanced styling
-                            Text(
-                              bookName,
-                              style: ResponsiveTextStyles.getResponsiveTitleStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.w700,
-                                color: Theme.of(context).colorScheme.onSurface,
-                              ),
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                            SizedBox(height: ResponsiveService.getSpacing(6)),
-                            // Author with refined styling
-                            Text(
-                              bookAuthor,
-                              style: ResponsiveTextStyles.getResponsiveTextStyle(
-                                fontSize: 15,
-                                color: Theme.of(context).colorScheme.onSurface.withOpacity(0.75),
-                                fontWeight: FontWeight.w500,
-                              ),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                            SizedBox(height: ResponsiveService.getSpacing(12)),
-                            // Enhanced Status Badge
-                            Container(
-                              padding: EdgeInsets.symmetric(
-                                horizontal: ResponsiveService.getSpacing(14),
-                                vertical: ResponsiveService.getSpacing(6),
-                              ),
-                              decoration: BoxDecoration(
-                                gradient: LinearGradient(
-                                  colors: [
-                                    _getStatusColor(status).withOpacity(0.15),
-                                    _getStatusColor(status).withOpacity(0.08),
+                            Expanded(
+                              child: Container(
+                                margin: EdgeInsets.only(right: ResponsiveService.getSpacing(6)),
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: ResponsiveService.getSpacing(12),
+                                  vertical: ResponsiveService.getSpacing(12),
+                                ),
+                                decoration: BoxDecoration(
+                                  gradient: LinearGradient(
+                                    colors: [
+                                      Colors.blue.withOpacity(0.10),
+                                      Colors.blue.withOpacity(0.06),
+                                    ],
+                                  ),
+                                  borderRadius: BorderRadius.circular(ResponsiveService.getSpacing(12)),
+                                  border: Border.all(
+                                    color: Colors.blue.withOpacity(0.25),
+                                    width: 1.2,
+                                  ),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.blue.withOpacity(0.08),
+                                      blurRadius: 6,
+                                      offset: const Offset(0, 2),
+                                    ),
                                   ],
                                 ),
-                                borderRadius: BorderRadius.circular(ResponsiveService.getSpacing(12)),
-                                border: Border.all(
-                                  color: _getStatusColor(status).withOpacity(0.3),
-                                  width: 1.5,
-                                ),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: _getStatusColor(status).withOpacity(0.1),
-                                    blurRadius: 4,
-                                    offset: Offset(0, 1),
-                                  ),
-                                ],
-                              ),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Icon(
-                                    _getStatusIcon(status),
-                                    color: _getStatusColor(status),
-                                    size: 16,
-                                  ),
-                                  SizedBox(width: ResponsiveService.getSpacing(8)),
-                                  Text(
-                                    _getStatusText(status),
-                                    style: ResponsiveTextStyles.getResponsiveTextStyle(
-                                      fontSize: 14,
-                                      color: _getStatusColor(status),
-                                      fontWeight: FontWeight.w600,
+                                child: Column(
+                                  children: [
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        Icon(Icons.calendar_today_rounded, size: 16, color: Colors.blue),
+                                        SizedBox(width: ResponsiveService.getSpacing(6)),
+                                        Text(
+                                          'Cerere',
+                                          style: ResponsiveTextStyles.getResponsiveTextStyle(
+                                            fontSize: 12,
+                                            color: Colors.blue,
+                                            fontWeight: FontWeight.w700,
+                                          ),
+                                        ),
+                                      ],
                                     ),
-                                  ),
-                                ],
+                                    SizedBox(height: ResponsiveService.getSpacing(4)),
+                                    Text(
+                                      requestDate != null 
+                                        ? '${requestDate.day.toString().padLeft(2, '0')}/${requestDate.month.toString().padLeft(2, '0')}/${requestDate.year}' 
+                                        : 'N/A',
+                                      style: ResponsiveTextStyles.getResponsiveTextStyle(
+                                        fontSize: 14,
+                                        color: Theme.of(context).colorScheme.onSurface,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                      textAlign: TextAlign.center,
+                                    ),
+                                  ],
+                                ),
                               ),
                             ),
-                            SizedBox(height: ResponsiveService.getSpacing(14)),
-                            // Enhanced Dates Section
-                            if (status != 'ANULATA' && status != 'RESPINS')
-                              Row(
-                                children: [
-                                  Expanded(
-                                    child: Container(
-                                      margin: EdgeInsets.only(right: ResponsiveService.getSpacing(8)),
-                                      padding: EdgeInsets.symmetric(
-                                        horizontal: ResponsiveService.getSpacing(10),
-                                        vertical: ResponsiveService.getSpacing(10),
-                                      ),
-                                      decoration: BoxDecoration(
-                                        color: Colors.blue.withOpacity(0.08),
-                                        borderRadius: BorderRadius.circular(ResponsiveService.getSpacing(12)),
-                                        border: Border.all(
-                                          color: Colors.blue.withOpacity(0.18),
-                                          width: 1.2,
-                                        ),
-                                        boxShadow: [
-                                          BoxShadow(
-                                            color: Colors.blue.withOpacity(0.07),
-                                            blurRadius: 6,
-                                            offset: Offset(0, 2),
-                                          ),
-                                        ],
-                                      ),
-                                      child: Row(
-                                        children: [
-                                          Icon(Icons.calendar_today_rounded, size: 18, color: Colors.blue),
-                                          SizedBox(width: ResponsiveService.getSpacing(8)),
-                                          Column(
-                                            crossAxisAlignment: CrossAxisAlignment.start,
-                                            children: [
-                                              Text(
-                                                'Cerere',
-                                                style: ResponsiveTextStyles.getResponsiveTextStyle(
-                                                  fontSize: 13,
-                                                  color: Colors.blue,
-                                                  fontWeight: FontWeight.w700,
-                                                ),
-                                              ),
-                                              Text(
-                                                requestDate != null ? '${requestDate.day}/${requestDate.month}/${requestDate.year-2000}' : 'N/A',
-                                                style: ResponsiveTextStyles.getResponsiveTextStyle(
-                                                  fontSize: 15,
-                                                  color: Theme.of(context).colorScheme.onSurface,
-                                                  fontWeight: FontWeight.w600,
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ],
-                                      ),
-                                    ),
+                            Expanded(
+                              child: Container(
+                                margin: EdgeInsets.only(left: ResponsiveService.getSpacing(6)),
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: ResponsiveService.getSpacing(12),
+                                  vertical: ResponsiveService.getSpacing(12),
+                                ),
+                                decoration: BoxDecoration(
+                                  gradient: LinearGradient(
+                                    colors: [
+                                      (_isEstimatedDueDate(status) ? Colors.orange : Colors.green).withOpacity(0.10),
+                                      (_isEstimatedDueDate(status) ? Colors.orange : Colors.green).withOpacity(0.06),
+                                    ],
                                   ),
-                                  Expanded(
-                                    child: Container(
-                                      margin: EdgeInsets.only(left: ResponsiveService.getSpacing(8)),
-                                      padding: EdgeInsets.symmetric(
-                                        horizontal: ResponsiveService.getSpacing(10),
-                                        vertical: ResponsiveService.getSpacing(10),
-                                      ),
-                                      decoration: BoxDecoration(
-                                        color: Colors.green.withOpacity(0.08),
-                                        borderRadius: BorderRadius.circular(ResponsiveService.getSpacing(12)),
-                                        border: Border.all(
-                                          color: Colors.green.withOpacity(0.18),
-                                          width: 1.2,
-                                        ),
-                                        boxShadow: [
-                                          BoxShadow(
-                                            color: Colors.green.withOpacity(0.07),
-                                            blurRadius: 6,
-                                            offset: Offset(0, 2),
-                                          ),
-                                        ],
-                                      ),
-                                      child: Row(
-                                        children: [
-                                          Icon(Icons.event_available_rounded, size: 18, color: Colors.green),
-                                          SizedBox(width: ResponsiveService.getSpacing(8)),
-                                          Column(
-                                            crossAxisAlignment: CrossAxisAlignment.start,
-                                            children: [
-                                              Text(
-                                                _isEstimatedDueDate(status) ? 'Estimată' : 'Scadență',
-                                                style: ResponsiveTextStyles.getResponsiveTextStyle(
-                                                  fontSize: 13,
-                                                  color: Colors.green,
-                                                  fontWeight: FontWeight.w700,
-                                                ),
-                                              ),
-                                              Text(
-                                                dueDate != null ? '${dueDate.day}/${dueDate.month}/${dueDate.year-2000}' : 'N/A',
-                                                style: ResponsiveTextStyles.getResponsiveTextStyle(
-                                                  fontSize: 15,
-                                                  color: Theme.of(context).colorScheme.onSurface,
-                                                  fontWeight: FontWeight.w600,
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ],
-                                      ),
-                                    ),
+                                  borderRadius: BorderRadius.circular(ResponsiveService.getSpacing(12)),
+                                  border: Border.all(
+                                    color: (_isEstimatedDueDate(status) ? Colors.orange : Colors.green).withOpacity(0.25),
+                                    width: 1.2,
                                   ),
-                                ],
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: (_isEstimatedDueDate(status) ? Colors.orange : Colors.green).withOpacity(0.08),
+                                      blurRadius: 6,
+                                      offset: const Offset(0, 2),
+                                    ),
+                                  ],
+                                ),
+                                child: Column(
+                                  children: [
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        Icon(
+                                          Icons.event_available_rounded, 
+                                          size: 16, 
+                                          color: _isEstimatedDueDate(status) ? Colors.orange : Colors.green
+                                        ),
+                                        SizedBox(width: ResponsiveService.getSpacing(6)),
+                                        Text(
+                                          _isEstimatedDueDate(status) ? 'Estimat' : 'Scadență',
+                                          style: ResponsiveTextStyles.getResponsiveTextStyle(
+                                            fontSize: 12,
+                                            color: _isEstimatedDueDate(status) ? Colors.orange : Colors.green,
+                                            fontWeight: FontWeight.w700,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    SizedBox(height: ResponsiveService.getSpacing(4)),
+                                    Text(
+                                      dueDate != null 
+                                        ? '${dueDate.day.toString().padLeft(2, '0')}/${dueDate.month.toString().padLeft(2, '0')}/${dueDate.year}' 
+                                        : 'N/A',
+                                      style: ResponsiveTextStyles.getResponsiveTextStyle(
+                                        fontSize: 14,
+                                        color: Theme.of(context).colorScheme.onSurface,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                      textAlign: TextAlign.center,
+                                    ),
+                                  ],
+                                ),
                               ),
+                            ),
                           ],
                         ),
-                      ),
+                      ],
+                      // Extension hint for borrowed books
+                      if (status == 'IMPRUMUTAT' && !_isAlreadyExtended(request)) ...[
+                        SizedBox(height: ResponsiveService.getSpacing(12)),
+                        Container(
+                          width: double.infinity,
+                          padding: EdgeInsets.symmetric(
+                            horizontal: ResponsiveService.getSpacing(12),
+                            vertical: ResponsiveService.getSpacing(8),
+                          ),
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              colors: [
+                                Theme.of(context).colorScheme.primary.withOpacity(0.08),
+                                Theme.of(context).colorScheme.primary.withOpacity(0.04),
+                              ],
+                            ),
+                            borderRadius: BorderRadius.circular(ResponsiveService.getSpacing(10)),
+                            border: Border.all(
+                              color: Theme.of(context).colorScheme.primary.withOpacity(0.2),
+                              width: 1,
+                            ),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.touch_app_rounded,
+                                size: ResponsiveService.getSpacing(16),
+                                color: Theme.of(context).colorScheme.primary,
+                              ),
+                              SizedBox(width: ResponsiveService.getSpacing(6)),
+                              Text(
+                                'Apasă pentru prelungire',
+                                style: ResponsiveTextStyles.getResponsiveTextStyle(
+                                  fontSize: 13,
+                                  color: Theme.of(context).colorScheme.primary,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
                     ],
                   ),
-                  // Enhanced Cancel button positioned at top right
-                  if (status == 'IN_ASTEPTARE' || status == 'APROBAT')
-                    Positioned(
-                      top: 0,
-                      right: 0,
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: Colors.red.withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(ResponsiveService.getSpacing(8)),
-                        ),
-                        child: IconButton(
-                          icon: Icon(Icons.delete_outline_rounded, color: Colors.red[700], size: 24),
-                          tooltip: 'Anulează cererea',
-                          onPressed: () => _showCancelDialog(context, request),
+                ),
+                // Enhanced action buttons positioned at top right
+                if (status == 'IN_ASTEPTARE' || status == 'APROBAT')
+                  Positioned(
+                    top: ResponsiveService.getSpacing(12),
+                    right: ResponsiveService.getSpacing(12),
+                    child: Material(
+                      color: Colors.transparent,
+                      borderRadius: BorderRadius.circular(ResponsiveService.getSpacing(8)),
+                      child: InkWell(
+                        borderRadius: BorderRadius.circular(ResponsiveService.getSpacing(8)),
+                        onTap: () => _showCancelDialog(context, request),
+                        child: Container(
+                          padding: EdgeInsets.all(ResponsiveService.getSpacing(8)),
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              colors: [
+                                Colors.red.withOpacity(0.12),
+                                Colors.red.withOpacity(0.08),
+                              ],
+                            ),
+                            borderRadius: BorderRadius.circular(ResponsiveService.getSpacing(8)),
+                            border: Border.all(
+                              color: Colors.red.withOpacity(0.3),
+                              width: 1.2,
+                            ),
+                          ),
+                          child: Icon(
+                            Icons.close_rounded,
+                            color: Colors.red[700],
+                            size: ResponsiveService.getSpacing(20),
+                          ),
                         ),
                       ),
                     ),
-                ],
-              ),
+                  ),
+                if (status == 'IMPRUMUTAT')
+                  Positioned(
+                    top: ResponsiveService.getSpacing(12),
+                    right: ResponsiveService.getSpacing(12),
+                    child: Material(
+                      color: Colors.transparent,
+                      borderRadius: BorderRadius.circular(ResponsiveService.getSpacing(8)),
+                      child: InkWell(
+                        borderRadius: BorderRadius.circular(ResponsiveService.getSpacing(8)),
+                        onTap: () async {
+                          if (_isAlreadyExtended(request)) {
+                            NotificationService.showWarning(
+                              context: context,
+                              message: 'Această carte a fost deja prelungită o dată și nu mai poate fi prelungită.',
+                            );
+                            return;
+                          }
+                          final result = await Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => ExtendLoanScreen(request: request),
+                            ),
+                          );
+                          if (result == true) {
+                            _loadRequests();
+                          }
+                        },
+                        child: Container(
+                          padding: EdgeInsets.all(ResponsiveService.getSpacing(8)),
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              colors: [
+                                Theme.of(context).colorScheme.primary.withOpacity(0.12),
+                                Theme.of(context).colorScheme.primary.withOpacity(0.08),
+                              ],
+                            ),
+                            borderRadius: BorderRadius.circular(ResponsiveService.getSpacing(8)),
+                            border: Border.all(
+                              color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
+                              width: 1.2,
+                            ),
+                          ),
+                          child: Icon(
+                            Icons.schedule_rounded,
+                            color: Theme.of(context).colorScheme.primary,
+                            size: ResponsiveService.getSpacing(20),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+              ],
             ),
           ),
         ),
@@ -1073,7 +1113,7 @@ class _ExtendLoanScreenState extends State<ExtendLoanScreen> with ResponsiveWidg
             end: Alignment.bottomCenter,
             colors: [
               Theme.of(context).colorScheme.primary.withOpacity(0.08),
-              Theme.of(context).colorScheme.background,
+              Theme.of(context).colorScheme.surface,
               Theme.of(context).colorScheme.secondary.withOpacity(0.03),
             ],
             stops: const [0.0, 0.5, 1.0],
@@ -1097,39 +1137,166 @@ class _ExtendLoanScreenState extends State<ExtendLoanScreen> with ResponsiveWidg
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Row(
-                      children: [
-                        Container(
-                          padding: EdgeInsets.all(getResponsiveSpacing(10)),
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              colors: [
-                                Theme.of(context).colorScheme.primary,
-                                Theme.of(context).colorScheme.primary.withOpacity(0.8),
-                              ],
-                            ),
-                            borderRadius: BorderRadius.circular(getResponsiveSpacing(10)),
+                    // Book image and title section at the top center
+                    Center(
+                      child: Column(
+                        children: [
+                          // Book cover image
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(getResponsiveSpacing(12)),
+                            child: widget.request['book']['thumbnail_url'] != null
+                                ? Image.network(
+                                    widget.request['book']['thumbnail_url'].toString().startsWith('http')
+                                        ? widget.request['book']['thumbnail_url']
+                                        : ApiService.baseUrl + '/media/' + widget.request['book']['thumbnail_url'].toString().replaceAll(RegExp(r'^/?media/'), ''),
+                                    width: getResponsiveSpacing(80),
+                                    height: getResponsiveSpacing(110),
+                                    fit: BoxFit.cover,
+                                    errorBuilder: (context, error, stackTrace) {
+                                      return Container(
+                                        width: getResponsiveSpacing(80),
+                                        height: getResponsiveSpacing(110),
+                                        decoration: BoxDecoration(
+                                          color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                                          borderRadius: BorderRadius.circular(getResponsiveSpacing(12)),
+                                        ),
+                                        child: Icon(
+                                          Icons.book_rounded,
+                                          size: getResponsiveIconSize(40),
+                                          color: Theme.of(context).colorScheme.primary,
+                                        ),
+                                      );
+                                    },
+                                  )
+                                : Container(
+                                    width: getResponsiveSpacing(80),
+                                    height: getResponsiveSpacing(110),
+                                    decoration: BoxDecoration(
+                                      color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                                      borderRadius: BorderRadius.circular(getResponsiveSpacing(12)),
+                                    ),
+                                    child: Icon(
+                                      Icons.book_rounded,
+                                      size: getResponsiveIconSize(40),
+                                      color: Theme.of(context).colorScheme.primary,
+                                    ),
+                                  ),
                           ),
-                          child: Icon(
-                            Icons.book_rounded,
-                            color: Theme.of(context).colorScheme.onPrimary,
-                            size: getResponsiveIconSize(22),
-                          ),
-                        ),
-                        SizedBox(width: getResponsiveSpacing(12)),
-                        Expanded(
-                          child: Text(
+                          SizedBox(height: getResponsiveSpacing(12)),
+                          // Book title
+                          Text(
                             book['name'] ?? 'Carte necunoscută',
                             style: ResponsiveTextStyles.getResponsiveTitleStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.w700,
                             ),
+                            textAlign: TextAlign.center,
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
+                    SizedBox(height: getResponsiveSpacing(24)),
+                    
+                    SizedBox(height: getResponsiveSpacing(20)),
+                    
+                    // Current due date section
+                    Container(
+                      padding: EdgeInsets.all(getResponsiveSpacing(16)),
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).colorScheme.secondary.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(getResponsiveSpacing(12)),
+                        border: Border.all(
+                          color: Theme.of(context).colorScheme.secondary.withOpacity(0.3),
+                        ),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Current due date
+                          Row(
+                            children: [
+                              Icon(
+                                Icons.schedule_rounded,
+                                color: Theme.of(context).colorScheme.secondary,
+                                size: getResponsiveIconSize(20),
+                              ),
+                              SizedBox(width: getResponsiveSpacing(12)),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      'Data curentă de returnare:',
+                                      style: ResponsiveTextStyles.getResponsiveTextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w600,
+                                        color: Theme.of(context).colorScheme.secondary,
+                                      ),
+                                    ),
+                                    SizedBox(height: getResponsiveSpacing(4)),
+                                    Text(
+                                      widget.request['due_date'] != null 
+                                        ? DateTime.parse(widget.request['due_date']).toLocal().toString().split(' ')[0]
+                                        : 'Necunoscută',
+                                      style: ResponsiveTextStyles.getResponsiveTitleStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w700,
+                                        color: Theme.of(context).colorScheme.onSurface,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                          SizedBox(height: getResponsiveSpacing(12)),
+                          // Estimated new due date
+                          Row(
+                            children: [
+                              Icon(
+                                Icons.event_available_rounded,
+                                color: Colors.green,
+                                size: getResponsiveIconSize(20),
+                              ),
+                              SizedBox(width: getResponsiveSpacing(12)),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      'Estimare nouă dată de returnare:',
+                                      style: ResponsiveTextStyles.getResponsiveTextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w600,
+                                        color: Colors.green,
+                                      ),
+                                    ),
+                                    SizedBox(height: getResponsiveSpacing(4)),
+                                    Text(
+                                      widget.request['due_date'] != null 
+                                        ? DateTime.parse(widget.request['due_date'])
+                                            .add(Duration(days: _selectedDays))
+                                            .toLocal()
+                                            .toString()
+                                            .split(' ')[0]
+                                        : 'Necunoscută',
+                                      style: ResponsiveTextStyles.getResponsiveTitleStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w700,
+                                        color: Colors.green.shade700,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                    
                     SizedBox(height: getResponsiveSpacing(20)),
                     Text(
                       'Perioada de prelungire:',
@@ -1197,7 +1364,7 @@ class _ExtendLoanScreenState extends State<ExtendLoanScreen> with ResponsiveWidg
                             ? SizedBox(
                                 width: getResponsiveSpacing(20),
                                 height: getResponsiveSpacing(20),
-                                child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                                child: const CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
                               )
                             : Icon(Icons.send_rounded, size: getResponsiveIconSize(20)),
                         label: Text(

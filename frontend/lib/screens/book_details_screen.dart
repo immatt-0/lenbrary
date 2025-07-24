@@ -339,7 +339,7 @@ class _BookDetailsScreenState extends State<BookDetailsScreen> with ResponsiveWi
                                         Icon(Icons.inventory_2_rounded, size: 18, color: Colors.green),
                                         const SizedBox(width: 6),
                                         Text(
-                                          'Disponibile: ${book['available_copies']}',
+                                           'Disponibile: ${book['available_copies']}',
                                           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                                             color: Colors.green,
                                             fontWeight: FontWeight.w600,
@@ -375,7 +375,7 @@ class _BookDetailsScreenState extends State<BookDetailsScreen> with ResponsiveWi
                 ),
                 const SizedBox(height: 20),
                 // Description card
-                if (book['description'] != null && book['description'].toString().isNotEmpty)
+                if (book['description'] != null && book['description'].toString().isNotEmpty && book['type'] != 'manual')
                   Card(
                     elevation: 4,
                     shape: RoundedRectangleBorder(
@@ -457,25 +457,29 @@ class _BookDetailsScreenState extends State<BookDetailsScreen> with ResponsiveWi
                   ),
                 ],
                 const SizedBox(height: 32),
-                // Loan button
-                ElevatedButton.icon(
-                  onPressed: (_isRequesting || (book['available_copies'] != null && book['available_copies'] == 0)) ? null : _requestLoanWithDialog,
-                  icon: _isRequesting
-                      ? SizedBox(
-                          height: 18,
-                          width: 18,
-                          child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
-                        )
-                      : const Icon(Icons.shopping_cart_rounded),
-                  label: Text(_isRequesting ? 'Se trimite...' : 'Solicită împrumut'),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Theme.of(context).colorScheme.primary,
-                    foregroundColor: Theme.of(context).colorScheme.onPrimary,
-                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
-                    textStyle: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                // Loan button - only show for non-manual books
+                if (book['type'] != 'manual')
+                  ElevatedButton.icon(
+                    onPressed: (_isRequesting || 
+                               (book['available_copies'] != null && book['available_copies'] == 0)) ? null : _requestLoanWithDialog,
+                    icon: _isRequesting
+                        ? SizedBox(
+                            height: 18,
+                            width: 18,
+                            child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                          )
+                        : const Icon(Icons.shopping_cart_rounded),
+                    label: Text(_isRequesting 
+                        ? 'Se trimite...' 
+                        : 'Solicită împrumut'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Theme.of(context).colorScheme.primary,
+                      foregroundColor: Theme.of(context).colorScheme.onPrimary,
+                      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+                      textStyle: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    ),
                   ),
-                ),
               ],
             ),
           ),

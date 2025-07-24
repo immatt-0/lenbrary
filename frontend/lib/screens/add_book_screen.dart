@@ -38,10 +38,8 @@ class _AddBookScreenState extends State<AddBookScreen>
 
   bool _isLoading = false;
   String? _errorMessage;
-  String? _thumbnailUrl;
   BookType _selectedType = BookType.carte; // Default to carte
   String? _selectedClass; // For manuals only
-  String? _pdfUrl; // For PDF upload
 
   // List of available classes for manuals
   final List<String> _availableClasses = [
@@ -187,8 +185,6 @@ class _AddBookScreenState extends State<AddBookScreen>
         _categoryController.clear();
         _yearController.clear();
         setState(() {
-          _thumbnailUrl = null;
-          _pdfUrl = null;
           _selectedType = BookType.carte;
           _selectedClass = null;
           _pendingThumbnailFile = null;
@@ -352,21 +348,6 @@ class _AddBookScreenState extends State<AddBookScreen>
     }
   }
 
-  Future<void> _processSelectedImage(XFile image) async {
-    if (kIsWeb) {
-      final bytes = await image.readAsBytes();
-      setState(() {
-        _pendingThumbnailBytes = bytes;
-        _pendingThumbnailFile = null;
-      });
-    } else {
-      setState(() {
-        _pendingThumbnailFile = image;
-        _pendingThumbnailBytes = null;
-      });
-    }
-  }
-
   Future<void> _uploadPdf() async {
     // Show popup with file picker options
     showDialog(
@@ -490,66 +471,65 @@ class _AddBookScreenState extends State<AddBookScreen>
     
     return Scaffold(
       appBar: AppBar(
-        elevation: 0,
-        backgroundColor: Colors.transparent,
-        title: FadeTransition(
-          opacity: _fadeAnimation,
-          child: Padding(
-            padding: getResponsivePadding(horizontal: 16.0, vertical: 8.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Container(
-                  padding: EdgeInsets.all(getResponsiveSpacing(8)),
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [
-                        Theme.of(context).colorScheme.primary,
-                        Theme.of(context).colorScheme.primary.withOpacity(0.8),
-                      ],
-                    ),
-                    borderRadius: getResponsiveBorderRadius(12),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
-                        blurRadius: getResponsiveSpacing(8),
-                        offset: Offset(0, getResponsiveSpacing(2)),
-                      ),
-                    ],
-                  ),
-                  child: Icon(
-                    Icons.library_add_rounded,
-                    size: getResponsiveIconSize(28),
-                    color: Theme.of(context).colorScheme.onPrimary,
-                  ),
+        centerTitle: true,
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              padding: EdgeInsets.all(getResponsiveSpacing(8)),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    Theme.of(context).colorScheme.primary,
+                    Theme.of(context).colorScheme.primary.withOpacity(0.8),
+                  ],
                 ),
-                SizedBox(width: getResponsiveSpacing(12)),
-                Text(
-                  ResponsiveService.isCompactLayout ? 'Add Book' : 'Add New Book',
-                  style: ResponsiveTextStyles.getResponsiveTitleStyle(
-                    fontSize: ResponsiveService.isCompactLayout ? 20.0 : 24.0,
-                    fontWeight: FontWeight.w800,
+                borderRadius: getResponsiveBorderRadius(12),
+                boxShadow: [
+                  BoxShadow(
+                    color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
+                    blurRadius: getResponsiveSpacing(8),
+                    offset: Offset(0, getResponsiveSpacing(2)),
                   ),
-                ),
-              ],
+                ],
+              ),
+              child: Icon(
+                Icons.library_add_rounded,
+                color: Theme.of(context).colorScheme.onPrimary,
+                size: getResponsiveIconSize(24),
+              ),
             ),
-          ),
+            SizedBox(width: getResponsiveSpacing(12)),
+            Text(
+              'Adaugă Carte Nouă',
+              style: ResponsiveTextStyles.getResponsiveTitleStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w700,
+                color: Theme.of(context).colorScheme.onSurface,
+              ),
+              overflow: TextOverflow.ellipsis,
+            ),
+          ],
         ),
-        leading: IconButton(
-          icon: Container(
-            padding: EdgeInsets.all(getResponsiveSpacing(8)),
-            decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
-              borderRadius: getResponsiveBorderRadius(8),
-            ),
-            child: Icon(
+        automaticallyImplyLeading: false,
+        leading: Container(
+          margin: EdgeInsets.only(left: getResponsiveSpacing(8)),
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+            borderRadius: getResponsiveBorderRadius(10),
+          ),
+          child: IconButton(
+            icon: Icon(
               Icons.arrow_back_rounded,
               color: Theme.of(context).colorScheme.primary,
               size: getResponsiveIconSize(24),
             ),
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            tooltip: 'Înapoi',
           ),
-          onPressed: () => Navigator.of(context).pop(),
         ),
       ),
       body: Container(
@@ -565,400 +545,95 @@ class _AddBookScreenState extends State<AddBookScreen>
             stops: const [0.0, 0.5, 1.0],
           ),
         ),
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: getResponsivePadding(all: 16),
-            child: Center(
-              child: Container(
-                constraints: BoxConstraints(
-                  maxWidth: ResponsiveService.cardMaxWidth,
-                ),
-                child: Form(
-                  key: _formKey,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      // Photo upload section first
-                      _buildThumbnailSection(),
-                      SizedBox(height: getResponsiveSpacing(24)),
-
-                      // Type selection card
-                      Container(
-                        margin: EdgeInsets.only(bottom: getResponsiveSpacing(24)),
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            colors: [
-                              Theme.of(context).colorScheme.surface,
-                              Theme.of(context).colorScheme.surface.withOpacity(0.95),
-                            ],
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                          ),
-                          borderRadius: getResponsiveBorderRadius(24),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Theme.of(context).colorScheme.primary.withOpacity(0.06),
-                              blurRadius: getResponsiveSpacing(24),
-                              offset: Offset(0, getResponsiveSpacing(10)),
-                              spreadRadius: 3,
-                            ),
-                          ],
-                          border: Border.all(
-                            color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
-                            width: 1.5,
-                          ),
-                        ),
-                        child: Padding(
-                          padding: getResponsivePadding(all: 24),
+        child: SafeArea(
+          child: SingleChildScrollView(
+            physics: const BouncingScrollPhysics(),
+            child: Padding(
+              padding: getResponsivePadding(all: 16),
+              child: Center(
+                child: Container(
+                  constraints: BoxConstraints(
+                    maxWidth: ResponsiveService.cardMaxWidth,
+                  ),
+                  child: FadeTransition(
+                    opacity: _fadeAnimation,
+                    child: SlideTransition(
+                      position: _slideAnimation,
+                      child: ScaleTransition(
+                        scale: _scaleAnimation,
+                        child: Form(
+                          key: _formKey,
                           child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: [
-                              Text(
-                                'Tip resursă',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w600,
-                                  color: Theme.of(context).colorScheme.primary,
-                                ),
-                              ),
-                              SizedBox(height: getResponsiveSpacing(16)),
-                              DropdownButtonFormField<BookType>(
-                                value: _selectedType,
-                                decoration: InputDecoration(
-                                  labelText: 'Tip resursă',
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(16),
-                                    borderSide: BorderSide(
-                                      color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
-                                    ),
-                                  ),
-                                  enabledBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(16),
-                                    borderSide: BorderSide(
-                                      color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
-                                    ),
-                                  ),
-                                  focusedBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(16),
-                                    borderSide: BorderSide(
-                                      color: Theme.of(context).colorScheme.primary,
-                                    ),
-                                  ),
-                                  filled: true,
-                                  fillColor: Theme.of(context).colorScheme.surface.withOpacity(0.9),
-                                ),
-                                items: BookType.values.map((type) {
-                                  return DropdownMenuItem<BookType>(
-                                    value: type,
-                                    child: Text(type.label),
-                                  );
-                                }).toList(),
-                                onChanged: (BookType? newValue) {
-                                  setState(() {
-                                    _selectedType = newValue!;
-                                    if (_selectedType == BookType.carte) {
-                                      _selectedClass = null;
-                                    }
-                                  });
-                                },
-                              ),
+                              // Header Section
+                              _buildHeaderSection(),
+                              SizedBox(height: getResponsiveSpacing(24)),
+                              
+                              // Cover Upload Section
+                              _buildCoverUploadSection(),
+                              SizedBox(height: getResponsiveSpacing(24)),
+
+                              // Basic Information Section
+                              _buildBasicInfoSection(),
+                              SizedBox(height: getResponsiveSpacing(24)),
+
+                              // Additional Details Section
+                              _buildAdditionalDetailsSection(),
+                              SizedBox(height: getResponsiveSpacing(24)),
+
+                              // Stock Information Section
+                              _buildStockInfoSection(),
+                              
+                              // PDF Upload Section (only for manuals)
                               if (_selectedType == BookType.manual) ...[
+                                SizedBox(height: getResponsiveSpacing(24)),
+                                _buildPdfUploadSection(),
+                              ],
+
+                              // Error Message
+                              if (_errorMessage != null) ...[
                                 SizedBox(height: getResponsiveSpacing(16)),
-                                DropdownButtonFormField<String>(
-                                  value: _selectedClass,
-                                  decoration: InputDecoration(
-                                    labelText: 'Clasă',
-                                    border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(16),
-                                      borderSide: BorderSide(
-                                        color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
-                                      ),
+                                Container(
+                                  padding: getResponsivePadding(all: 16),
+                                  decoration: BoxDecoration(
+                                    color: Theme.of(context).colorScheme.error.withOpacity(0.1),
+                                    borderRadius: getResponsiveBorderRadius(12),
+                                    border: Border.all(
+                                      color: Theme.of(context).colorScheme.error.withOpacity(0.3),
                                     ),
-                                    enabledBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(16),
-                                      borderSide: BorderSide(
-                                        color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
-                                      ),
-                                    ),
-                                    focusedBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(16),
-                                      borderSide: BorderSide(
-                                        color: Theme.of(context).colorScheme.primary,
-                                      ),
-                                    ),
-                                    filled: true,
-                                    fillColor: Theme.of(context).colorScheme.surface.withOpacity(0.9),
                                   ),
-                                  items: _availableClasses.map((String value) {
-                                    return DropdownMenuItem<String>(
-                                      value: value,
-                                      child: Text(value),
-                                    );
-                                  }).toList(),
-                                  onChanged: (String? newValue) {
-                                    setState(() {
-                                      _selectedClass = newValue;
-                                    });
-                                  },
-                                  validator: (value) => _selectedType == BookType.manual && value == null
-                                      ? 'Please select a class'
-                                      : null,
+                                  child: Row(
+                                    children: [
+                                      Icon(
+                                        Icons.error_outline_rounded,
+                                        color: Theme.of(context).colorScheme.error,
+                                        size: getResponsiveIconSize(20),
+                                      ),
+                                      SizedBox(width: getResponsiveSpacing(8)),
+                                      Expanded(
+                                        child: Text(
+                                          _errorMessage!,
+                                          style: ResponsiveTextStyles.getResponsiveTextStyle(
+                                            fontSize: 14,
+                                            color: Theme.of(context).colorScheme.error,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ],
+
+                              // Action Buttons
+                              SizedBox(height: getResponsiveSpacing(32)),
+                              _buildActionButtons(),
+                              SizedBox(height: getResponsiveSpacing(16)),
                             ],
                           ),
                         ),
                       ),
-
-                      // Title and Author card
-                      Container(
-                        margin: EdgeInsets.only(bottom: getResponsiveSpacing(24)),
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            colors: [
-                              Theme.of(context).colorScheme.surface,
-                              Theme.of(context).colorScheme.surface.withOpacity(0.95),
-                            ],
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                          ),
-                          borderRadius: getResponsiveBorderRadius(24),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Theme.of(context).colorScheme.primary.withOpacity(0.06),
-                              blurRadius: getResponsiveSpacing(24),
-                              offset: Offset(0, getResponsiveSpacing(10)),
-                              spreadRadius: 3,
-                            ),
-                          ],
-                          border: Border.all(
-                            color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
-                            width: 1.5,
-                          ),
-                        ),
-                        child: Padding(
-                          padding: getResponsivePadding(all: 24),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              _buildTextField(
-                                controller: _nameController,
-                                label: 'Titlu',
-                                validator: (value) => value?.isEmpty ?? true ? 'Vă rugăm să introduceți un titlu' : null,
-                              ),
-                              SizedBox(height: getResponsiveSpacing(16)),
-                              _buildTextField(
-                                controller: _authorController,
-                                label: 'Autor',
-                                validator: (value) => value?.isEmpty ?? true ? 'Vă rugăm să introduceți un autor' : null,
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                      
-                      // Rest of the form fields
-                      Container(
-                        margin: EdgeInsets.only(bottom: getResponsiveSpacing(24)),
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            colors: [
-                              Theme.of(context).colorScheme.surface,
-                              Theme.of(context).colorScheme.surface.withOpacity(0.95),
-                            ],
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                          ),
-                          borderRadius: getResponsiveBorderRadius(24),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Theme.of(context).colorScheme.primary.withOpacity(0.06),
-                              blurRadius: getResponsiveSpacing(24),
-                              offset: Offset(0, getResponsiveSpacing(10)),
-                              spreadRadius: 3,
-                            ),
-                          ],
-                          border: Border.all(
-                            color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
-                            width: 1.5,
-                          ),
-                        ),
-                        child: Padding(
-                          padding: getResponsivePadding(all: 24),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              _buildTextField(
-                                controller: _categoryController,
-                                label: 'Categorie',
-                                validator: (value) => value?.isEmpty ?? true ? 'Vă rugăm să introduceți o categorie' : null,
-                              ),
-                              SizedBox(height: getResponsiveSpacing(16)),
-                              _buildTextField(
-                                controller: _descriptionController,
-                                label: 'Descriere',
-                                maxLines: 3,
-                                validator: (value) => value?.isEmpty ?? true ? 'Vă rugăm să introduceți o descriere' : null,
-                              ),
-                              SizedBox(height: getResponsiveSpacing(16)),
-                              _buildTextField(
-                                controller: _inventoryController,
-                                label: 'Inventar',
-                                validator: (value) {
-                                  if (value == null || value.isEmpty) return 'Vă rugăm să introduceți un inventar';
-                                  if (int.tryParse(value) == null) return 'Inventarul trebuie să fie un număr';
-                                  return null;
-                                },
-                                keyboardType: TextInputType.number,
-                              ),
-                              SizedBox(height: getResponsiveSpacing(16)),
-                              _buildTextField(
-                                controller: _stockController,
-                                label: 'Stoc',
-                                validator: (value) {
-                                  if (value == null || value.isEmpty) return 'Vă rugăm să introduceți un stoc';
-                                  if (int.tryParse(value) == null) return 'Stocul trebuie să fie un număr';
-                                  return null;
-                                },
-                                keyboardType: TextInputType.number,
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-
-                      // PDF upload section (show only for manuals)
-                      if (_selectedType == BookType.manual) ...[
-                        SizedBox(height: getResponsiveSpacing(24)),
-                        _buildPdfUploadWidget(),
-                      ],
-
-                      // Add more space before the buttons
-                      SizedBox(height: getResponsiveSpacing(32)),
-
-                      if (ResponsiveService.isCompactLayout)
-                        Row(
-                          children: [
-                            Expanded(
-                              child: OutlinedButton(
-                                onPressed: () => Navigator.of(context).pop(),
-                                style: OutlinedButton.styleFrom(
-                                  padding: getResponsivePadding(vertical: 16),
-                                  side: BorderSide(
-                                    color: Theme.of(context).colorScheme.primary,
-                                  ),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: getResponsiveBorderRadius(8),
-                                  ),
-                                ),
-                                child: Text(
-                                  'Cancel',
-                                  style: ResponsiveTextStyles.getResponsiveBodyStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                    color: Theme.of(context).colorScheme.primary,
-                                  ),
-                                ),
-                              ),
-                            ),
-                            SizedBox(width: getResponsiveSpacing(12)),
-                            Expanded(
-                              child: ElevatedButton(
-                                onPressed: _isLoading ? null : _addBook,
-                                style: ElevatedButton.styleFrom(
-                                  padding: getResponsivePadding(vertical: 16),
-                                  backgroundColor: Theme.of(context).colorScheme.primary,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: getResponsiveBorderRadius(8),
-                                  ),
-                                ),
-                                child: _isLoading
-                                    ? SizedBox(
-                                        height: getResponsiveIconSize(24),
-                                        width: getResponsiveIconSize(24),
-                                        child: CircularProgressIndicator(
-                                          valueColor: AlwaysStoppedAnimation<Color>(
-                                            Theme.of(context).colorScheme.onPrimary,
-                                          ),
-                                        ),
-                                      )
-                                    : Text(
-                                        'Adaugă carte',
-                                        style: ResponsiveTextStyles.getResponsiveBodyStyle(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.bold,
-                                          color: Theme.of(context).colorScheme.onPrimary,
-                                        ),
-                                      ),
-                              ),
-                            ),
-                          ],
-                        )
-                      else
-                        Row(
-                          children: [
-                            Expanded(
-                              child: OutlinedButton(
-                                onPressed: () => Navigator.of(context).pop(),
-                                style: OutlinedButton.styleFrom(
-                                  padding: getResponsivePadding(
-                                    horizontal: 24,
-                                    vertical: 16,
-                                  ),
-                                  side: BorderSide(
-                                    color: Theme.of(context).colorScheme.primary,
-                                  ),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: getResponsiveBorderRadius(8),
-                                  ),
-                                ),
-                                child: Text(
-                                  'Anulează',
-                                  style: ResponsiveTextStyles.getResponsiveBodyStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                    color: Theme.of(context).colorScheme.primary,
-                                  ),
-                                ),
-                              ),
-                            ),
-                            SizedBox(width: getResponsiveSpacing(12)),
-                            Expanded(
-                              child: ElevatedButton(
-                                onPressed: _isLoading ? null : _addBook,
-                                style: ElevatedButton.styleFrom(
-                                  padding: getResponsivePadding(
-                                    horizontal: 24,
-                                    vertical: 16,
-                                  ),
-                                  backgroundColor: Theme.of(context).colorScheme.primary,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: getResponsiveBorderRadius(8),
-                                  ),
-                                ),
-                                child: _isLoading
-                                    ? SizedBox(
-                                        height: getResponsiveIconSize(24),
-                                        width: getResponsiveIconSize(24),
-                                        child: CircularProgressIndicator(
-                                          valueColor: AlwaysStoppedAnimation<Color>(
-                                            Theme.of(context).colorScheme.onPrimary,
-                                          ),
-                                        ),
-                                      )
-                                    : Text(
-                                        'Add Book',
-                                        style: ResponsiveTextStyles.getResponsiveBodyStyle(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.bold,
-                                          color: Theme.of(context).colorScheme.onPrimary,
-                                        ),
-                                      ),
-                              ),
-                            ),
-                          ],
-                        ),
-                    ],
+                    ),
                   ),
                 ),
               ),
@@ -969,161 +644,986 @@ class _AddBookScreenState extends State<AddBookScreen>
     );
   }
 
-  Widget _buildTextField({
+  // Header Section
+  Widget _buildHeaderSection() {
+    return Container(
+      padding: getResponsivePadding(all: 20),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            Theme.of(context).colorScheme.primary.withOpacity(0.1),
+            Theme.of(context).colorScheme.secondary.withOpacity(0.05),
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: getResponsiveBorderRadius(20),
+        border: Border.all(
+          color: Theme.of(context).colorScheme.primary.withOpacity(0.2),
+          width: 1,
+        ),
+      ),
+      child: Column(
+        children: [
+          Icon(
+            Icons.library_books_rounded,
+            size: getResponsiveIconSize(48),
+            color: Theme.of(context).colorScheme.primary,
+          ),
+          SizedBox(height: getResponsiveSpacing(12)),
+          Text(
+            'Completează detaliile pentru noua carte/manual',
+            textAlign: TextAlign.center,
+            style: ResponsiveTextStyles.getResponsiveTextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+              color: Theme.of(context).colorScheme.primary,
+            ),
+          ),
+          SizedBox(height: getResponsiveSpacing(8)),
+          Text(
+            'Câmpurile marcate cu * sunt obligatorii',
+            textAlign: TextAlign.center,
+            style: ResponsiveTextStyles.getResponsiveTextStyle(
+              fontSize: 14,
+              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // Cover Upload Section
+  Widget _buildCoverUploadSection() {
+    return Container(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            Theme.of(context).colorScheme.surface,
+            Theme.of(context).colorScheme.surface.withOpacity(0.95),
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: getResponsiveBorderRadius(20),
+        boxShadow: [
+          BoxShadow(
+            color: Theme.of(context).colorScheme.shadow.withOpacity(0.08),
+            blurRadius: getResponsiveSpacing(16),
+            offset: Offset(0, getResponsiveSpacing(4)),
+          ),
+        ],
+        border: Border.all(
+          color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+          width: 1,
+        ),
+      ),
+      child: Padding(
+        padding: getResponsivePadding(all: 20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Container(
+                  padding: EdgeInsets.all(getResponsiveSpacing(8)),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                    borderRadius: getResponsiveBorderRadius(8),
+                  ),
+                  child: Icon(
+                    Icons.photo_camera_rounded,
+                    color: Theme.of(context).colorScheme.primary,
+                    size: getResponsiveIconSize(20),
+                  ),
+                ),
+                SizedBox(width: getResponsiveSpacing(12)),
+                Text(
+                  'Copertă (opțional)',
+                  style: ResponsiveTextStyles.getResponsiveTextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: getResponsiveSpacing(16)),
+            Center(child: _buildThumbnailSection()),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // Basic Information Section
+  Widget _buildBasicInfoSection() {
+    return Container(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            Theme.of(context).colorScheme.surface,
+            Theme.of(context).colorScheme.surface.withOpacity(0.95),
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: getResponsiveBorderRadius(20),
+        boxShadow: [
+          BoxShadow(
+            color: Theme.of(context).colorScheme.shadow.withOpacity(0.08),
+            blurRadius: getResponsiveSpacing(16),
+            offset: Offset(0, getResponsiveSpacing(4)),
+          ),
+        ],
+        border: Border.all(
+          color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+          width: 1,
+        ),
+      ),
+      child: Padding(
+        padding: getResponsivePadding(all: 20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Container(
+                  padding: EdgeInsets.all(getResponsiveSpacing(8)),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                    borderRadius: getResponsiveBorderRadius(8),
+                  ),
+                  child: Icon(
+                    Icons.info_outline_rounded,
+                    color: Theme.of(context).colorScheme.primary,
+                    size: getResponsiveIconSize(20),
+                  ),
+                ),
+                SizedBox(width: getResponsiveSpacing(12)),
+                Text(
+                  'Informații de bază',
+                  style: ResponsiveTextStyles.getResponsiveTextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: getResponsiveSpacing(20)),
+            
+            // Type Selection
+            Container(
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.primary.withOpacity(0.03),
+                borderRadius: getResponsiveBorderRadius(12),
+                border: Border.all(
+                  color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                ),
+              ),
+              child: DropdownButtonFormField<BookType>(
+                value: _selectedType,
+                decoration: InputDecoration(
+                  labelText: 'Tip resursă *',
+                  labelStyle: ResponsiveTextStyles.getResponsiveTextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
+                  prefixIcon: Container(
+                    margin: EdgeInsets.all(getResponsiveSpacing(8)),
+                    padding: EdgeInsets.all(getResponsiveSpacing(8)),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                      borderRadius: getResponsiveBorderRadius(8),
+                    ),
+                    child: Icon(
+                      _selectedType == BookType.manual ? Icons.menu_book_rounded : Icons.book_rounded,
+                      color: Theme.of(context).colorScheme.primary,
+                      size: getResponsiveIconSize(20),
+                    ),
+                  ),
+                  border: InputBorder.none,
+                  contentPadding: getResponsivePadding(horizontal: 16, vertical: 16),
+                ),
+                items: BookType.values.map((type) {
+                  return DropdownMenuItem<BookType>(
+                    value: type,
+                    child: Text(
+                      type.label,
+                      style: ResponsiveTextStyles.getResponsiveTextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  );
+                }).toList(),
+                onChanged: (BookType? newValue) {
+                  setState(() {
+                    _selectedType = newValue!;
+                    if (_selectedType == BookType.carte) {
+                      _selectedClass = null;
+                    }
+                  });
+                },
+              ),
+            ),
+            
+            // Class Selection (for manuals only)
+            if (_selectedType == BookType.manual) ...[
+              SizedBox(height: getResponsiveSpacing(16)),
+              Container(
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.secondary.withOpacity(0.03),
+                  borderRadius: getResponsiveBorderRadius(12),
+                  border: Border.all(
+                    color: Theme.of(context).colorScheme.secondary.withOpacity(0.1),
+                  ),
+                ),
+                child: DropdownButtonFormField<String>(
+                  value: _selectedClass,
+                  decoration: InputDecoration(
+                    labelText: 'Clasă *',
+                    labelStyle: ResponsiveTextStyles.getResponsiveTextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                      color: Theme.of(context).colorScheme.secondary,
+                    ),
+                    prefixIcon: Container(
+                      margin: EdgeInsets.all(getResponsiveSpacing(8)),
+                      padding: EdgeInsets.all(getResponsiveSpacing(8)),
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).colorScheme.secondary.withOpacity(0.1),
+                        borderRadius: getResponsiveBorderRadius(8),
+                      ),
+                      child: Icon(
+                        Icons.school_rounded,
+                        color: Theme.of(context).colorScheme.secondary,
+                        size: getResponsiveIconSize(20),
+                      ),
+                    ),
+                    border: InputBorder.none,
+                    contentPadding: getResponsivePadding(horizontal: 16, vertical: 16),
+                  ),
+                  items: _availableClasses.map((String value) {
+                    return DropdownMenuItem<String>(
+                      value: value,
+                      child: Text(
+                        value,
+                        style: ResponsiveTextStyles.getResponsiveTextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    );
+                  }).toList(),
+                  onChanged: (String? newValue) {
+                    setState(() {
+                      _selectedClass = newValue;
+                    });
+                  },
+                  validator: (value) => _selectedType == BookType.manual && value == null
+                      ? 'Vă rugăm să selectați o clasă'
+                      : null,
+                ),
+              ),
+            ],
+            
+            SizedBox(height: getResponsiveSpacing(16)),
+            
+            // Title Field
+            _buildStyledTextField(
+              controller: _nameController,
+              label: 'Titlu *',
+              icon: Icons.title_rounded,
+              validator: (value) => value?.isEmpty ?? true ? 'Vă rugăm să introduceți un titlu' : null,
+            ),
+            
+            SizedBox(height: getResponsiveSpacing(16)),
+            
+            // Author Field
+            _buildStyledTextField(
+              controller: _authorController,
+              label: 'Autor *',
+              icon: Icons.person_rounded,
+              validator: (value) => value?.isEmpty ?? true ? 'Vă rugăm să introduceți un autor' : null,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // Additional Details Section
+  Widget _buildAdditionalDetailsSection() {
+    return Container(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            Theme.of(context).colorScheme.surface,
+            Theme.of(context).colorScheme.surface.withOpacity(0.95),
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: getResponsiveBorderRadius(20),
+        boxShadow: [
+          BoxShadow(
+            color: Theme.of(context).colorScheme.shadow.withOpacity(0.08),
+            blurRadius: getResponsiveSpacing(16),
+            offset: Offset(0, getResponsiveSpacing(4)),
+          ),
+        ],
+        border: Border.all(
+          color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+          width: 1,
+        ),
+      ),
+      child: Padding(
+        padding: getResponsivePadding(all: 20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Container(
+                  padding: EdgeInsets.all(getResponsiveSpacing(8)),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.secondary.withOpacity(0.1),
+                    borderRadius: getResponsiveBorderRadius(8),
+                  ),
+                  child: Icon(
+                    Icons.description_rounded,
+                    color: Theme.of(context).colorScheme.secondary,
+                    size: getResponsiveIconSize(20),
+                  ),
+                ),
+                SizedBox(width: getResponsiveSpacing(12)),
+                Text(
+                  'Detalii suplimentare',
+                  style: ResponsiveTextStyles.getResponsiveTextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    color: Theme.of(context).colorScheme.secondary,
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: getResponsiveSpacing(20)),
+            
+            // Category Field
+            _buildStyledTextField(
+              controller: _categoryController,
+              label: 'Categorie',
+              icon: Icons.category_rounded,
+              validator: (value) => value?.isEmpty ?? true ? 'Vă rugăm să introduceți o categorie' : null,
+            ),
+            
+            SizedBox(height: getResponsiveSpacing(16)),
+            
+            // Description Field
+            _buildStyledTextField(
+              controller: _descriptionController,
+              label: 'Descriere',
+              icon: Icons.notes_rounded,
+              maxLines: 3,
+              validator: (value) => value?.isEmpty ?? true ? 'Vă rugăm să introduceți o descriere' : null,
+            ),
+            
+            SizedBox(height: getResponsiveSpacing(16)),
+            
+            // Publication Year Field
+            _buildStyledTextField(
+              controller: _yearController,
+              label: 'Anul publicării (opțional)',
+              icon: Icons.calendar_today_rounded,
+              keyboardType: TextInputType.number,
+              validator: (value) {
+                if (value != null && value.isNotEmpty) {
+                  final year = int.tryParse(value);
+                  if (year == null || year < 1000 || year > DateTime.now().year) {
+                    return 'Vă rugăm să introduceți un an valid';
+                  }
+                }
+                return null;
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // Stock Information Section
+  Widget _buildStockInfoSection() {
+    return Container(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            Theme.of(context).colorScheme.surface,
+            Theme.of(context).colorScheme.surface.withOpacity(0.95),
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: getResponsiveBorderRadius(20),
+        boxShadow: [
+          BoxShadow(
+            color: Theme.of(context).colorScheme.shadow.withOpacity(0.08),
+            blurRadius: getResponsiveSpacing(16),
+            offset: Offset(0, getResponsiveSpacing(4)),
+          ),
+        ],
+        border: Border.all(
+          color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+          width: 1,
+        ),
+      ),
+      child: Padding(
+        padding: getResponsivePadding(all: 20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Container(
+                  padding: EdgeInsets.all(getResponsiveSpacing(8)),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                    borderRadius: getResponsiveBorderRadius(8),
+                  ),
+                  child: Icon(
+                    Icons.inventory_2_rounded,
+                    color: Theme.of(context).colorScheme.primary,
+                    size: getResponsiveIconSize(20),
+                  ),
+                ),
+                SizedBox(width: getResponsiveSpacing(12)),
+                Text(
+                  'Informații stoc',
+                  style: ResponsiveTextStyles.getResponsiveTextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: getResponsiveSpacing(20)),
+            
+            // Stock and Inventory Fields
+            if (ResponsiveService.isSmallPhone) ...[
+              // Stack vertically on small phones
+              _buildStyledTextField(
+                controller: _inventoryController,
+                label: 'Inventar total *',
+                icon: Icons.library_books_rounded,
+                validator: (value) {
+                  if (value == null || value.isEmpty) return 'Vă rugăm să introduceți inventarul total';
+                  if (int.tryParse(value) == null) return 'Inventarul trebuie să fie un număr';
+                  return null;
+                },
+                keyboardType: TextInputType.number,
+                helperText: 'Numărul total de exemplare',
+              ),
+              SizedBox(height: getResponsiveSpacing(16)),
+              _buildStyledTextField(
+                controller: _stockController,
+                label: 'Stoc disponibil *',
+                icon: Icons.inventory_rounded,
+                validator: (value) {
+                  if (value == null || value.isEmpty) return 'Vă rugăm să introduceți stocul disponibil';
+                  final stock = int.tryParse(value);
+                  if (stock == null) return 'Stocul trebuie să fie un număr';
+                  final inventory = int.tryParse(_inventoryController.text);
+                  if (inventory != null && stock > inventory) {
+                    return 'Stocul nu poate fi mai mare decât inventarul';
+                  }
+                  return null;
+                },
+                keyboardType: TextInputType.number,
+                helperText: 'Numărul de exemplare disponibile pentru împrumut',
+              ),
+            ] else ...[
+              // Side by side on larger screens
+              Row(
+                children: [
+                  Expanded(
+                    child: _buildStyledTextField(
+                      controller: _inventoryController,
+                      label: 'Inventar total *',
+                      icon: Icons.library_books_rounded,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) return 'Vă rugăm să introduceți inventarul total';
+                        if (int.tryParse(value) == null) return 'Inventarul trebuie să fie un număr';
+                        return null;
+                      },
+                      keyboardType: TextInputType.number,
+                      helperText: 'Numărul total de exemplare',
+                    ),
+                  ),
+                  SizedBox(width: getResponsiveSpacing(16)),
+                  Expanded(
+                    child: _buildStyledTextField(
+                      controller: _stockController,
+                      label: 'Stoc disponibil *',
+                      icon: Icons.inventory_rounded,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) return 'Vă rugăm să introduceți stocul disponibil';
+                        final stock = int.tryParse(value);
+                        if (stock == null) return 'Stocul trebuie să fie un număr';
+                        final inventory = int.tryParse(_inventoryController.text);
+                        if (inventory != null && stock > inventory) {
+                          return 'Stocul nu poate fi mai mare decât inventarul';
+                        }
+                        return null;
+                      },
+                      keyboardType: TextInputType.number,
+                      helperText: 'Numărul de exemplare disponibile pentru împrumut',
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+
+  // PDF Upload Section
+  Widget _buildPdfUploadSection() {
+    return Container(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            Theme.of(context).colorScheme.surface,
+            Theme.of(context).colorScheme.surface.withOpacity(0.95),
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: getResponsiveBorderRadius(20),
+        boxShadow: [
+          BoxShadow(
+            color: Theme.of(context).colorScheme.shadow.withOpacity(0.08),
+            blurRadius: getResponsiveSpacing(16),
+            offset: Offset(0, getResponsiveSpacing(4)),
+          ),
+        ],
+        border: Border.all(
+          color: Theme.of(context).colorScheme.secondary.withOpacity(0.2),
+          width: 1,
+        ),
+      ),
+      child: Padding(
+        padding: getResponsivePadding(all: 20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Container(
+                  padding: EdgeInsets.all(getResponsiveSpacing(8)),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.secondary.withOpacity(0.1),
+                    borderRadius: getResponsiveBorderRadius(8),
+                  ),
+                  child: Icon(
+                    Icons.picture_as_pdf_rounded,
+                    color: Theme.of(context).colorScheme.secondary,
+                    size: getResponsiveIconSize(20),
+                  ),
+                ),
+                SizedBox(width: getResponsiveSpacing(12)),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Manual PDF (opțional)',
+                        style: ResponsiveTextStyles.getResponsiveTextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: Theme.of(context).colorScheme.secondary,
+                        ),
+                      ),
+                      Text(
+                        'Încarcă fișierul PDF al manualului',
+                        style: ResponsiveTextStyles.getResponsiveTextStyle(
+                          fontSize: 12,
+                          color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: getResponsiveSpacing(16)),
+            _buildPdfUploadWidget(),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // Action Buttons
+  Widget _buildActionButtons() {
+    return Container(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            Theme.of(context).colorScheme.surface,
+            Theme.of(context).colorScheme.surface.withOpacity(0.95),
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: getResponsiveBorderRadius(20),
+        boxShadow: [
+          BoxShadow(
+            color: Theme.of(context).colorScheme.shadow.withOpacity(0.08),
+            blurRadius: getResponsiveSpacing(16),
+            offset: Offset(0, getResponsiveSpacing(4)),
+          ),
+        ],
+        border: Border.all(
+          color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+          width: 1,
+        ),
+      ),
+      child: Padding(
+        padding: getResponsivePadding(all: 20),
+        child: ResponsiveService.isSmallPhone
+            ? Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  // Cancel Button
+                  OutlinedButton.icon(
+                    onPressed: () => Navigator.of(context).pop(),
+                    icon: Icon(
+                      Icons.cancel_rounded,
+                      size: getResponsiveIconSize(20),
+                    ),
+                    label: Text(
+                      'Anulează',
+                      style: ResponsiveTextStyles.getResponsiveTextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    style: OutlinedButton.styleFrom(
+                      padding: getResponsivePadding(vertical: 16),
+                      side: BorderSide(
+                        color: Theme.of(context).colorScheme.outline,
+                        width: 1.5,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: getResponsiveBorderRadius(12),
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: getResponsiveSpacing(12)),
+                  // Add Book Button
+                  ElevatedButton.icon(
+                    onPressed: _isLoading ? null : _addBook,
+                    icon: _isLoading
+                        ? SizedBox(
+                            height: getResponsiveIconSize(20),
+                            width: getResponsiveIconSize(20),
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                Theme.of(context).colorScheme.onPrimary,
+                              ),
+                            ),
+                          )
+                        : Icon(
+                            Icons.add_rounded,
+                            size: getResponsiveIconSize(20),
+                          ),
+                    label: Text(
+                      _isLoading 
+                          ? 'Se adaugă...' 
+                          : 'Adaugă ${_selectedType.label}',
+                      style: ResponsiveTextStyles.getResponsiveTextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        color: Theme.of(context).colorScheme.onPrimary,
+                      ),
+                    ),
+                    style: ElevatedButton.styleFrom(
+                      padding: getResponsivePadding(vertical: 16),
+                      backgroundColor: Theme.of(context).colorScheme.primary,
+                      foregroundColor: Theme.of(context).colorScheme.onPrimary,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: getResponsiveBorderRadius(12),
+                      ),
+                      elevation: 2,
+                    ),
+                  ),
+                ],
+              )
+            : Row(
+                children: [
+                  // Cancel Button
+                  Expanded(
+                    flex: 2,
+                    child: OutlinedButton.icon(
+                      onPressed: () => Navigator.of(context).pop(),
+                      icon: Icon(
+                        Icons.cancel_rounded,
+                        size: getResponsiveIconSize(20),
+                      ),
+                      label: Text(
+                        'Anulează',
+                        style: ResponsiveTextStyles.getResponsiveTextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      style: OutlinedButton.styleFrom(
+                        padding: getResponsivePadding(vertical: 16),
+                        side: BorderSide(
+                          color: Theme.of(context).colorScheme.outline,
+                          width: 1.5,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: getResponsiveBorderRadius(12),
+                        ),
+                      ),
+                    ),
+                  ),
+                  SizedBox(width: getResponsiveSpacing(16)),
+                  // Add Book Button
+                  Expanded(
+                    flex: 3,
+                    child: ElevatedButton.icon(
+                      onPressed: _isLoading ? null : _addBook,
+                      icon: _isLoading
+                          ? SizedBox(
+                              height: getResponsiveIconSize(20),
+                              width: getResponsiveIconSize(20),
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                valueColor: AlwaysStoppedAnimation<Color>(
+                                  Theme.of(context).colorScheme.onPrimary,
+                                ),
+                              ),
+                            )
+                          : Icon(
+                              Icons.add_rounded,
+                              size: getResponsiveIconSize(20),
+                            ),
+                      label: Text(
+                        _isLoading 
+                            ? 'Se adaugă...' 
+                            : 'Adaugă ${_selectedType.label}',
+                        style: ResponsiveTextStyles.getResponsiveTextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: Theme.of(context).colorScheme.onPrimary,
+                        ),
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        padding: getResponsivePadding(vertical: 16),
+                        backgroundColor: Theme.of(context).colorScheme.primary,
+                        foregroundColor: Theme.of(context).colorScheme.onPrimary,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: getResponsiveBorderRadius(12),
+                        ),
+                        elevation: 2,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+      ),
+    );
+  }
+
+  Widget _buildStyledTextField({
     required TextEditingController controller,
     required String label,
+    required IconData icon,
     String? Function(String?)? validator,
     int? maxLines,
     TextInputType keyboardType = TextInputType.text,
+    String? helperText,
   }) {
     return Container(
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Theme.of(context).colorScheme.shadow.withOpacity(0.05),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
+        color: Theme.of(context).colorScheme.surface.withOpacity(0.5),
+        borderRadius: getResponsiveBorderRadius(12),
+        border: Border.all(
+          color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+        ),
       ),
       child: TextFormField(
         controller: controller,
         decoration: InputDecoration(
           labelText: label,
-          labelStyle: TextStyle(
-            color: Colors.grey[600],
+          labelStyle: ResponsiveTextStyles.getResponsiveTextStyle(
+            fontSize: 14,
             fontWeight: FontWeight.w500,
+            color: Theme.of(context).colorScheme.primary.withOpacity(0.8),
           ),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(16),
-            borderSide: BorderSide(
-              color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
-            ),
+          helperText: helperText,
+          helperStyle: ResponsiveTextStyles.getResponsiveTextStyle(
+            fontSize: 12,
+            color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
           ),
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(16),
-            borderSide: BorderSide(
-              color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
-            ),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(16),
-            borderSide: BorderSide(
-              color: Theme.of(context).colorScheme.primary,
-            ),
-          ),
-          filled: true,
-          fillColor: Theme.of(context).colorScheme.surface,
           prefixIcon: Container(
-            margin: const EdgeInsets.all(8),
+            margin: EdgeInsets.all(getResponsiveSpacing(8)),
+            padding: EdgeInsets.all(getResponsiveSpacing(8)),
             decoration: BoxDecoration(
               color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: getResponsiveBorderRadius(8),
             ),
             child: Icon(
-              Icons.title_rounded,
+              icon,
               color: Theme.of(context).colorScheme.primary,
-              size: 20,
+              size: getResponsiveIconSize(20),
             ),
           ),
-          contentPadding: const EdgeInsets.symmetric(
-            horizontal: 16,
-            vertical: 16,
+          border: InputBorder.none,
+          contentPadding: getResponsivePadding(horizontal: 16, vertical: 16),
+          errorStyle: ResponsiveTextStyles.getResponsiveTextStyle(
+            fontSize: 12,
+            color: Theme.of(context).colorScheme.error,
           ),
         ),
         keyboardType: keyboardType,
         validator: validator,
         maxLines: maxLines,
-        style: TextStyle(
+        style: ResponsiveTextStyles.getResponsiveTextStyle(
           fontSize: 16,
-          color: Theme.of(context).colorScheme.onSurface,
           fontWeight: FontWeight.w500,
+          color: Theme.of(context).colorScheme.onSurface,
         ),
       ),
     );
   }
 
   Widget _buildThumbnailSection() {
-    return Center(
-      child: SizedBox(
-        width: 180,
-        height: 280,
-        child: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: [
-                Theme.of(context).colorScheme.surface,
-                Theme.of(context).colorScheme.surface.withOpacity(0.8),
-              ],
-            ),
-            borderRadius: BorderRadius.circular(16),
-            boxShadow: [
-              BoxShadow(
-                color: Theme.of(context).colorScheme.shadow.withOpacity(0.08),
-                blurRadius: 12,
-                offset: const Offset(0, 4),
-              ),
-            ],
+    return Container(
+      width: getResponsiveSpacing(160),
+      height: getResponsiveSpacing(240),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            Theme.of(context).colorScheme.surface,
+            Theme.of(context).colorScheme.surface.withOpacity(0.8),
+          ],
+        ),
+        borderRadius: getResponsiveBorderRadius(16),
+        boxShadow: [
+          BoxShadow(
+            color: Theme.of(context).colorScheme.shadow.withOpacity(0.1),
+            blurRadius: getResponsiveSpacing(12),
+            offset: Offset(0, getResponsiveSpacing(4)),
           ),
-          child: InkWell(
-            onTap: _uploadThumbnail,
-            borderRadius: BorderRadius.circular(16),
-            child: Container(
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.primary.withOpacity(0.05),
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(
-                  color: Theme.of(context).colorScheme.primary.withOpacity(0.2),
-                  width: 2,
-                  style: BorderStyle.solid,
-                ),
-              ),
-              child: _pendingThumbnailFile != null || _pendingThumbnailBytes != null
-                  ? ClipRRect(
-                      borderRadius: BorderRadius.circular(16),
-                      child: kIsWeb && _pendingThumbnailBytes != null
-                          ? Image.memory(_pendingThumbnailBytes!, fit: BoxFit.cover)
-                          : Image.file(File(_pendingThumbnailFile!.path), fit: BoxFit.cover),
-                    )
-                  : Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.all(16),
+        ],
+        border: Border.all(
+          color: Theme.of(context).colorScheme.primary.withOpacity(0.2),
+          width: 2,
+        ),
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: _uploadThumbnail,
+          borderRadius: getResponsiveBorderRadius(16),
+          child: Container(
+            child: _pendingThumbnailFile != null || _pendingThumbnailBytes != null
+                ? Stack(
+                    children: [
+                      ClipRRect(
+                        borderRadius: getResponsiveBorderRadius(14),
+                        child: Container(
+                          width: double.infinity,
+                          height: double.infinity,
+                          child: kIsWeb && _pendingThumbnailBytes != null
+                              ? Image.memory(
+                                  _pendingThumbnailBytes!,
+                                  fit: BoxFit.cover,
+                                )
+                              : Image.file(
+                                  File(_pendingThumbnailFile!.path),
+                                  fit: BoxFit.cover,
+                                ),
+                        ),
+                      ),
+                      // Overlay with edit icon
+                      Positioned(
+                        top: getResponsiveSpacing(8),
+                        right: getResponsiveSpacing(8),
+                        child: Container(
+                          padding: EdgeInsets.all(getResponsiveSpacing(6)),
                           decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              colors: [
-                                Theme.of(context).colorScheme.primary.withOpacity(0.15),
-                                Theme.of(context).colorScheme.primary.withOpacity(0.05),
-                              ],
-                            ),
-                            shape: BoxShape.circle,
+                            color: Theme.of(context).colorScheme.primary,
+                            borderRadius: getResponsiveBorderRadius(20),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.2),
+                                blurRadius: 4,
+                                offset: const Offset(0, 2),
+                              ),
+                            ],
                           ),
                           child: Icon(
-                            Icons.add_photo_alternate_rounded,
-                            size: 40,
-                            color: Theme.of(context).colorScheme.primary,
+                            Icons.edit_rounded,
+                            color: Theme.of(context).colorScheme.onPrimary,
+                            size: getResponsiveIconSize(16),
                           ),
                         ),
-                        const SizedBox(height: 12),
-                        Text(
-                          'Adaugă copertă',
-                          style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                            color: Theme.of(context).colorScheme.primary,
-                            fontWeight: FontWeight.w600,
+                      ),
+                    ],
+                  )
+                : Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Container(
+                        padding: EdgeInsets.all(getResponsiveSpacing(16)),
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [
+                              Theme.of(context).colorScheme.primary.withOpacity(0.15),
+                              Theme.of(context).colorScheme.primary.withOpacity(0.05),
+                            ],
                           ),
+                          shape: BoxShape.circle,
                         ),
-                        const SizedBox(height: 4),
-                        Text(
-                          'Apasă pentru a încărca',
-                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: Colors.grey[600],
-                          ),
+                        child: Icon(
+                          Icons.add_photo_alternate_rounded,
+                          size: getResponsiveIconSize(40),
+                          color: Theme.of(context).colorScheme.primary,
                         ),
-                      ],
-                    ),
-            ),
+                      ),
+                      SizedBox(height: getResponsiveSpacing(12)),
+                      Text(
+                        'Adaugă copertă',
+                        textAlign: TextAlign.center,
+                        style: ResponsiveTextStyles.getResponsiveTextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
+                      ),
+                      SizedBox(height: getResponsiveSpacing(4)),
+                      Text(
+                        'Apasă pentru a încărca',
+                        textAlign: TextAlign.center,
+                        style: ResponsiveTextStyles.getResponsiveTextStyle(
+                          fontSize: 12,
+                          color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                        ),
+                      ),
+                    ],
+                  ),
           ),
         ),
       ),
@@ -1139,89 +1639,99 @@ class _AddBookScreenState extends State<AddBookScreen>
             Theme.of(context).colorScheme.surface.withOpacity(0.8),
           ],
         ),
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: getResponsiveBorderRadius(16),
         boxShadow: [
           BoxShadow(
             color: Theme.of(context).colorScheme.shadow.withOpacity(0.08),
-            blurRadius: 12,
-            offset: const Offset(0, 4),
+            blurRadius: getResponsiveSpacing(12),
+            offset: Offset(0, getResponsiveSpacing(4)),
           ),
         ],
+        border: Border.all(
+          color: Theme.of(context).colorScheme.secondary.withOpacity(0.2),
+          width: 2,
+        ),
       ),
-      child: InkWell(
-        onTap: _uploadPdf,
-        borderRadius: BorderRadius.circular(16),
-        child: Container(
-          width: double.infinity,
-          height: 120,
-          decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.secondary.withOpacity(0.05),
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(
-              color: Theme.of(context).colorScheme.secondary.withOpacity(0.2),
-              width: 2,
-              style: BorderStyle.solid,
-            ),
-          ),
-          child: _pendingPdfFile != null || _pendingPdfBytes != null
-              ? Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Row(
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: _uploadPdf,
+          borderRadius: getResponsiveBorderRadius(16),
+          child: Container(
+            width: double.infinity,
+            padding: getResponsivePadding(all: 20),
+            child: _pendingPdfFile != null || _pendingPdfBytes != null
+                ? Row(
                     children: [
                       Container(
-                        padding: const EdgeInsets.all(12),
+                        padding: EdgeInsets.all(getResponsiveSpacing(12)),
                         decoration: BoxDecoration(
                           gradient: LinearGradient(
                             colors: [
-                              Theme.of(context).colorScheme.secondary.withOpacity(0.15),
-                              Theme.of(context).colorScheme.secondary.withOpacity(0.05),
+                              Theme.of(context).colorScheme.secondary.withOpacity(0.2),
+                              Theme.of(context).colorScheme.secondary.withOpacity(0.1),
                             ],
                           ),
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: getResponsiveBorderRadius(12),
                         ),
                         child: Icon(
                           Icons.picture_as_pdf_rounded,
-                          size: 32,
+                          size: getResponsiveIconSize(32),
                           color: Theme.of(context).colorScheme.secondary,
                         ),
                       ),
-                      const SizedBox(width: 16),
+                      SizedBox(width: getResponsiveSpacing(16)),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Text(
-                              'PDF selectat',
-                              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                color: Theme.of(context).colorScheme.secondary,
+                              'PDF selectat cu succes',
+                              style: ResponsiveTextStyles.getResponsiveTextStyle(
+                                fontSize: 16,
                                 fontWeight: FontWeight.w600,
+                                color: Theme.of(context).colorScheme.secondary,
                               ),
                             ),
-                            const SizedBox(height: 4),
+                            SizedBox(height: getResponsiveSpacing(4)),
+                            Text(
+                              kIsWeb && _pendingPdfBytes != null
+                                  ? 'Fișier PDF (${(_pendingPdfBytes!.length / 1024).toStringAsFixed(1)} KB)'
+                                  : 'Fișier PDF selectat',
+                              style: ResponsiveTextStyles.getResponsiveTextStyle(
+                                fontSize: 12,
+                                color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                              ),
+                            ),
+                            SizedBox(height: getResponsiveSpacing(4)),
                             Text(
                               'Apasă pentru a schimba',
-                              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                color: Colors.grey[600],
+                              style: ResponsiveTextStyles.getResponsiveTextStyle(
+                                fontSize: 12,
+                                color: Theme.of(context).colorScheme.secondary.withOpacity(0.8),
                               ),
                             ),
                           ],
                         ),
                       ),
-                      Icon(
-                        Icons.check_circle_rounded,
-                        color: Theme.of(context).colorScheme.secondary,
-                        size: 24,
+                      Container(
+                        padding: EdgeInsets.all(getResponsiveSpacing(8)),
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).colorScheme.secondary.withOpacity(0.1),
+                          borderRadius: getResponsiveBorderRadius(20),
+                        ),
+                        child: Icon(
+                          Icons.check_circle_rounded,
+                          color: Theme.of(context).colorScheme.secondary,
+                          size: getResponsiveIconSize(24),
+                        ),
                       ),
                     ],
-                  ),
-                )
-              : Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Row(
+                  )
+                : Row(
                     children: [
                       Container(
-                        padding: const EdgeInsets.all(12),
+                        padding: EdgeInsets.all(getResponsiveSpacing(12)),
                         decoration: BoxDecoration(
                           gradient: LinearGradient(
                             colors: [
@@ -1229,45 +1739,61 @@ class _AddBookScreenState extends State<AddBookScreen>
                               Theme.of(context).colorScheme.secondary.withOpacity(0.05),
                             ],
                           ),
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: getResponsiveBorderRadius(12),
                         ),
                         child: Icon(
                           Icons.picture_as_pdf_rounded,
-                          size: 32,
+                          size: getResponsiveIconSize(32),
                           color: Theme.of(context).colorScheme.secondary,
                         ),
                       ),
-                      const SizedBox(width: 16),
+                      SizedBox(width: getResponsiveSpacing(16)),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Text(
-                              'Adaugă PDF',
-                              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                color: Theme.of(context).colorScheme.secondary,
+                              'Încarcă fișier PDF',
+                              style: ResponsiveTextStyles.getResponsiveTextStyle(
+                                fontSize: 16,
                                 fontWeight: FontWeight.w600,
+                                color: Theme.of(context).colorScheme.secondary,
                               ),
                             ),
-                            const SizedBox(height: 4),
+                            SizedBox(height: getResponsiveSpacing(4)),
+                            Text(
+                              'Selectează fișierul PDF al manualului',
+                              style: ResponsiveTextStyles.getResponsiveTextStyle(
+                                fontSize: 12,
+                                color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                              ),
+                            ),
+                            SizedBox(height: getResponsiveSpacing(4)),
                             Text(
                               'Apasă pentru a încărca',
-                              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                color: Colors.grey[600],
+                              style: ResponsiveTextStyles.getResponsiveTextStyle(
+                                fontSize: 12,
+                                color: Theme.of(context).colorScheme.secondary.withOpacity(0.8),
                               ),
                             ),
                           ],
                         ),
                       ),
-                      Icon(
-                        Icons.add_rounded,
-                        color: Theme.of(context).colorScheme.secondary,
-                        size: 24,
+                      Container(
+                        padding: EdgeInsets.all(getResponsiveSpacing(8)),
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).colorScheme.secondary.withOpacity(0.1),
+                          borderRadius: getResponsiveBorderRadius(20),
+                        ),
+                        child: Icon(
+                          Icons.add_rounded,
+                          color: Theme.of(context).colorScheme.secondary,
+                          size: getResponsiveIconSize(24),
+                        ),
                       ),
                     ],
                   ),
-                ),
+          ),
         ),
       ),
     );

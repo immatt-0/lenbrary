@@ -21,11 +21,10 @@ class ApiService {
   // Base URL of your Django backend - update this for your testing environment
   // For emulators:
   // static const String baseUrl = 'http://10.0.2.2:8000';      // Android emulator
-  // static const String baseUrl =
-     // 'http://localhost:8000'; // Windows/Web/iOS simulator
+  // static const String baseUrl =  'http://localhost:8000'; // Windows/Web/iOS simulator
 
   // For physical devices, use your computer's actual IP address:
-   static const String baseUrl = 'http://192.168.68.111:8000'; // Replace with your actual IP
+  static const String baseUrl = 'http://192.168.68.111:8000'; // Replace with your actual IP
 
   // Endpoints
   static const String registerEndpoint = '/book-library/register';
@@ -948,7 +947,23 @@ class ApiService {
   static Future<List<dynamic>> fetchExamModels() async {
     final response = await http.get(Uri.parse('$baseUrl$examModelsEndpoint'));
     if (response.statusCode == 200) {
-      return jsonDecode(response.body);
+      final List<dynamic> models = jsonDecode(response.body);
+      
+      // Sort the models for better organization
+      models.sort((a, b) {
+        // First sort by type: EN comes before BAC
+        int typeComparison = (a['type'] ?? '').compareTo(b['type'] ?? '');
+        if (typeComparison != 0) return typeComparison;
+        
+        // Then sort by category: Matematica comes before Romana
+        int categoryComparison = (a['category'] ?? '').compareTo(b['category'] ?? '');
+        if (categoryComparison != 0) return categoryComparison;
+        
+        // Finally sort by name alphabetically
+        return (a['name'] ?? '').toLowerCase().compareTo((b['name'] ?? '').toLowerCase());
+      });
+      
+      return models;
     } else {
       throw Exception('Failed to load exam models: \\${response.body}');
     }

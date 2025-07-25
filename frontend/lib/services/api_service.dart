@@ -36,6 +36,11 @@ class ApiService {
   static const String createExamModelEndpoint = '/book-library/exam-models/create/';
   static String deleteExamModelEndpoint(int id) => '/book-library/exam-models/$id/delete/';
 
+  // Teacher Code Endpoints
+  static const String teacherCodesEndpoint = '/book-library/invitation-codes';
+  static const String generateTeacherCodeEndpoint = '/book-library/invitation-codes/create';
+  static String deleteTeacherCodeEndpoint(int id) => '/book-library/invitation-codes/$id/delete';
+
   // Register a new user
   static Future<Map<String, dynamic>> register({
     required String password,
@@ -1167,6 +1172,72 @@ class ApiService {
         }
       } catch (_) {}
       throw Exception('Failed to cancel request: ${response.body}');
+    }
+  }
+
+  // Teacher Code Management Methods
+  
+  // Get all teacher codes (for librarians)
+  static Future<List<dynamic>> getTeacherCodes() async {
+    final token = await getAccessToken();
+    if (token == null) {
+      throw Exception('No access token available');
+    }
+
+    final response = await http.get(
+      Uri.parse('$baseUrl$teacherCodesEndpoint'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body);
+    } else {
+      throw Exception('Failed to load teacher codes: ${response.body}');
+    }
+  }
+
+  // Generate a new teacher code
+  static Future<Map<String, dynamic>> generateTeacherCode() async {
+    final token = await getAccessToken();
+    if (token == null) {
+      throw Exception('No access token available');
+    }
+
+    final response = await http.post(
+      Uri.parse('$baseUrl$generateTeacherCodeEndpoint'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+    );
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      return jsonDecode(response.body);
+    } else {
+      throw Exception('Failed to generate teacher code: ${response.body}');
+    }
+  }
+
+  // Delete a teacher code
+  static Future<void> deleteTeacherCode(int codeId) async {
+    final token = await getAccessToken();
+    if (token == null) {
+      throw Exception('No access token available');
+    }
+
+    final response = await http.delete(
+      Uri.parse('$baseUrl${deleteTeacherCodeEndpoint(codeId)}'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+    );
+
+    if (response.statusCode != 200 && response.statusCode != 204) {
+      throw Exception('Failed to delete teacher code: ${response.body}');
     }
   }
 

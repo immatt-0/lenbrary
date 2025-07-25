@@ -750,6 +750,18 @@ class _SuccessScreenState extends State<SuccessScreen>
                                 Navigator.pushNamed(context, '/admin-exam-models');
                               },
                             ),
+                            SizedBox(height: getResponsiveSpacing(16.0)),
+
+                            // Teacher Code Generation Button
+                            _buildEnhancedMenuButton(
+                              icon: Icons.qr_code_2_rounded,
+                              title: 'Creaza cod pentru profesori',
+                              description: 'Generează coduri de înregistrare pentru profesori',
+                              color: Colors.indigo[600]!,
+                              onTap: () {
+                                Navigator.pushNamed(context, '/teacher-code-generation');
+                              },
+                            ),
                           ],
                         ),
                       ),

@@ -16,6 +16,7 @@ import 'screens/notifications_screen.dart';
 import 'screens/exam_models_screen.dart';
 import 'screens/exam_models_admin_screen.dart';
 import 'screens/add_exam_model_screen.dart';
+import 'screens/teacher_code_generation_screen.dart';
 import 'screens/settings_screen.dart';
 
 void main() async {
@@ -59,6 +60,7 @@ class MyApp extends StatelessWidget {
               '/exam-models': (context) => const ExamModelsScreen(),
               '/admin-exam-models': (context) => const ExamModelsAdminScreen(),
               '/add-exam-model': (context) => const AddExamModelScreen(),
+              '/teacher-code-generation': (context) => const TeacherCodeGenerationScreen(),
             },
           );
         },

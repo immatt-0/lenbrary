@@ -130,11 +130,9 @@ class RegistrationSerializer(serializers.Serializer):
         )
         
         if is_teacher:
-            # Add to Teachers group and make staff
+            # Add to Teachers group
             teachers_group, created = Group.objects.get_or_create(name='Teachers')
             user.groups.add(teachers_group)
-            user.is_staff = True
-            user.save()
             
             # Use and delete invitation code
             if invitation_code:

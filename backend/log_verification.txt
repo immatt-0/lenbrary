@@ -1,1 +1,4 @@
 INFO 2025-06-28 14:13:17,404 views 7208 20720 To: teacher@nlenau.ro | Subject: Verify your email | Link: http://localhost:8000/book-library/verify-email?token=1BFUKG8KE6KBBnfXCWnW74u6ocC0M418CaXaemEhkZSbPV5o
+INFO 2025-07-25 13:41:04,752 views 6988 15084 To: dorisruse@nlenau.ro | Subject: Verify your email | Link: http://192.168.0.104:8000/book-library/verify-email?token=XM936uLAMM29Ux5ETiKp8dM6kQOpGzgHbXmeLsZZDfC79KDO
+INFO 2025-07-25 15:55:57,766 views 1188 10964 To: testemail@nlenau.ro | Subject: Verify your email | Link: http://192.168.0.104:8000/book-library/verify-email?token=gjeLimL6W9hsvcMp5LalaMNxTPk3lZMQdIL3gQhROzLwGnlZ
+INFO 2025-07-25 15:57:30,855 views 14540 11480 To: test@nlenau.ro | Subject: Verify your email | Link: http://192.168.0.104:8000/book-library/verify-email?token=EFY6smXPMqPRGvUO3hrcKd9cOuxtshdIQ2FZLJZA1rOj6TTn

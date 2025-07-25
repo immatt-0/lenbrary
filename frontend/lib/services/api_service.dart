@@ -105,7 +105,7 @@ class ApiService {
   // You can login with any of:
   // - Full email: firstname.lastname@nlenau.ro
   // - Username part: firstname.lastname
-  // - Custom username (if manually set during registration)
+  // - Custom username (iif manually set during registraton)
   static Future<Map<String, dynamic>> login({
     required String usernameOrEmail,
     required String password,

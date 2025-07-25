@@ -52,16 +52,85 @@ def register_user(request):
         domain = request.get_host()
         verify_path = reverse('verify_email')
         verify_url = f"http://{domain}{verify_path}?token={ev.token}"
-        send_mail(
-            'Verify your email',
-            f'Click the link to verify your email: {verify_url}',
-            'noreply@lenbrary.com',
-            [user.email],
-            fail_silently=False,
+        
+        # Create professional HTML email (same as send_verification_email)
+        html_message = f'''
+        <!DOCTYPE html>
+        <html lang="ro">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Verificare Email - Lenbrary</title>
+        </head>
+        <body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background-color: #f8f9fa;">
+            <div style="max-width: 600px; margin: 0 auto; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 0;">
+                <!-- Header -->
+                <div style="background: rgba(255,255,255,0.1); text-align: center; padding: 40px 20px;">
+                    <h1 style="color: white; margin: 0; font-size: 28px; font-weight: 700;">📚 Lenbrary</h1>
+                    <p style="color: rgba(255,255,255,0.9); margin: 8px 0 0 0; font-size: 16px;">Biblioteca Ta Digitală</p>
+                </div>
+                
+                <!-- Content -->
+                <div style="background: white; padding: 40px 30px; margin: 0;">
+                    <h2 style="color: #333; margin: 0 0 20px 0; font-size: 24px;">Bun venit în Lenbrary!</h2>
+                    
+                    <p style="color: #555; line-height: 1.6; margin: 0 0 20px 0; font-size: 16px;">
+                        Îți mulțumim pentru înregistrare! Pentru a-ți activa contul și a accesa biblioteca noastră digitală, 
+                        te rugăm să îți verifici adresa de email.
+                    </p>
+                    
+                    <div style="text-align: center; margin: 30px 0;">
+                        <a href="{verify_url}" 
+                           style="display: inline-block; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+                                  color: white; padding: 15px 30px; text-decoration: none; border-radius: 8px; 
+                                  font-weight: 600; font-size: 16px; box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);">
+                            ✅ Verifică Email-ul
+                        </a>
+                    </div>
+                    
+                    <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin: 25px 0;">
+                        <p style="color: #666; margin: 0; font-size: 14px; line-height: 1.5;">
+                            <strong>Dacă butonul nu funcționează,</strong> copiază și lipește următorul link în browser:
+                        </p>
+                        <p style="color: #667eea; margin: 10px 0 0 0; font-size: 14px; word-break: break-all;">
+                            {verify_url}
+                        </p>
+                    </div>
+                    
+                    <div style="border-top: 1px solid #eee; padding-top: 20px; margin-top: 30px;">
+                        <p style="color: #888; font-size: 14px; margin: 0; line-height: 1.5;">
+                            Acest link va expira în 6 ore din motive de securitate.<br>
+                            Dacă nu te-ai înregistrat pe Lenbrary, poți ignora acest email.
+                        </p>
+                    </div>
+                </div>
+                
+                <!-- Footer -->
+                <div style="background: #333; color: white; text-align: center; padding: 20px;">
+                    <p style="margin: 0; font-size: 14px; opacity: 0.8;">
+                        © 2025 Lenbrary - Biblioteca Ta Digitală
+                    </p>
+                </div>
+            </div>
+        </body>
+        </html>
+        '''
+        
+        # Send HTML email using EmailMessage instead of send_mail
+        from django.core.mail import EmailMessage
+        
+        email = EmailMessage(
+            subject='Verifică-ți emailul - Lenbrary',
+            body=html_message,
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            to=[user.email],
         )
+        email.content_subtype = "html"  # Main content is now text/html
+        email.send(fail_silently=False)
+        
         # Log the verification email
         email_logger = logging.getLogger('email_verification_logger')
-        email_logger.info(f"To: {user.email} | Subject: Verify your email | Link: {verify_url}")
+        email_logger.info(f"To: {user.email} | Subject: Verifică-ți emailul - Lenbrary | Link: {verify_url}")
         
         # Generate response based on whether user is teacher or student
         is_teacher = request.data.get('is_teacher', False)
@@ -422,10 +491,20 @@ def loan_history(request):
     if not request.user.groups.filter(name='Librarians').exists():
         return Response({'error': 'Unauthorized'}, status=status.HTTP_403_FORBIDDEN)
         
-    # Get loan history (returned books and rejected requests)
+    # Get loan history (returned books, rejected requests, and canceled requests)
     history = BookBorrowing.objects.filter(
-        status__in=['RETURNAT', 'RESPINS']
-    ).order_by('-return_date', '-approved_date')
+        status__in=['RETURNAT', 'RESPINS', 'ANULATA']
+    ).extra(
+        select={
+            'sort_date': '''
+                CASE 
+                    WHEN return_date IS NOT NULL THEN return_date
+                    WHEN approved_date IS NOT NULL THEN approved_date
+                    ELSE request_date
+                END
+            '''
+        }
+    ).order_by('-sort_date')
     
     serializer = BookBorrowingSerializer(history, many=True)
     return Response(serializer.data)
@@ -1291,21 +1370,90 @@ def send_verification_email(request):
     else:
         ev = EmailVerification.objects.create(user=user)
         ev.generate_token()
+    
     # Build verification link
     domain = request.get_host()
     verify_path = reverse('verify_email')
     verify_url = f"http://{domain}{verify_path}?token={ev.token}"
-    # Send email
-    send_mail(
-        'Verify your email',
-        f'Click the link to verify your email: {verify_url}',
-        'noreply@lenbrary.com',
-        [user.email],
-        fail_silently=False,
+    
+    # Create professional HTML email
+    html_message = f'''
+    <!DOCTYPE html>
+    <html lang="ro">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Verificare Email - Lenbrary</title>
+    </head>
+    <body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background-color: #f8f9fa;">
+        <div style="max-width: 600px; margin: 0 auto; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 0;">
+            <!-- Header -->
+            <div style="background: rgba(255,255,255,0.1); text-align: center; padding: 40px 20px;">
+                <h1 style="color: white; margin: 0; font-size: 28px; font-weight: 700;">📚 Lenbrary</h1>
+                <p style="color: rgba(255,255,255,0.9); margin: 8px 0 0 0; font-size: 16px;">Biblioteca Ta Digitală</p>
+            </div>
+            
+            <!-- Content -->
+            <div style="background: white; padding: 40px 30px; margin: 0;">
+                <h2 style="color: #333; margin: 0 0 20px 0; font-size: 24px;">Bun venit în Lenbrary!</h2>
+                
+                <p style="color: #555; line-height: 1.6; margin: 0 0 20px 0; font-size: 16px;">
+                    Îți mulțumim pentru înregistrare! Pentru a-ți activa contul și a accesa biblioteca noastră digitală, 
+                    te rugăm să îți verifici adresa de email.
+                </p>
+                
+                <div style="text-align: center; margin: 30px 0;">
+                    <a href="{verify_url}" 
+                       style="display: inline-block; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+                              color: white; padding: 15px 30px; text-decoration: none; border-radius: 8px; 
+                              font-weight: 600; font-size: 16px; box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);">
+                        ✅ Verifică Email-ul
+                    </a>
+                </div>
+                
+                <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin: 25px 0;">
+                    <p style="color: #666; margin: 0; font-size: 14px; line-height: 1.5;">
+                        <strong>Dacă butonul nu funcționează,</strong> copiază și lipește următorul link în browser:
+                    </p>
+                    <p style="color: #667eea; margin: 10px 0 0 0; font-size: 14px; word-break: break-all;">
+                        {verify_url}
+                    </p>
+                </div>
+                
+                <div style="border-top: 1px solid #eee; padding-top: 20px; margin-top: 30px;">
+                    <p style="color: #888; font-size: 14px; margin: 0; line-height: 1.5;">
+                        Acest link va expira în 6 ore din motive de securitate.<br>
+                        Dacă nu te-ai înregistrat pe Lenbrary, poți ignora acest email.
+                    </p>
+                </div>
+            </div>
+            
+            <!-- Footer -->
+            <div style="background: #333; color: white; text-align: center; padding: 20px;">
+                <p style="margin: 0; font-size: 14px; opacity: 0.8;">
+                    © 2025 Lenbrary - Biblioteca Ta Digitală
+                </p>
+            </div>
+        </div>
+    </body>
+    </html>
+    '''
+    
+    # Send HTML email
+    from django.core.mail import EmailMessage
+    
+    email = EmailMessage(
+        subject='Verifică-ți emailul - Lenbrary',
+        body=html_message,
+        from_email=settings.DEFAULT_FROM_EMAIL,
+        to=[user.email],
     )
+    email.content_subtype = "html"  # Main content is now text/html
+    email.send(fail_silently=False)
+    
     # Log the verification email
     email_logger = logging.getLogger('email_verification_logger')
-    email_logger.info(f"To: {user.email} | Subject: Verify your email | Link: {verify_url}")
+    email_logger.info(f"To: {user.email} | Subject: Verifică-ți emailul - Lenbrary | Link: {verify_url}")
     return Response({'detail': 'Verification email sent.'})
 
 @api_view(['GET'])
@@ -1322,31 +1470,87 @@ def verify_email(request):
     # Check if token has expired
     if ev.is_expired():
         html = '''
-        <html><head><meta charset="UTF-8"><title>Token Expired</title></head>
-        <body style="margin:0;padding:0;min-height:100vh;background:linear-gradient(135deg,#ffffff 0%,#e3f0ff 100%);display:flex;align-items:center;justify-content:center;">
-        <div style="background:#ffe6e6;color:#dc3545;padding:32px 40px;border-radius:16px;box-shadow:0 2px 16px #0001;font-size:1.3rem;font-family:sans-serif;max-width:90vw;text-align:center;">
-        Linkul de verificare a expirat (6 ore).<br>Contul tău a fost șters automat.<br>Poți să te înregistrezi din nou.
-        </div></body></html>
+        <!DOCTYPE html>
+        <html lang="ro">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Link Expirat - Lenbrary</title>
+        </head>
+        <body style="margin:0;padding:0;min-height:100vh;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);display:flex;align-items:center;justify-content:center;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">
+            <div style="background:white;padding:40px;border-radius:16px;box-shadow:0 8px 32px rgba(0,0,0,0.1);text-align:center;max-width:90vw;max-width:500px;">
+                <div style="font-size:4rem;margin-bottom:20px;">⏰</div>
+                <h1 style="color:#dc3545;margin:0 0 15px 0;font-size:1.8rem;">Link Expirat</h1>
+                <p style="color:#666;line-height:1.6;margin:0 0 25px 0;">
+                    Linkul de verificare a expirat (6 ore).<br>
+                    Contul tău a fost șters automat pentru siguranță.
+                </p>
+                <div style="background:#f8f9fa;padding:20px;border-radius:8px;margin:20px 0;">
+                    <p style="color:#666;margin:0;font-size:14px;">
+                        📚 Poți să te înregistrezi din nou pentru a accesa Lenbrary
+                    </p>
+            </div>
+        </body>
+        </html>
         '''
         return HttpResponse(html, content_type='text/html')
     
     if ev.is_verified:
         html = '''
-        <html><head><meta charset="UTF-8"><title>Email Already Verified</title></head>
-        <body style="margin:0;padding:0;min-height:100vh;background:linear-gradient(135deg,#ffffff 0%,#e3f0ff 100%);display:flex;align-items:center;justify-content:center;">
-        <div style="background:#e6ffe6;color:#218838;padding:32px 40px;border-radius:16px;box-shadow:0 2px 16px #0001;font-size:1.3rem;font-family:sans-serif;max-width:90vw;text-align:center;">
-        Emailul a fost deja verificat.<br>Poți închide această pagină.
-        </div></body></html>
+        <!DOCTYPE html>
+        <html lang="ro">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Email Deja Verificat - Lenbrary</title>
+        </head>
+        <body style="margin:0;padding:0;min-height:100vh;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);display:flex;align-items:center;justify-content:center;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">
+            <div style="background:white;padding:40px;border-radius:16px;box-shadow:0 8px 32px rgba(0,0,0,0.1);text-align:center;max-width:90vw;max-width:500px;">
+                <div style="font-size:4rem;margin-bottom:20px;">✅</div>
+                <h1 style="color:#28a745;margin:0 0 15px 0;font-size:1.8rem;">Email Deja Verificat</h1>
+                <p style="color:#666;line-height:1.6;margin:0 0 25px 0;">
+                    Emailul tău a fost deja verificat anterior.<br>
+                    Contul tău Lenbrary este activ și funcțional.
+                </p>
+                <div style="background:#e8f5e8;padding:20px;border-radius:8px;margin:20px 0;border-left:4px solid #28a745;">
+                    <p style="color:#155724;margin:0;font-size:14px;">
+                        📚 Poți accesa biblioteca digitală în orice moment
+                    </p>
+            </div>
+        </body>
+        </html>
         '''
         return HttpResponse(html, content_type='text/html')
+    
     ev.is_verified = True
     ev.save()
     html = '''
-    <html><head><meta charset="UTF-8"><title>Email Verified</title></head>
-    <body style="margin:0;padding:0;min-height:100vh;background:linear-gradient(135deg,#ffffff 0%,#e3f0ff 100%);display:flex;align-items:center;justify-content:center;">
-    <div style="background:#e6ffe6;color:#218838;padding:32px 40px;border-radius:16px;box-shadow:0 2px 16px #0001;font-size:1.3rem;font-family:sans-serif;max-width:90vw;text-align:center;">
-    Emailul a fost verificat cu succes!<br>Poți închide această pagină.
-    </div></body></html>
+    <!DOCTYPE html>
+    <html lang="ro">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Email Verificat - Lenbrary</title>
+    </head>
+    <body style="margin:0;padding:0;min-height:100vh;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);display:flex;align-items:center;justify-content:center;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">
+        <div style="background:white;padding:40px;border-radius:16px;box-shadow:0 8px 32px rgba(0,0,0,0.1);text-align:center;max-width:90vw;max-width:500px;">
+            <div style="font-size:4rem;margin-bottom:20px;">🎉</div>
+            <h1 style="color:#28a745;margin:0 0 15px 0;font-size:1.8rem;">Email Verificat cu Succes!</h1>
+            <p style="color:#666;line-height:1.6;margin:0 0 25px 0;">
+                Felicitări! Contul tău Lenbrary a fost activat cu succes.<br>
+                Acum poți accesa toate funcționalitățile bibliotecii digitale.
+            </p>
+            <div style="background:#e8f5e8;padding:20px;border-radius:8px;margin:20px 0;border-left:4px solid #28a745;">
+                <h3 style="color:#155724;margin:0 0 10px 0;font-size:16px;">Ce poți face acum:</h3>
+                <ul style="color:#155724;margin:0;padding-left:20px;text-align:left;font-size:14px;">
+                    <li>Căuta și împrumuta cărți</li>
+                    <li>Accesa manuale școlare</li>
+                    <li>Gestiona cererile tale</li>
+                </ul>
+            </div>
+        </div>
+    </body>
+    </html>
     '''
     return HttpResponse(html, content_type='text/html')
 

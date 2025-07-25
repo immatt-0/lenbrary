@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../services/api_service.dart';
@@ -97,6 +98,15 @@ class _TeacherCodeGenerationScreenState extends State<TeacherCodeGenerationScree
         context: context,
         message: 'Cod generat cu succes!',
       );
+      
+      // Auto-hide the generated code display after 5 seconds
+      Timer(const Duration(seconds: 5), () {
+        if (mounted) {
+          setState(() {
+            _generatedCode = null;
+          });
+        }
+      });
     } catch (e) {
       setState(() => _isGenerating = false);
       NotificationService.showError(
@@ -116,8 +126,19 @@ class _TeacherCodeGenerationScreenState extends State<TeacherCodeGenerationScree
 
   Future<void> _deleteCode(int codeId) async {
     try {
+      // Find the code being deleted to check if it matches the currently displayed one
+      final codeToDelete = _codes.firstWhere((code) => code['id'] == codeId, orElse: () => null);
+      
       await ApiService.deleteTeacherCode(codeId);
       await _loadExistingCodes();
+      
+      // If the deleted code matches the currently displayed generated code, clear it
+      if (_generatedCode != null && codeToDelete != null && codeToDelete['code'] == _generatedCode) {
+        setState(() {
+          _generatedCode = null;
+        });
+      }
+      
       NotificationService.showSuccess(
         context: context,
         message: 'Cod șters cu succes!',

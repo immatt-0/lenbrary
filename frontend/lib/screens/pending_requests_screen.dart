@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../services/api_service.dart';
 import '../services/notification_service.dart';
-import '../services/responsive_service.dart' show getResponsiveSpacing, getResponsiveBorderRadius, getResponsiveIconSize, ResponsiveWidget;
+import '../services/responsive_service.dart';
 
 class PendingRequestsScreen extends StatefulWidget {
   const PendingRequestsScreen({Key? key}) : super(key: key);
@@ -11,7 +11,7 @@ class PendingRequestsScreen extends StatefulWidget {
 }
 
 class _PendingRequestsScreenState extends State<PendingRequestsScreen>
-    with TickerProviderStateMixin, ResponsiveWidget {
+    with TickerProviderStateMixin {
   late TabController _tabController;
   bool _isLoading = true;
   List<dynamic> _pendingRequests = [];
@@ -28,7 +28,6 @@ class _PendingRequestsScreenState extends State<PendingRequestsScreen>
   late AnimationController _scaleController;
   late Animation<double> _fadeAnimation;
   late Animation<Offset> _slideAnimation;
-  late Animation<double> _scaleAnimation;
 
   @override
   void initState() {
@@ -65,14 +64,6 @@ class _PendingRequestsScreenState extends State<PendingRequestsScreen>
     ).animate(CurvedAnimation(
       parent: _slideController,
       curve: Curves.easeOutCubic,
-    ));
-    
-    _scaleAnimation = Tween<double>(
-      begin: 0.9,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _scaleController,
-      curve: Curves.elasticOut,
     ));
     
     // Start animations
@@ -219,12 +210,14 @@ class _PendingRequestsScreenState extends State<PendingRequestsScreen>
 
   @override
   Widget build(BuildContext context) {
+    ResponsiveService.init(context);
+    
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
         backgroundColor: Colors.transparent,
         centerTitle: true,
-        toolbarHeight: 80,
+        toolbarHeight: ResponsiveService.isSmallPhone ? 70 : 80,
         title: FadeTransition(
           opacity: _fadeAnimation,
           child: Row(
@@ -232,7 +225,7 @@ class _PendingRequestsScreenState extends State<PendingRequestsScreen>
             mainAxisSize: MainAxisSize.min,
             children: [
               Container(
-                padding: const EdgeInsets.all(8),
+                padding: EdgeInsets.all(ResponsiveService.isSmallPhone ? 6 : 8),
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     colors: [
@@ -240,11 +233,11 @@ class _PendingRequestsScreenState extends State<PendingRequestsScreen>
                       Theme.of(context).colorScheme.primary.withOpacity(0.8),
                     ],
                   ),
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: BorderRadius.circular(ResponsiveService.isSmallPhone ? 8 : 10),
                   boxShadow: [
                     BoxShadow(
                       color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
-                      blurRadius: 8,
+                      blurRadius: ResponsiveService.isSmallPhone ? 6 : 8,
                       offset: const Offset(0, 2),
                     ),
                   ],
@@ -252,15 +245,19 @@ class _PendingRequestsScreenState extends State<PendingRequestsScreen>
                 child: Icon(
                   Icons.pending_actions_rounded,
                   color: Theme.of(context).colorScheme.onPrimary,
-                  size: 24,
+                  size: ResponsiveService.isSmallPhone ? 20 : 24,
                 ),
               ),
-              const SizedBox(width: 12),
-              Text(
-                'Cereri de Cărți și Manuale',
-                style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.w700,
-                  letterSpacing: -0.5,
+              SizedBox(width: ResponsiveService.isSmallPhone ? 8 : 12),
+              Flexible(
+                child: Text(
+                  ResponsiveService.isSmallPhone ? 'Cereri Cărți' : 'Cereri de Cărți și Manuale',
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: -0.5,
+                    fontSize: ResponsiveService.isSmallPhone ? 16 : null,
+                  ),
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
             ],
@@ -269,17 +266,17 @@ class _PendingRequestsScreenState extends State<PendingRequestsScreen>
         leading: FadeTransition(
           opacity: _fadeAnimation,
           child: Container(
-            margin: EdgeInsets.only(left: getResponsiveSpacing(8)),
+            margin: EdgeInsets.only(left: ResponsiveService.getSpacing(8)),
             padding: EdgeInsets.zero,
             decoration: BoxDecoration(
               color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
-              borderRadius: getResponsiveBorderRadius(6),
+              borderRadius: BorderRadius.circular(ResponsiveService.getSpacing(6)),
             ),
             child: IconButton(
               icon: Icon(
                 Icons.arrow_back_rounded,
                 color: Theme.of(context).colorScheme.primary,
-                size: getResponsiveIconSize(20),
+                size: ResponsiveService.getIconSize(20),
               ),
               padding: EdgeInsets.zero,
               constraints: BoxConstraints(),
@@ -289,11 +286,14 @@ class _PendingRequestsScreenState extends State<PendingRequestsScreen>
           ),
         ),
         bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(120),
+          preferredSize: Size.fromHeight(ResponsiveService.isSmallPhone ? 100 : 120),
           child: FadeTransition(
             opacity: _fadeAnimation,
             child: Container(
-              margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+              margin: EdgeInsets.symmetric(
+                horizontal: ResponsiveService.isSmallPhone ? 16 : 20, 
+                vertical: ResponsiveService.isSmallPhone ? 16 : 24
+              ),
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   colors: [
@@ -301,12 +301,12 @@ class _PendingRequestsScreenState extends State<PendingRequestsScreen>
                     Theme.of(context).colorScheme.surface.withOpacity(0.8),
                   ],
                 ),
-                borderRadius: BorderRadius.circular(20),
+                borderRadius: BorderRadius.circular(ResponsiveService.isSmallPhone ? 16 : 20),
                 boxShadow: [
                   BoxShadow(
                     color: Theme.of(context).colorScheme.shadow.withOpacity(0.08),
-                    blurRadius: 16,
-                    offset: const Offset(0, 6),
+                    blurRadius: ResponsiveService.isSmallPhone ? 12 : 16,
+                    offset: Offset(0, ResponsiveService.isSmallPhone ? 4 : 6),
                   ),
                 ],
                 border: Border.all(
@@ -323,25 +323,25 @@ class _PendingRequestsScreenState extends State<PendingRequestsScreen>
                       Theme.of(context).colorScheme.secondary,
                     ],
                   ),
-                  borderRadius: BorderRadius.circular(16),
+                  borderRadius: BorderRadius.circular(ResponsiveService.isSmallPhone ? 12 : 16),
                   boxShadow: [
                     BoxShadow(
                       color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
-                      blurRadius: 8,
+                      blurRadius: ResponsiveService.isSmallPhone ? 6 : 8,
                       offset: const Offset(0, 2),
                     ),
                   ],
                 ),
                 labelColor: Colors.white,
                 unselectedLabelColor: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
-                labelStyle: const TextStyle(
+                labelStyle: TextStyle(
                   fontWeight: FontWeight.w700,
-                  fontSize: 15,
+                  fontSize: ResponsiveService.isSmallPhone ? 13 : 15,
                   letterSpacing: 0.5,
                 ),
-                unselectedLabelStyle: const TextStyle(
+                unselectedLabelStyle: TextStyle(
                   fontWeight: FontWeight.w600,
-                  fontSize: 15,
+                  fontSize: ResponsiveService.isSmallPhone ? 13 : 15,
                   letterSpacing: 0.5,
                 ),
                 indicatorSize: TabBarIndicatorSize.tab,
@@ -349,20 +349,20 @@ class _PendingRequestsScreenState extends State<PendingRequestsScreen>
                 tabs: [
                   Tab(
                     icon: Container(
-                      padding: const EdgeInsets.all(8),
+                      padding: EdgeInsets.all(ResponsiveService.isSmallPhone ? 6 : 8),
                       child: Icon(
                         Icons.pending_actions_rounded,
-                        size: 24,
+                        size: ResponsiveService.isSmallPhone ? 20 : 24,
                       ),
                     ),
-                    text: 'În așteptare',
+                    text: ResponsiveService.isSmallPhone ? 'În așteptare' : 'În așteptare',
                   ),
                   Tab(
                     icon: Container(
-                      padding: const EdgeInsets.all(8),
+                      padding: EdgeInsets.all(ResponsiveService.isSmallPhone ? 6 : 8),
                       child: Icon(
                         Icons.check_circle_rounded,
-                        size: 24,
+                        size: ResponsiveService.isSmallPhone ? 20 : 24,
                       ),
                     ),
                     text: 'Aprobate',
@@ -494,7 +494,10 @@ class _PendingRequestsScreenState extends State<PendingRequestsScreen>
                           children: [
                             // Search Bar
                             Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+                              padding: EdgeInsets.symmetric(
+                                horizontal: ResponsiveService.isSmallPhone ? 16 : 24, 
+                                vertical: ResponsiveService.isSmallPhone ? 6 : 8
+                              ),
                               child: Container(
                                 decoration: BoxDecoration(
                                   gradient: LinearGradient(
@@ -503,12 +506,12 @@ class _PendingRequestsScreenState extends State<PendingRequestsScreen>
                                       Theme.of(context).colorScheme.surface.withOpacity(0.8),
                                     ],
                                   ),
-                                  borderRadius: BorderRadius.circular(25),
+                                  borderRadius: BorderRadius.circular(ResponsiveService.isSmallPhone ? 20 : 25),
                                   boxShadow: [
                                     BoxShadow(
                                       color: Theme.of(context).colorScheme.shadow.withOpacity(0.08),
-                                      blurRadius: 12,
-                                      offset: const Offset(0, 4),
+                                      blurRadius: ResponsiveService.isSmallPhone ? 8 : 12,
+                                      offset: Offset(0, ResponsiveService.isSmallPhone ? 3 : 4),
                                     ),
                                   ],
                                   border: Border.all(
@@ -519,39 +522,44 @@ class _PendingRequestsScreenState extends State<PendingRequestsScreen>
                                 child: TextField(
                                   controller: _searchController,
                                   decoration: InputDecoration(
-                                    hintText: '🔍 Caută după numele cărții sau studentului...',
+                                    hintText: ResponsiveService.isSmallPhone 
+                                        ? '🔍 Caută...' 
+                                        : '🔍 Caută după numele cărții sau studentului...',
                                     hintStyle: TextStyle(
                                       color: Theme.of(context).colorScheme.primary.withOpacity(0.6),
-                                      fontSize: 16,
+                                      fontSize: ResponsiveService.isSmallPhone ? 14 : 16,
                                       fontWeight: FontWeight.w500,
                                     ),
                                     prefixIcon: Container(
-                                      margin: const EdgeInsets.all(8),
-                                      padding: const EdgeInsets.all(10),
+                                      margin: EdgeInsets.all(ResponsiveService.isSmallPhone ? 6 : 8),
+                                      padding: EdgeInsets.all(ResponsiveService.isSmallPhone ? 8 : 10),
                                       decoration: BoxDecoration(
                                         color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
-                                        borderRadius: BorderRadius.circular(12),
+                                        borderRadius: BorderRadius.circular(ResponsiveService.isSmallPhone ? 10 : 12),
                                       ),
                                       child: Icon(
                                         Icons.search_rounded,
                                         color: Theme.of(context).colorScheme.primary,
-                                        size: 24,
+                                        size: ResponsiveService.isSmallPhone ? 20 : 24,
                                       ),
                                     ),
                                     suffixIcon: _searchController.text.isNotEmpty
                                         ? AnimatedContainer(
                                             duration: const Duration(milliseconds: 200),
                                             child: Container(
-                                              margin: const EdgeInsets.all(8),
+                                              margin: EdgeInsets.all(ResponsiveService.isSmallPhone ? 6 : 8),
                                               decoration: BoxDecoration(
                                                 color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
-                                                borderRadius: BorderRadius.circular(10),
+                                                borderRadius: BorderRadius.circular(ResponsiveService.isSmallPhone ? 8 : 10),
                                               ),
                                               child: IconButton(
                                                 icon: Icon(
                                                   Icons.clear_rounded,
                                                   color: Theme.of(context).colorScheme.primary,
+                                                  size: ResponsiveService.isSmallPhone ? 18 : 20,
                                                 ),
+                                                padding: EdgeInsets.all(ResponsiveService.isSmallPhone ? 4 : 6),
+                                                constraints: const BoxConstraints(),
                                                 onPressed: () {
                                                   _searchController.clear();
                                                 },
@@ -560,26 +568,26 @@ class _PendingRequestsScreenState extends State<PendingRequestsScreen>
                                           )
                                         : null,
                                     border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(25),
+                                      borderRadius: BorderRadius.circular(ResponsiveService.isSmallPhone ? 20 : 25),
                                       borderSide: BorderSide.none,
                                     ),
                                     enabledBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(25),
+                                      borderRadius: BorderRadius.circular(ResponsiveService.isSmallPhone ? 20 : 25),
                                       borderSide: BorderSide.none,
                                     ),
                                     focusedBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(25),
+                                      borderRadius: BorderRadius.circular(ResponsiveService.isSmallPhone ? 20 : 25),
                                       borderSide: BorderSide.none,
                                     ),
                                     filled: true,
                                     fillColor: Colors.transparent,
-                                    contentPadding: const EdgeInsets.symmetric(
-                                      horizontal: 20,
-                                      vertical: 18,
+                                    contentPadding: EdgeInsets.symmetric(
+                                      horizontal: ResponsiveService.isSmallPhone ? 16 : 20,
+                                      vertical: ResponsiveService.isSmallPhone ? 14 : 18,
                                     ),
                                   ),
                                   style: TextStyle(
-                                    fontSize: 16,
+                                    fontSize: ResponsiveService.isSmallPhone ? 14 : 16,
                                     fontWeight: FontWeight.w500,
                                     color: Theme.of(context).colorScheme.onSurface,
                                   ),
@@ -618,8 +626,8 @@ class _PendingRequestsScreenState extends State<PendingRequestsScreen>
     if (requests.isEmpty) {
       return Center(
         child: Container(
-          margin: const EdgeInsets.all(32),
-          padding: const EdgeInsets.all(32),
+          margin: EdgeInsets.all(ResponsiveService.isSmallPhone ? 24 : 32),
+          padding: EdgeInsets.all(ResponsiveService.isSmallPhone ? 24 : 32),
           decoration: BoxDecoration(
             gradient: LinearGradient(
               colors: [
@@ -627,12 +635,12 @@ class _PendingRequestsScreenState extends State<PendingRequestsScreen>
                 Theme.of(context).colorScheme.surface.withOpacity(0.8),
               ],
             ),
-            borderRadius: BorderRadius.circular(24),
+            borderRadius: BorderRadius.circular(ResponsiveService.isSmallPhone ? 20 : 24),
             boxShadow: [
               BoxShadow(
                 color: Theme.of(context).colorScheme.shadow.withOpacity(0.08),
-                blurRadius: 16,
-                offset: const Offset(0, 6),
+                blurRadius: ResponsiveService.isSmallPhone ? 12 : 16,
+                offset: Offset(0, ResponsiveService.isSmallPhone ? 4 : 6),
               ),
             ],
           ),
@@ -640,7 +648,7 @@ class _PendingRequestsScreenState extends State<PendingRequestsScreen>
             mainAxisSize: MainAxisSize.min,
             children: [
               Container(
-                padding: const EdgeInsets.all(20),
+                padding: EdgeInsets.all(ResponsiveService.isSmallPhone ? 16 : 20),
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     colors: [
@@ -654,11 +662,11 @@ class _PendingRequestsScreenState extends State<PendingRequestsScreen>
                   _searchQuery.isNotEmpty 
                       ? Icons.search_off_rounded 
                       : (showActions ? Icons.pending_actions_rounded : Icons.check_circle_rounded),
-                  size: 48,
+                  size: ResponsiveService.isSmallPhone ? 40 : 48,
                   color: Theme.of(context).colorScheme.primary,
                 ),
               ),
-              const SizedBox(height: 24),
+              SizedBox(height: ResponsiveService.isSmallPhone ? 16 : 24),
               Text(
                 _searchQuery.isNotEmpty 
                     ? 'Nu s-au găsit rezultate pentru "$_searchQuery"'
@@ -667,10 +675,11 @@ class _PendingRequestsScreenState extends State<PendingRequestsScreen>
                   fontWeight: FontWeight.w700,
                   color: Theme.of(context).colorScheme.onSurface,
                   letterSpacing: 0.5,
+                  fontSize: ResponsiveService.isSmallPhone ? 18 : null,
                 ),
                 textAlign: TextAlign.center,
               ),
-              const SizedBox(height: 8),
+              SizedBox(height: ResponsiveService.isSmallPhone ? 6 : 8),
               Text(
                 _searchQuery.isNotEmpty
                     ? 'Încearcă să modifici termenii de căutare'
@@ -680,6 +689,7 @@ class _PendingRequestsScreenState extends State<PendingRequestsScreen>
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                   color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
                   fontWeight: FontWeight.w500,
+                  fontSize: ResponsiveService.isSmallPhone ? 13 : null,
                 ),
                 textAlign: TextAlign.center,
               ),
@@ -690,473 +700,799 @@ class _PendingRequestsScreenState extends State<PendingRequestsScreen>
     }
 
     return ListView.builder(
-      padding: const EdgeInsets.all(20),
+      padding: EdgeInsets.all(ResponsiveService.isSmallPhone ? 16 : 20),
       itemCount: requests.length,
       itemBuilder: (context, index) {
         final request = requests[index];
-        return Container(
-          margin: const EdgeInsets.only(bottom: 20),
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: [
-                Theme.of(context).colorScheme.surface,
-                Theme.of(context).colorScheme.surface.withOpacity(0.8),
-              ],
-            ),
-            borderRadius: BorderRadius.circular(20),
-            boxShadow: [
-              BoxShadow(
-                color: Theme.of(context).colorScheme.shadow.withOpacity(0.08),
-                blurRadius: 16,
-                offset: const Offset(0, 6),
-              ),
-            ],
-          ),
-          child: Padding(
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Header with student info and status badge
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Student avatar
-                    Container(
-                      width: 60,
-                      height: 60,
+        return TweenAnimationBuilder<double>(
+          duration: Duration(milliseconds: 300 + (index * 100)),
+          tween: Tween(begin: 0.0, end: 1.0),
+          builder: (context, value, child) {
+            return Transform.scale(
+              scale: 0.9 + (value * 0.1),
+              child: Opacity(
+                opacity: value,
+                child: Center(
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(
+                      maxWidth: ResponsiveService.isTablet ? 600 : double.infinity,
+                    ),
+                    child: Container(
+                      margin: EdgeInsets.only(
+                        bottom: ResponsiveService.isSmallPhone ? 16 : 20,
+                      ),
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
                           colors: [
-                            Theme.of(context).colorScheme.primary,
-                            Theme.of(context).colorScheme.secondary,
+                            Theme.of(context).colorScheme.surface,
+                            Theme.of(context).colorScheme.surface.withOpacity(0.8),
                           ],
                         ),
-                        borderRadius: BorderRadius.circular(16),
+                        borderRadius: BorderRadius.circular(20),
                         boxShadow: [
                           BoxShadow(
-                            color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
-                            blurRadius: 8,
-                            offset: const Offset(0, 2),
+                            color: Theme.of(context).colorScheme.shadow.withOpacity(0.08),
+                            blurRadius: 16,
+                            offset: const Offset(0, 6),
                           ),
                         ],
                       ),
-                      child: Icon(
-                        Icons.person_rounded,
-                        size: 32,
-                        color: Colors.white,
-                      ),
-                    ),
-                    const SizedBox(width: 16),
-                    // Student info
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            toTitleCase(request['student']['user']['display_name'] ?? 
-                                request['student']['user']['first_name'] + ' ' + request['student']['user']['last_name'] ?? 
-                                'Utilizator necunoscut'),
-                            style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                              fontWeight: FontWeight.w700,
-                              color: Theme.of(context).colorScheme.onSurface,
-                              letterSpacing: 0.5,
+                      child: Padding(
+                        padding: EdgeInsets.all(ResponsiveService.isSmallPhone ? 16 : 24),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // Student Information Section - Compact Top Layout with Background
+                            Container(
+                              padding: EdgeInsets.all(ResponsiveService.isSmallPhone ? 12 : 16),
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                  colors: [
+                                    Theme.of(context).colorScheme.primary.withOpacity(0.08),
+                                    Theme.of(context).colorScheme.primary.withOpacity(0.02),
+                                  ],
+                                ),
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(
+                                  color: Theme.of(context).colorScheme.primary.withOpacity(0.15),
+                                  width: 1.5,
+                                ),
+                              ),
+                              child: Row(
+                                children: [
+                                  Container(
+                                    width: ResponsiveService.isSmallPhone ? 40 : 48,
+                                    height: ResponsiveService.isSmallPhone ? 40 : 48,
+                                    padding: EdgeInsets.all(ResponsiveService.isSmallPhone ? 8 : 10),
+                                    decoration: BoxDecoration(
+                                      gradient: LinearGradient(
+                                        colors: [
+                                          Theme.of(context).colorScheme.primary.withOpacity(0.15),
+                                          Theme.of(context).colorScheme.primary.withOpacity(0.05),
+                                        ],
+                                      ),
+                                      borderRadius: BorderRadius.circular(12),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Theme.of(context).colorScheme.primary.withOpacity(0.2),
+                                          blurRadius: 6,
+                                          offset: const Offset(0, 2),
+                                        ),
+                                      ],
+                                    ),
+                                    child: Icon(
+                                      Icons.person_rounded,
+                                      size: ResponsiveService.isSmallPhone ? 20 : 24,
+                                      color: Theme.of(context).colorScheme.primary,
+                                    ),
+                                  ),
+                                  SizedBox(width: ResponsiveService.isSmallPhone ? 8 : 12),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        // Name and Email on same line
+                                        Wrap(
+                                          crossAxisAlignment: WrapCrossAlignment.center,
+                                          children: [
+                                            Text(
+                                              toTitleCase(request['student']['user']['display_name'] ?? 
+                                                  '${request['student']['user']['first_name']} ${request['student']['user']['last_name']}'),
+                                              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                                fontWeight: FontWeight.w700,
+                                                color: Theme.of(context).colorScheme.onSurface,
+                                                fontSize: ResponsiveService.isSmallPhone ? 16 : 18,
+                                              ),
+                                            ),
+                                            SizedBox(width: ResponsiveService.isSmallPhone ? 8 : 10),
+                                            Text(
+                                              request['student']['user']['email'] ?? '',
+                                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                                color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+                                                fontWeight: FontWeight.w500,
+                                                fontSize: ResponsiveService.isSmallPhone ? 12 : 14,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        SizedBox(height: ResponsiveService.isSmallPhone ? 6 : 8),
+                                        // Student class information and status badge
+                                        Row(
+                                          children: [
+                                            // Student class information - bigger
+                                            Builder(
+                                              builder: (context) {
+                                                final studentId = request['student']['student_id']?.toString() ?? '';
+                                                final isTeacher = studentId.startsWith('T');
+                                                
+                                                if (isTeacher) {
+                                                  return Container(
+                                                    padding: EdgeInsets.symmetric(
+                                                      horizontal: ResponsiveService.isSmallPhone ? 6 : 8, 
+                                                      vertical: ResponsiveService.isSmallPhone ? 3 : 4
+                                                    ),
+                                                    decoration: BoxDecoration(
+                                                      color: Colors.blue.withOpacity(0.1),
+                                                      borderRadius: BorderRadius.circular(8),
+                                                      border: Border.all(
+                                                        color: Colors.blue.withOpacity(0.3),
+                                                        width: 1.5,
+                                                      ),
+                                                    ),
+                                                    child: Text(
+                                                      'Profesor',
+                                                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                                        color: Colors.blue[700],
+                                                        fontWeight: FontWeight.w700,
+                                                        fontSize: ResponsiveService.isSmallPhone ? 10 : 12,
+                                                      ),
+                                                    ),
+                                                  );
+                                                } else if (request['student']['student_class'] != null || request['student']['department'] != null) {
+                                                  return Container(
+                                                    padding: EdgeInsets.symmetric(
+                                                      horizontal: ResponsiveService.isSmallPhone ? 6 : 8, 
+                                                      vertical: ResponsiveService.isSmallPhone ? 3 : 4
+                                                    ),
+                                                    decoration: BoxDecoration(
+                                                      color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                                                      borderRadius: BorderRadius.circular(8),
+                                                      border: Border.all(
+                                                        color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
+                                                        width: 1.5,
+                                                      ),
+                                                    ),
+                                                    child: Text(
+                                                      '${request['student']['school_type'] ?? ''} ${request['student']['student_class'] ?? ''} ${request['student']['department'] ?? ''}'.trim(),
+                                                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                                        color: Theme.of(context).colorScheme.primary,
+                                                        fontWeight: FontWeight.w700,
+                                                        fontSize: ResponsiveService.isSmallPhone ? 10 : 12,
+                                                      ),
+                                                    ),
+                                                  );
+                                                }
+                                                return const SizedBox.shrink();
+                                              },
+                                            ),
+                                            const Spacer(),
+                                            // Status badge
+                                            Container(
+                                              padding: EdgeInsets.symmetric(
+                                                horizontal: ResponsiveService.isSmallPhone ? 6 : 10, 
+                                                vertical: ResponsiveService.isSmallPhone ? 3 : 5
+                                              ),
+                                              decoration: BoxDecoration(
+                                                gradient: LinearGradient(
+                                                  colors: showActions 
+                                                    ? [const Color(0xFFFFA726), const Color(0xFFFF9800)] // Orange for pending
+                                                    : [const Color(0xFF66BB6A), const Color(0xFF4CAF50)], // Green for approved
+                                                ),
+                                                borderRadius: BorderRadius.circular(ResponsiveService.isSmallPhone ? 14 : 18),
+                                                boxShadow: [
+                                                  BoxShadow(
+                                                    color: (showActions ? const Color(0xFFFF9800) : const Color(0xFF4CAF50)).withOpacity(0.3),
+                                                    blurRadius: ResponsiveService.isSmallPhone ? 6 : 8,
+                                                    offset: const Offset(0, 2),
+                                                  ),
+                                                ],
+                                              ),
+                                              child: Row(
+                                                mainAxisSize: MainAxisSize.min,
+                                                children: [
+                                                  Icon(
+                                                    showActions ? Icons.pending_rounded : Icons.check_circle_rounded,
+                                                    color: Colors.white,
+                                                    size: ResponsiveService.isSmallPhone ? 12 : 14,
+                                                  ),
+                                                  SizedBox(width: ResponsiveService.isSmallPhone ? 3 : 5),
+                                                  Text(
+                                                    showActions ? 'În așteptare' : 'Aprobat',
+                                                    style: TextStyle(
+                                                      color: Colors.white,
+                                                      fontWeight: FontWeight.w700,
+                                                      fontSize: ResponsiveService.isSmallPhone ? 9 : 11,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            request['student']['user']['email'] ?? '',
-                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          // Student class information or Teacher badge
-                          Builder(
-                            builder: (context) {
-                              final studentId = request['student']['student_id']?.toString() ?? '';
-                              final isTeacher = studentId.startsWith('T');
-                              
-                              if (isTeacher) {
-                                return Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                            SizedBox(height: ResponsiveService.isSmallPhone ? 12 : 16),
+                            
+                            // Book Information Section - Cover left, Info with background right
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                // Book cover image on the left
+                                Container(
                                   decoration: BoxDecoration(
-                                    color: Colors.blue.withOpacity(0.1),
                                     borderRadius: BorderRadius.circular(12),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.black.withOpacity(0.1),
+                                        blurRadius: 8,
+                                        offset: const Offset(0, 4),
+                                      ),
+                                    ],
+                                  ),
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(12),
+                                    child: SizedBox(
+                                      width: ResponsiveService.isSmallPhone ? 70 : 90,
+                                      height: ResponsiveService.isSmallPhone ? 105 : 135,
+                                      child: request['book']['thumbnail_url'] != null && request['book']['thumbnail_url'].isNotEmpty
+                                          ? Image.network(
+                                              request['book']['thumbnail_url'],
+                                              fit: BoxFit.cover,
+                                              errorBuilder: (context, error, stackTrace) {
+                                                return Container(
+                                                  color: Colors.grey[300],
+                                                  child: Center(
+                                                    child: Icon(Icons.image_not_supported, 
+                                                      size: ResponsiveService.isSmallPhone ? 25 : 30),
+                                                  ),
+                                                );
+                                              },
+                                            )
+                                          : Container(
+                                              color: Colors.grey[300],
+                                              child: Center(
+                                                child: Icon(Icons.image_not_supported, 
+                                                  size: ResponsiveService.isSmallPhone ? 25 : 30),
+                                              ),
+                                            ),
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(width: ResponsiveService.isSmallPhone ? 12 : 16),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      // Book Title and Author with Background - Same height as cover
+                                      Container(
+                                        height: ResponsiveService.isSmallPhone ? 105 : 135, // Match book cover height
+                                        padding: EdgeInsets.all(ResponsiveService.isSmallPhone ? 12 : 16),
+                                        decoration: BoxDecoration(
+                                          gradient: LinearGradient(
+                                            colors: [
+                                              Theme.of(context).colorScheme.secondary.withOpacity(0.08),
+                                              Theme.of(context).colorScheme.secondary.withOpacity(0.02),
+                                            ],
+                                          ),
+                                          borderRadius: BorderRadius.circular(12),
+                                          border: Border.all(
+                                            color: Theme.of(context).colorScheme.secondary.withOpacity(0.15),
+                                            width: 1.5,
+                                          ),
+                                        ),
+                                        child: Column(
+                                          crossAxisAlignment: CrossAxisAlignment.center, // Center content horizontally
+                                          mainAxisAlignment: MainAxisAlignment.center, // Center content vertically
+                                          children: [
+                                            // Book Title
+                                            Center(
+                                              child: Text(
+                                                request['book']['name'] ?? 'Carte necunoscută',
+                                                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                                  fontWeight: FontWeight.w600,
+                                                  fontSize: ResponsiveService.isSmallPhone ? 14 : 16,
+                                                ),
+                                                maxLines: 2, // Limit to 2 lines for better layout
+                                                overflow: TextOverflow.ellipsis,
+                                                textAlign: TextAlign.center, // Center the title text
+                                              ),
+                                            ),
+                                            SizedBox(height: ResponsiveService.isSmallPhone ? 8 : 12),
+                                            // Author - Centered
+                                            Center(
+                                              child: Text(
+                                                request['book']['author'] ?? '',
+                                                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                                  color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                                                  fontWeight: FontWeight.w500,
+                                                  fontSize: ResponsiveService.isSmallPhone ? 12 : 14,
+                                                ),
+                                                maxLines: 2, // Limit to 2 lines for better layout
+                                                overflow: TextOverflow.ellipsis,
+                                                textAlign: TextAlign.center, // Center the author text
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                            SizedBox(height: ResponsiveService.isSmallPhone ? 12 : 16),
+                            
+                            // Dates Section - Below the book info
+                            Column(
+                              children: [
+                                // Request Date
+                                Container(
+                                  width: double.infinity,
+                                  padding: EdgeInsets.all(ResponsiveService.isSmallPhone ? 12 : 16),
+                                  decoration: BoxDecoration(
+                                    gradient: LinearGradient(
+                                      colors: [
+                                        Colors.blue.withOpacity(0.08),
+                                        Colors.blue.withOpacity(0.02),
+                                      ],
+                                    ),
+                                    borderRadius: BorderRadius.circular(8),
                                     border: Border.all(
                                       color: Colors.blue.withOpacity(0.2),
                                       width: 1,
                                     ),
                                   ),
-                                  child: Text(
-                                    'Profesor',
-                                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                      color: Colors.blue[700],
-                                      fontWeight: FontWeight.w600,
-                                      fontSize: 12,
-                                    ),
-                                  ),
-                                );
-                              } else if (request['student']['student_class'] != null || request['student']['department'] != null) {
-                                return Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                                  decoration: BoxDecoration(
-                                    color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
-                                    borderRadius: BorderRadius.circular(12),
-                                    border: Border.all(
-                                      color: Theme.of(context).colorScheme.primary.withOpacity(0.2),
-                                      width: 1,
-                                    ),
-                                  ),
-                                  child: Text(
-                                    '${request['student']['school_type'] ?? ''} ${request['student']['student_class'] ?? ''} ${request['student']['department'] ?? ''}'.trim(),
-                                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                      color: Theme.of(context).colorScheme.primary,
-                                      fontWeight: FontWeight.w600,
-                                      fontSize: 12,
-                                    ),
-                                  ),
-                                );
-                              }
-                              return const SizedBox.shrink();
-                            },
-                          ),
-                        ],
-                      ),
-                    ),
-                    // Status badge
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: showActions 
-                            ? [const Color(0xFFFFA726), const Color(0xFFFF9800)] // Orange for pending
-                            : [const Color(0xFF66BB6A), const Color(0xFF4CAF50)], // Green for approved
-                        ),
-                        borderRadius: BorderRadius.circular(20),
-                        boxShadow: [
-                          BoxShadow(
-                            color: (showActions ? const Color(0xFFFF9800) : const Color(0xFF4CAF50)).withOpacity(0.3),
-                            blurRadius: 8,
-                            offset: const Offset(0, 2),
-                          ),
-                        ],
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(
-                            showActions ? Icons.pending_rounded : Icons.check_circle_rounded,
-                            color: Colors.white,
-                            size: 16,
-                          ),
-                          const SizedBox(width: 6),
-                          Text(
-                            showActions ? 'În așteptare' : 'Aprobat',
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.w700,
-                              fontSize: 12,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 24),
-                // Book information with photo
-                Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [
-                        Theme.of(context).colorScheme.primary.withOpacity(0.05),
-                        Theme.of(context).colorScheme.primary.withOpacity(0.02),
-                      ],
-                    ),
-                    borderRadius: BorderRadius.circular(16),
-                    border: Border.all(
-                      color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
-                      width: 1,
-                    ),
-                  ),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Book cover image
-                      Container(
-                        width: 80,
-                        height: 120,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(12),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.2),
-                              blurRadius: 8,
-                              offset: const Offset(0, 4),
-                            ),
-                          ],
-                        ),
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(12),
-                          child: request['book']['thumbnail_url'] != null && request['book']['thumbnail_url'].isNotEmpty
-                              ? Image.network(
-                                  request['book']['thumbnail_url'],
-                                  fit: BoxFit.cover,
-                                  errorBuilder: (context, error, stackTrace) {
-                                    return Container(
-                                      decoration: BoxDecoration(
-                                        gradient: LinearGradient(
-                                          colors: [
-                                            Theme.of(context).colorScheme.primary.withOpacity(0.1),
-                                            Theme.of(context).colorScheme.primary.withOpacity(0.05),
-                                          ],
+                                  child: Row(
+                                    children: [
+                                      Container(
+                                        padding: EdgeInsets.all(ResponsiveService.isSmallPhone ? 6 : 8),
+                                        decoration: BoxDecoration(
+                                          gradient: LinearGradient(
+                                            colors: [
+                                              Colors.blue.withOpacity(0.15),
+                                              Colors.blue.withOpacity(0.05),
+                                            ],
+                                          ),
+                                          borderRadius: BorderRadius.circular(6),
+                                        ),
+                                        child: Icon(
+                                          Icons.calendar_today_rounded,
+                                          color: Colors.blue[700],
+                                          size: ResponsiveService.isSmallPhone ? 16 : 18,
                                         ),
                                       ),
-                                      child: Icon(
-                                        Icons.book_rounded,
-                                        size: 32,
-                                        color: Theme.of(context).colorScheme.primary,
+                                      SizedBox(width: ResponsiveService.isSmallPhone ? 10 : 12),
+                                      Expanded(
+                                        child: RichText(
+                                          text: TextSpan(
+                                            text: 'Data cererii: ',
+                                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                              color: Colors.blue[700],
+                                              fontWeight: FontWeight.w700,
+                                              fontSize: ResponsiveService.isSmallPhone ? 13 : 15,
+                                            ),
+                                            children: [
+                                              TextSpan(
+                                                text: request['request_date'] != null
+                                                    ? DateTime.parse(request['request_date']).toLocal().toString().split(' ')[0]
+                                                    : 'Nu este disponibilă',
+                                                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                                  color: Colors.blue[600],
+                                                  fontWeight: FontWeight.w600,
+                                                  fontSize: ResponsiveService.isSmallPhone ? 13 : 15,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
                                       ),
-                                    );
-                                  },
-                                )
-                              : Container(
+                                    ],
+                                  ),
+                                ),
+                                SizedBox(height: ResponsiveService.isSmallPhone ? 8 : 10),
+                                // Due Date
+                                Container(
+                                  width: double.infinity,
+                                  padding: EdgeInsets.all(ResponsiveService.isSmallPhone ? 12 : 16),
                                   decoration: BoxDecoration(
                                     gradient: LinearGradient(
                                       colors: [
-                                        Theme.of(context).colorScheme.primary.withOpacity(0.1),
-                                        Theme.of(context).colorScheme.primary.withOpacity(0.05),
+                                        Colors.orange.withOpacity(0.08),
+                                        Colors.orange.withOpacity(0.02),
                                       ],
                                     ),
-                                  ),
-                                  child: Icon(
-                                    Icons.book_rounded,
-                                    size: 32,
-                                    color: Theme.of(context).colorScheme.primary,
-                                  ),
-                                ),
-                        ),
-                      ),
-                      const SizedBox(width: 16),
-                      // Book details
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              request['book']['name'] ?? 'Carte necunoscută',
-                              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                fontWeight: FontWeight.w700,
-                                color: Theme.of(context).colorScheme.onSurface,
-                              ),
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              request['book']['author'] ?? '',
-                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                            // Class info for manuals
-                            if (request['book']['type'] == 'manual' && request['book']['book_class'] != null) ...[
-                              const SizedBox(height: 4),
-                              Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                                decoration: BoxDecoration(
-                                  color: Theme.of(context).colorScheme.secondary.withOpacity(0.1),
-                                  borderRadius: BorderRadius.circular(12),
-                                  border: Border.all(
-                                    color: Theme.of(context).colorScheme.secondary.withOpacity(0.3),
-                                    width: 1,
-                                  ),
-                                ),
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Icon(
-                                      Icons.school_rounded,
-                                      color: Theme.of(context).colorScheme.secondary,
-                                      size: 14,
+                                    borderRadius: BorderRadius.circular(8),
+                                    border: Border.all(
+                                      color: Colors.orange.withOpacity(0.2),
+                                      width: 1,
                                     ),
-                                    const SizedBox(width: 4),
-                                    Text(
-                                      'Clasa ${request['book']['book_class']}',
-                                      style: TextStyle(
-                                        color: Theme.of(context).colorScheme.secondary,
-                                        fontWeight: FontWeight.w600,
-                                        fontSize: 11,
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      Container(
+                                        padding: EdgeInsets.all(ResponsiveService.isSmallPhone ? 6 : 8),
+                                        decoration: BoxDecoration(
+                                          gradient: LinearGradient(
+                                            colors: [
+                                              Colors.orange.withOpacity(0.15),
+                                              Colors.orange.withOpacity(0.05),
+                                            ],
+                                          ),
+                                          borderRadius: BorderRadius.circular(6),
+                                        ),
+                                        child: Icon(
+                                          Icons.event_rounded,
+                                          color: Colors.orange[700],
+                                          size: ResponsiveService.isSmallPhone ? 16 : 18,
+                                        ),
                                       ),
+                                      SizedBox(width: ResponsiveService.isSmallPhone ? 10 : 12),
+                                      Expanded(
+                                        child: RichText(
+                                          text: TextSpan(
+                                            text: 'Data scadenței: ',
+                                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                              color: Colors.orange[700],
+                                              fontWeight: FontWeight.w700,
+                                              fontSize: ResponsiveService.isSmallPhone ? 13 : 15,
+                                            ),
+                                            children: [
+                                              TextSpan(
+                                                text: request['due_date'] != null
+                                                    ? DateTime.parse(request['due_date']).toLocal().toString().split(' ')[0]
+                                                    : 'Nu este disponibilă',
+                                                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                                  color: Colors.orange[600],
+                                                  fontWeight: FontWeight.w600,
+                                                  fontSize: ResponsiveService.isSmallPhone ? 13 : 15,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                SizedBox(height: ResponsiveService.isSmallPhone ? 8 : 10),
+                                // Loan Duration
+                                Container(
+                                  width: double.infinity,
+                                  padding: EdgeInsets.all(ResponsiveService.isSmallPhone ? 12 : 16),
+                                  decoration: BoxDecoration(
+                                    gradient: LinearGradient(
+                                      colors: [
+                                        Colors.purple.withOpacity(0.08),
+                                        Colors.purple.withOpacity(0.02),
+                                      ],
                                     ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                            const SizedBox(height: 12),
-                            // Request details in a vertical format
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                _buildInfoChip(
-                                  icon: Icons.calendar_today_rounded,
-                                  label: 'Cerere',
-                                  value: request['request_date'] != null
-                                      ? DateTime.parse(request['request_date'])
-                                          .toLocal()
-                                          .toString()
-                                          .split(' ')[0]
-                                      : 'N/A',
-                                ),
-                                const SizedBox(height: 8),
-                                _buildInfoChip(
-                                  icon: Icons.event_rounded,
-                                  label: 'Returnare',
-                                  value: request['due_date'] != null
-                                      ? DateTime.parse(request['due_date'])
-                                          .toLocal()
-                                          .toString()
-                                          .split(' ')[0]
-                                      : 'N/A',
-                                ),
-                                const SizedBox(height: 8),
-                                _buildInfoChip(
-                                  icon: Icons.timer_rounded,
-                                  label: 'Durată',
-                                  value: '${request['loan_duration_days'] ?? 14} zile',
+                                    borderRadius: BorderRadius.circular(8),
+                                    border: Border.all(
+                                      color: Colors.purple.withOpacity(0.2),
+                                      width: 1,
+                                    ),
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      Container(
+                                        padding: EdgeInsets.all(ResponsiveService.isSmallPhone ? 6 : 8),
+                                        decoration: BoxDecoration(
+                                          gradient: LinearGradient(
+                                            colors: [
+                                              Colors.purple.withOpacity(0.15),
+                                              Colors.purple.withOpacity(0.05),
+                                            ],
+                                          ),
+                                          borderRadius: BorderRadius.circular(6),
+                                        ),
+                                        child: Icon(
+                                          Icons.timer_rounded,
+                                          color: Colors.purple[700],
+                                          size: ResponsiveService.isSmallPhone ? 16 : 18,
+                                        ),
+                                      ),
+                                      SizedBox(width: ResponsiveService.isSmallPhone ? 10 : 12),
+                                      Expanded(
+                                        child: RichText(
+                                          text: TextSpan(
+                                            text: 'Durată împrumut: ',
+                                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                              color: Colors.purple[700],
+                                              fontWeight: FontWeight.w700,
+                                              fontSize: ResponsiveService.isSmallPhone ? 13 : 15,
+                                            ),
+                                            children: [
+                                              TextSpan(
+                                                text: '${request['loan_duration_days'] ?? 14} zile',
+                                                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                                  color: Colors.purple[600],
+                                                  fontWeight: FontWeight.w600,
+                                                  fontSize: ResponsiveService.isSmallPhone ? 13 : 15,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ],
                             ),
+                            SizedBox(height: ResponsiveService.isSmallPhone ? 16 : 20),
+                            
+                            // Action Buttons
+                            if (showActions) ...[
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children: ResponsiveService.isSmallPhone
+                                    ? [
+                                        // Stack buttons vertically on small phones
+                                        Expanded(
+                                          child: Column(
+                                            children: [
+                                              Container(
+                                                width: double.infinity,
+                                                decoration: BoxDecoration(
+                                                  gradient: LinearGradient(
+                                                    colors: [
+                                                      const Color(0xFFE57373),
+                                                      const Color(0xFFE57373).withOpacity(0.8),
+                                                    ],
+                                                  ),
+                                                  borderRadius: BorderRadius.circular(12),
+                                                  boxShadow: [
+                                                    BoxShadow(
+                                                      color: const Color(0xFFE57373).withOpacity(0.3),
+                                                      blurRadius: 6,
+                                                      offset: const Offset(0, 2),
+                                                    ),
+                                                  ],
+                                                ),
+                                                child: ElevatedButton.icon(
+                                                  onPressed: () => _handleRequest(request['id'].toString(), false),
+                                                  icon: Icon(
+                                                    Icons.close_rounded,
+                                                    size: 18,
+                                                  ),
+                                                  label: Text(
+                                                    'Respinge',
+                                                    style: TextStyle(
+                                                      fontSize: 12,
+                                                      fontWeight: FontWeight.w600,
+                                                    ),
+                                                  ),
+                                                  style: ElevatedButton.styleFrom(
+                                                    backgroundColor: Colors.transparent,
+                                                    foregroundColor: Colors.white,
+                                                    elevation: 0,
+                                                    padding: const EdgeInsets.symmetric(
+                                                      horizontal: 16,
+                                                      vertical: 12,
+                                                    ),
+                                                    shape: RoundedRectangleBorder(
+                                                      borderRadius: BorderRadius.circular(12),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                              const SizedBox(height: 8),
+                                              Container(
+                                                width: double.infinity,
+                                                decoration: BoxDecoration(
+                                                  gradient: LinearGradient(
+                                                    colors: [
+                                                      const Color(0xFF66BB6A),
+                                                      const Color(0xFF66BB6A).withOpacity(0.8),
+                                                    ],
+                                                  ),
+                                                  borderRadius: BorderRadius.circular(12),
+                                                  boxShadow: [
+                                                    BoxShadow(
+                                                      color: const Color(0xFF66BB6A).withOpacity(0.3),
+                                                      blurRadius: 6,
+                                                      offset: const Offset(0, 2),
+                                                    ),
+                                                  ],
+                                                ),
+                                                child: ElevatedButton.icon(
+                                                  onPressed: () => _handleRequest(request['id'].toString(), true),
+                                                  icon: Icon(
+                                                    Icons.check_rounded,
+                                                    size: 18,
+                                                  ),
+                                                  label: Text(
+                                                    'Aprobă',
+                                                    style: TextStyle(
+                                                      fontSize: 12,
+                                                      fontWeight: FontWeight.w600,
+                                                    ),
+                                                  ),
+                                                  style: ElevatedButton.styleFrom(
+                                                    backgroundColor: Colors.transparent,
+                                                    foregroundColor: Colors.white,
+                                                    elevation: 0,
+                                                    padding: const EdgeInsets.symmetric(
+                                                      horizontal: 16,
+                                                      vertical: 12,
+                                                    ),
+                                                    shape: RoundedRectangleBorder(
+                                                      borderRadius: BorderRadius.circular(12),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ]
+                                    : [
+                                        // Side by side buttons on larger screens
+                                        Container(
+                                          decoration: BoxDecoration(
+                                            gradient: LinearGradient(
+                                              colors: [
+                                                const Color(0xFFE57373),
+                                                const Color(0xFFE57373).withOpacity(0.8),
+                                              ],
+                                            ),
+                                            borderRadius: BorderRadius.circular(16),
+                                            boxShadow: [
+                                              BoxShadow(
+                                                color: const Color(0xFFE57373).withOpacity(0.3),
+                                                blurRadius: 8,
+                                                offset: const Offset(0, 2),
+                                              ),
+                                            ],
+                                          ),
+                                          child: ElevatedButton.icon(
+                                            onPressed: () => _handleRequest(request['id'].toString(), false),
+                                            icon: Icon(
+                                              Icons.close_rounded,
+                                              size: 20,
+                                            ),
+                                            label: Text(
+                                              'Respinge',
+                                              style: TextStyle(
+                                                fontSize: 14,
+                                                fontWeight: FontWeight.w600,
+                                              ),
+                                            ),
+                                            style: ElevatedButton.styleFrom(
+                                              backgroundColor: Colors.transparent,
+                                              foregroundColor: Colors.white,
+                                              elevation: 0,
+                                              padding: const EdgeInsets.symmetric(
+                                                horizontal: 24,
+                                                vertical: 16,
+                                              ),
+                                              shape: RoundedRectangleBorder(
+                                                borderRadius: BorderRadius.circular(16),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                        const SizedBox(width: 12),
+                                        Container(
+                                          decoration: BoxDecoration(
+                                            gradient: LinearGradient(
+                                              colors: [
+                                                const Color(0xFF66BB6A),
+                                                const Color(0xFF66BB6A).withOpacity(0.8),
+                                              ],
+                                            ),
+                                            borderRadius: BorderRadius.circular(16),
+                                            boxShadow: [
+                                              BoxShadow(
+                                                color: const Color(0xFF66BB6A).withOpacity(0.3),
+                                                blurRadius: 8,
+                                                offset: const Offset(0, 2),
+                                              ),
+                                            ],
+                                          ),
+                                          child: ElevatedButton.icon(
+                                            onPressed: () => _handleRequest(request['id'].toString(), true),
+                                            icon: Icon(
+                                              Icons.check_rounded,
+                                              size: 20,
+                                            ),
+                                            label: Text(
+                                              'Aprobă',
+                                              style: TextStyle(
+                                                fontSize: 14,
+                                                fontWeight: FontWeight.w600,
+                                              ),
+                                            ),
+                                            style: ElevatedButton.styleFrom(
+                                              backgroundColor: Colors.transparent,
+                                              foregroundColor: Colors.white,
+                                              elevation: 0,
+                                              padding: const EdgeInsets.symmetric(
+                                                horizontal: 24,
+                                                vertical: 16,
+                                              ),
+                                              shape: RoundedRectangleBorder(
+                                                borderRadius: BorderRadius.circular(16),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                              ),
+                            ] else if (request['status'] == 'APROBAT' && request['pickup_date'] == null) ...[
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children: [
+                                  Container(
+                                    decoration: BoxDecoration(
+                                      gradient: LinearGradient(
+                                        colors: [
+                                          Theme.of(context).colorScheme.primary,
+                                          Theme.of(context).colorScheme.primary.withOpacity(0.8),
+                                        ],
+                                      ),
+                                      borderRadius: BorderRadius.circular(ResponsiveService.isSmallPhone ? 12 : 16),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
+                                          blurRadius: ResponsiveService.isSmallPhone ? 6 : 8,
+                                          offset: const Offset(0, 2),
+                                        ),
+                                      ],
+                                    ),
+                                    child: ElevatedButton.icon(
+                                      onPressed: () => _markAsPickedUp(request['id'].toString()),
+                                      icon: Icon(
+                                        Icons.check_circle_rounded,
+                                        size: ResponsiveService.isSmallPhone ? 18 : 20,
+                                      ),
+                                      label: Text(
+                                        'Marcare Ridicată',
+                                        style: TextStyle(
+                                          fontSize: ResponsiveService.isSmallPhone ? 12 : 14,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: Colors.transparent,
+                                        foregroundColor: Colors.white,
+                                        elevation: 0,
+                                        padding: EdgeInsets.symmetric(
+                                          horizontal: ResponsiveService.isSmallPhone ? 16 : 24,
+                                          vertical: ResponsiveService.isSmallPhone ? 12 : 16,
+                                        ),
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(ResponsiveService.isSmallPhone ? 12 : 16),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
                           ],
                         ),
                       ),
-                    ],
+                    ),
                   ),
                 ),
-                if (showActions) ...[
-                  const SizedBox(height: 20),
-                  Container(
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [
-                          Theme.of(context).colorScheme.primary.withOpacity(0.05),
-                          Theme.of(context).colorScheme.primary.withOpacity(0.02),
-                        ],
-                      ),
-                      borderRadius: BorderRadius.circular(16),
-                      border: Border.all(
-                        color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
-                        width: 1,
-                      ),
-                    ),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: ElevatedButton.icon(
-                            onPressed: () => _handleRequest(request['id'].toString(), false),
-                            icon: const Icon(Icons.close_rounded, size: 20),
-                            label: const Text(
-                              'Respinge',
-                              style: TextStyle(
-                                fontWeight: FontWeight.w600,
-                                fontSize: 14,
-                              ),
-                            ),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xFFE57373),
-                              foregroundColor: Colors.white,
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 20,
-                                vertical: 12,
-                              ),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              elevation: 4,
-                              shadowColor: const Color(0xFFE57373).withOpacity(0.4),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: ElevatedButton.icon(
-                            onPressed: () => _handleRequest(request['id'].toString(), true),
-                            icon: const Icon(Icons.check_rounded, size: 20),
-                            label: const Text(
-                              'Aprobă',
-                              style: TextStyle(
-                                fontWeight: FontWeight.w600,
-                                fontSize: 14,
-                              ),
-                            ),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xFF66BB6A),
-                              foregroundColor: Colors.white,
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 20,
-                                vertical: 12,
-                              ),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              elevation: 4,
-                              shadowColor: const Color(0xFF66BB6A).withOpacity(0.4),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ] else if (request['status'] == 'APROBAT' &&
-                    request['pickup_date'] == null) ...[
-                  const SizedBox(height: 20),
-                  Container(
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [
-                          const Color(0xFF66BB6A).withOpacity(0.1),
-                          const Color(0xFF4CAF50).withOpacity(0.05),
-                        ],
-                      ),
-                      borderRadius: BorderRadius.circular(16),
-                      border: Border.all(
-                        color: const Color(0xFF4CAF50).withOpacity(0.2),
-                        width: 1,
-                      ),
-                    ),
-                    child: ElevatedButton.icon(
-                      onPressed: () => _markAsPickedUp(request['id'].toString()),
-                      icon: const Icon(Icons.check_circle_rounded, size: 20),
-                      label: const Text(
-                        'Marchează ca ridicată',
-                        style: TextStyle(
-                          fontWeight: FontWeight.w600,
-                          fontSize: 14,
-                        ),
-                      ),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF4CAF50),
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 24,
-                          vertical: 12,
-                        ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        elevation: 4,
-                        shadowColor: const Color(0xFF4CAF50).withOpacity(0.4),
-                      ),
-                    ),
-                  ),
-                ],
-              ],
-            ),
-          ),
+              ),
+            );
+          },
         );
       },
     );
@@ -1168,40 +1504,5 @@ class _PendingRequestsScreenState extends State<PendingRequestsScreen>
       if (word.isEmpty) return word;
       return word[0].toUpperCase() + word.substring(1).toLowerCase();
     }).join(' ');
-  }
-
-  Widget _buildInfoChip({required IconData icon, required String label, required String value}) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(
-            icon,
-            color: Theme.of(context).colorScheme.primary,
-            size: 16,
-          ),
-          const SizedBox(width: 6),
-          Text(
-            value,
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-        ],
-      ),
-    );
   }
 }

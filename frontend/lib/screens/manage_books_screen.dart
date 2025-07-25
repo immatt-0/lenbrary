@@ -725,7 +725,7 @@ class _ManageBooksScreenState extends State<ManageBooksScreen>
                             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                               fontWeight: FontWeight.bold,
                               color: Theme.of(context).colorScheme.onSurface,
-                              fontSize: ResponsiveService.isSmallPhone ? 12 : null,
+                              fontSize: ResponsiveService.isSmallPhone ? 9 : null,
                             ),
                             overflow: TextOverflow.ellipsis,
                             maxLines: 1,
@@ -942,6 +942,7 @@ class _ManageBooksScreenState extends State<ManageBooksScreen>
                                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
                                     fontWeight: FontWeight.bold,
                                     color: Theme.of(context).colorScheme.onSurface,
+                                    fontSize: ResponsiveService.isMediumPhone ? 12 : 16,
                                   ),
                                   overflow: TextOverflow.ellipsis,
                                   maxLines: 1,

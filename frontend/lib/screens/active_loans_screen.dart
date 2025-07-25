@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../services/api_service.dart';
-import '../services/responsive_service.dart' show ResponsiveWidget;
+import '../services/responsive_service.dart';
 import 'extension_requests_screen.dart';
 
 class ActiveLoansScreen extends StatefulWidget {
@@ -11,7 +11,7 @@ class ActiveLoansScreen extends StatefulWidget {
 }
 
 class _ActiveLoansScreenState extends State<ActiveLoansScreen>
-    with TickerProviderStateMixin, ResponsiveWidget {
+    with TickerProviderStateMixin {
   bool _isLoading = true;
   List<dynamic> _activeLoans = [];
   List<dynamic> _filteredActiveLoans = [];
@@ -133,6 +133,8 @@ class _ActiveLoansScreenState extends State<ActiveLoansScreen>
 
   @override
   Widget build(BuildContext context) {
+    ResponsiveService.init(context);
+    
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
@@ -145,7 +147,7 @@ class _ActiveLoansScreenState extends State<ActiveLoansScreen>
             mainAxisSize: MainAxisSize.min,
             children: [
               Container(
-                padding: const EdgeInsets.all(8),
+                padding: EdgeInsets.all(ResponsiveService.isSmallPhone ? 6 : 8),
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     colors: [
@@ -153,11 +155,11 @@ class _ActiveLoansScreenState extends State<ActiveLoansScreen>
                       Theme.of(context).colorScheme.primary.withOpacity(0.8),
                     ],
                   ),
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: BorderRadius.circular(ResponsiveService.isSmallPhone ? 8 : 10),
                   boxShadow: [
                     BoxShadow(
                       color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
-                      blurRadius: 8,
+                      blurRadius: ResponsiveService.isSmallPhone ? 6 : 8,
                       offset: const Offset(0, 2),
                     ),
                   ],
@@ -165,15 +167,19 @@ class _ActiveLoansScreenState extends State<ActiveLoansScreen>
                 child: Icon(
                   Icons.book_rounded,
                   color: Theme.of(context).colorScheme.onPrimary,
-                  size: 24,
+                  size: ResponsiveService.isSmallPhone ? 20 : 24,
                 ),
               ),
-              const SizedBox(width: 12),
-              Text(
-                'Împrumuturi Active',
-                style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.w700,
-                  letterSpacing: -0.5,
+              SizedBox(width: ResponsiveService.isSmallPhone ? 8 : 12),
+              Flexible(
+                child: Text(
+                  ResponsiveService.isSmallPhone ? 'Împrumuturi' : 'Împrumuturi Active',
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: -0.5,
+                    fontSize: ResponsiveService.isSmallPhone ? 16 : null,
+                  ),
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
             ],
@@ -182,17 +188,17 @@ class _ActiveLoansScreenState extends State<ActiveLoansScreen>
         leading: FadeTransition(
           opacity: _fadeAnimation,
           child: Container(
-            margin: const EdgeInsets.only(left: 8),
+            margin: EdgeInsets.only(left: ResponsiveService.getSpacing(8)),
             padding: EdgeInsets.zero,
             decoration: BoxDecoration(
               color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(6),
+              borderRadius: BorderRadius.circular(ResponsiveService.getSpacing(6)),
             ),
             child: IconButton(
               icon: Icon(
                 Icons.arrow_back_rounded,
                 color: Theme.of(context).colorScheme.primary,
-                size: 20,
+                size: ResponsiveService.getIconSize(20),
               ),
               padding: EdgeInsets.zero,
               constraints: BoxConstraints(),
@@ -261,69 +267,137 @@ class _ActiveLoansScreenState extends State<ActiveLoansScreen>
                   FadeTransition(
                     opacity: _fadeAnimation,
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-                      child: Row(
-                        children: [
-                          Container(
-                            decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                                colors: [
-                                  Theme.of(context).colorScheme.secondary,
-                                  Theme.of(context).colorScheme.secondary.withOpacity(0.8),
-                                ],
-                              ),
-                              borderRadius: BorderRadius.circular(12),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Theme.of(context).colorScheme.secondary.withOpacity(0.3),
-                                  blurRadius: 8,
-                                  offset: const Offset(0, 2),
+                      padding: EdgeInsets.symmetric(
+                        horizontal: ResponsiveService.isSmallPhone ? 16 : 24, 
+                        vertical: ResponsiveService.isSmallPhone ? 12 : 16
+                      ),
+                      child: ResponsiveService.isSmallPhone
+                          ? Column(
+                              children: [
+                                Container(
+                                  width: double.infinity,
+                                  decoration: BoxDecoration(
+                                    gradient: LinearGradient(
+                                      colors: [
+                                        Theme.of(context).colorScheme.secondary,
+                                        Theme.of(context).colorScheme.secondary.withOpacity(0.8),
+                                      ],
+                                    ),
+                                    borderRadius: BorderRadius.circular(12),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Theme.of(context).colorScheme.secondary.withOpacity(0.3),
+                                        blurRadius: 6,
+                                        offset: const Offset(0, 2),
+                                      ),
+                                    ],
+                                  ),
+                                  child: ElevatedButton.icon(
+                                    onPressed: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => const ExtensionRequestsScreen(),
+                                        ),
+                                      );
+                                    },
+                                    icon: Icon(
+                                      Icons.schedule_rounded,
+                                      size: 18,
+                                      color: Theme.of(context).colorScheme.onSecondary,
+                                    ),
+                                    label: Text(
+                                      'Cereri Extindere',
+                                      style: TextStyle(
+                                        color: Theme.of(context).colorScheme.onSecondary,
+                                        fontWeight: FontWeight.w600,
+                                        fontSize: 14,
+                                      ),
+                                    ),
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: Colors.transparent,
+                                      elevation: 0,
+                                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(height: 8),
+                                Text(
+                                  'Aici puteți vizualiza cererile de extindere',
+                                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                    color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+                                    fontWeight: FontWeight.w500,
+                                    fontSize: 12,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+                              ],
+                            )
+                          : Row(
+                              children: [
+                                Container(
+                                  decoration: BoxDecoration(
+                                    gradient: LinearGradient(
+                                      colors: [
+                                        Theme.of(context).colorScheme.secondary,
+                                        Theme.of(context).colorScheme.secondary.withOpacity(0.8),
+                                      ],
+                                    ),
+                                    borderRadius: BorderRadius.circular(12),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Theme.of(context).colorScheme.secondary.withOpacity(0.3),
+                                        blurRadius: 8,
+                                        offset: const Offset(0, 2),
+                                      ),
+                                    ],
+                                  ),
+                                  child: ElevatedButton.icon(
+                                    onPressed: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => const ExtensionRequestsScreen(),
+                                        ),
+                                      );
+                                    },
+                                    icon: Icon(
+                                      Icons.schedule_rounded,
+                                      size: 20,
+                                      color: Theme.of(context).colorScheme.onSecondary,
+                                    ),
+                                    label: Text(
+                                      'Cereri Extindere',
+                                      style: TextStyle(
+                                        color: Theme.of(context).colorScheme.onSecondary,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: Colors.transparent,
+                                      elevation: 0,
+                                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(width: 16),
+                                Expanded(
+                                  child: Text(
+                                    'Aici puteți vizualiza cererile de extindere',
+                                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                      color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
                                 ),
                               ],
                             ),
-                            child: ElevatedButton.icon(
-                              onPressed: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => const ExtensionRequestsScreen(),
-                                  ),
-                                );
-                              },
-                              icon: Icon(
-                                Icons.schedule_rounded,
-                                size: 20,
-                                color: Theme.of(context).colorScheme.onSecondary,
-                              ),
-                              label: Text(
-                                'Cereri Extindere',
-                                style: TextStyle(
-                                  color: Theme.of(context).colorScheme.onSecondary,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.transparent,
-                                elevation: 0,
-                                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 16),
-                          Expanded(
-                            child: Text(
-                              'Aici puteți vizualiza cererile de extindere',
-                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
                     ),
                   ),
                   
@@ -333,7 +407,10 @@ class _ActiveLoansScreenState extends State<ActiveLoansScreen>
                     child: SlideTransition(
                       position: _slideAnimation,
                       child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                        padding: EdgeInsets.symmetric(
+                          horizontal: ResponsiveService.isSmallPhone ? 16 : 24, 
+                          vertical: ResponsiveService.isSmallPhone ? 12 : 16
+                        ),
                         child: Container(
                           decoration: BoxDecoration(
                             gradient: LinearGradient(
@@ -342,12 +419,12 @@ class _ActiveLoansScreenState extends State<ActiveLoansScreen>
                                 Theme.of(context).colorScheme.surface.withOpacity(0.8),
                               ],
                             ),
-                            borderRadius: BorderRadius.circular(25),
+                            borderRadius: BorderRadius.circular(ResponsiveService.isSmallPhone ? 20 : 25),
                             boxShadow: [
                               BoxShadow(
                                 color: Theme.of(context).colorScheme.shadow.withOpacity(0.08),
-                                blurRadius: 12,
-                                offset: const Offset(0, 4),
+                                blurRadius: ResponsiveService.isSmallPhone ? 8 : 12,
+                                offset: Offset(0, ResponsiveService.isSmallPhone ? 3 : 4),
                               ),
                             ],
                             border: Border.all(
@@ -358,39 +435,44 @@ class _ActiveLoansScreenState extends State<ActiveLoansScreen>
                           child: TextField(
                             controller: _searchController,
                             decoration: InputDecoration(
-                              hintText: '🔍 Caută după numele cărții...',
+                              hintText: ResponsiveService.isSmallPhone 
+                                  ? '🔍 Caută cărți...' 
+                                  : '🔍 Caută după numele cărții...',
                               hintStyle: TextStyle(
                                 color: Theme.of(context).colorScheme.primary.withOpacity(0.6),
-                                fontSize: 16,
+                                fontSize: ResponsiveService.isSmallPhone ? 14 : 16,
                                 fontWeight: FontWeight.w500,
                               ),
                               prefixIcon: Container(
-                                margin: const EdgeInsets.all(8),
-                                padding: const EdgeInsets.all(10),
+                                margin: EdgeInsets.all(ResponsiveService.isSmallPhone ? 6 : 8),
+                                padding: EdgeInsets.all(ResponsiveService.isSmallPhone ? 8 : 10),
                                 decoration: BoxDecoration(
                                   color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
-                                  borderRadius: BorderRadius.circular(12),
+                                  borderRadius: BorderRadius.circular(ResponsiveService.isSmallPhone ? 10 : 12),
                                 ),
                                 child: Icon(
                                   Icons.search_rounded,
                                   color: Theme.of(context).colorScheme.primary,
-                                  size: 24,
+                                  size: ResponsiveService.isSmallPhone ? 20 : 24,
                                 ),
                               ),
                               suffixIcon: _searchController.text.isNotEmpty
                                   ? AnimatedContainer(
                                       duration: const Duration(milliseconds: 200),
                                       child: Container(
-                                        margin: const EdgeInsets.all(8),
+                                        margin: EdgeInsets.all(ResponsiveService.isSmallPhone ? 6 : 8),
                                         decoration: BoxDecoration(
                                           color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
-                                          borderRadius: BorderRadius.circular(10),
+                                          borderRadius: BorderRadius.circular(ResponsiveService.isSmallPhone ? 8 : 10),
                                         ),
                                         child: IconButton(
                                           icon: Icon(
                                             Icons.clear_rounded,
                                             color: Theme.of(context).colorScheme.primary,
+                                            size: ResponsiveService.isSmallPhone ? 18 : 20,
                                           ),
+                                          padding: EdgeInsets.all(ResponsiveService.isSmallPhone ? 4 : 6),
+                                          constraints: const BoxConstraints(),
                                           onPressed: () {
                                             _searchController.clear();
                                           },
@@ -399,26 +481,26 @@ class _ActiveLoansScreenState extends State<ActiveLoansScreen>
                                     )
                                   : null,
                               border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(25),
+                                borderRadius: BorderRadius.circular(ResponsiveService.isSmallPhone ? 20 : 25),
                                 borderSide: BorderSide.none,
                               ),
                               enabledBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(25),
+                                borderRadius: BorderRadius.circular(ResponsiveService.isSmallPhone ? 20 : 25),
                                 borderSide: BorderSide.none,
                               ),
                               focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(25),
+                                borderRadius: BorderRadius.circular(ResponsiveService.isSmallPhone ? 20 : 25),
                                 borderSide: BorderSide.none,
                               ),
                               filled: true,
                               fillColor: Colors.transparent,
-                              contentPadding: const EdgeInsets.symmetric(
-                                horizontal: 20,
-                                vertical: 18,
+                              contentPadding: EdgeInsets.symmetric(
+                                horizontal: ResponsiveService.isSmallPhone ? 16 : 20,
+                                vertical: ResponsiveService.isSmallPhone ? 14 : 18,
                               ),
                             ),
                             style: TextStyle(
-                              fontSize: 16,
+                              fontSize: ResponsiveService.isSmallPhone ? 14 : 16,
                               fontWeight: FontWeight.w500,
                               color: Theme.of(context).colorScheme.onSurface,
                             ),
@@ -442,32 +524,33 @@ class _ActiveLoansScreenState extends State<ActiveLoansScreen>
                                     return Transform.scale(
                                       scale: value,
                                       child: Container(
-                                        padding: const EdgeInsets.all(20),
+                                        padding: EdgeInsets.all(ResponsiveService.isSmallPhone ? 16 : 20),
                                         decoration: BoxDecoration(
                                           color: Theme.of(context).colorScheme.error.withOpacity(0.1),
                                           shape: BoxShape.circle,
                                         ),
                                         child: Icon(
                           Icons.error_outline_rounded,
-                          size: 48,
+                          size: ResponsiveService.isSmallPhone ? 40 : 48,
                           color: Theme.of(context).colorScheme.error,
                                         ),
                                       ),
                                     );
                                   },
                         ),
-                        const SizedBox(height: 16),
+                        SizedBox(height: ResponsiveService.isSmallPhone ? 12 : 16),
                                 FadeTransition(
                                   opacity: _fadeAnimation,
                                   child: Text(
                           _errorMessage!,
                           style: TextStyle(
                             color: Theme.of(context).colorScheme.error,
+                            fontSize: ResponsiveService.isSmallPhone ? 14 : null,
                           ),
                           textAlign: TextAlign.center,
                                   ),
                         ),
-                        const SizedBox(height: 16),
+                        SizedBox(height: ResponsiveService.isSmallPhone ? 12 : 16),
                                 FadeTransition(
                                   opacity: _fadeAnimation,
                                   child: ElevatedButton.icon(
@@ -490,43 +573,52 @@ class _ActiveLoansScreenState extends State<ActiveLoansScreen>
                   )
                 : _filteredActiveLoans.isEmpty
                     ? Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            TweenAnimationBuilder<double>(
-                              duration: const Duration(milliseconds: 600),
-                              tween: Tween(begin: 0.0, end: 1.0),
-                              builder: (context, value, child) {
-                                return Transform.scale(
-                                  scale: value,
-                                  child: Container(
-                                    padding: const EdgeInsets.all(20),
-                                    decoration: BoxDecoration(
-                                      color: Colors.grey[100],
-                                      shape: BoxShape.circle,
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: ResponsiveService.isSmallPhone ? 16 : 24,
+                          ),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              TweenAnimationBuilder<double>(
+                                duration: const Duration(milliseconds: 600),
+                                tween: Tween(begin: 0.0, end: 1.0),
+                                builder: (context, value, child) {
+                                  return Transform.scale(
+                                    scale: value,
+                                    child: Container(
+                                      padding: EdgeInsets.all(
+                                        ResponsiveService.isSmallPhone ? 16 : 20,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: Colors.grey[100],
+                                        shape: BoxShape.circle,
+                                      ),
+                                      child: Icon(
+                                        _searchQuery.isNotEmpty ? Icons.search_off_rounded : Icons.book_outlined,
+                                        size: ResponsiveService.isSmallPhone ? 40 : 48,
+                                        color: Colors.grey[400],
+                                      ),
                                     ),
-                                    child: Icon(
-                                      _searchQuery.isNotEmpty ? Icons.search_off_rounded : Icons.book_outlined,
-                                      size: 48,
-                                      color: Colors.grey[400],
-                                    ),
+                                  );
+                                },
+                              ),
+                              SizedBox(height: ResponsiveService.isSmallPhone ? 12 : 16),
+                              FadeTransition(
+                                opacity: _fadeAnimation,
+                                child: Text(
+                                  _searchQuery.isNotEmpty 
+                                      ? 'Nu s-au găsit rezultate pentru "$_searchQuery"'
+                                      : 'Nu există împrumuturi active',
+                                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                                    color: Theme.of(context).colorScheme.primary.withOpacity(0.5),
+                                    fontSize: ResponsiveService.isSmallPhone ? 16 : null,
                                   ),
-                                );
-                              },
-                            ),
-                            const SizedBox(height: 16),
-                            FadeTransition(
-                              opacity: _fadeAnimation,
-                              child: Text(
-                                _searchQuery.isNotEmpty 
-                                    ? 'Nu s-au găsit rezultate pentru "$_searchQuery"'
-                                    : 'Nu există împrumuturi active',
-                                style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                                  color: Theme.of(context).colorScheme.primary.withOpacity(0.5),
+                                  textAlign: TextAlign.center,
                                 ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                       )
                             : FadeTransition(
@@ -534,7 +626,10 @@ class _ActiveLoansScreenState extends State<ActiveLoansScreen>
                                 child: SlideTransition(
                                   position: _slideAnimation,
                                   child: ListView.builder(
-                                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                                    padding: EdgeInsets.symmetric(
+                                      horizontal: ResponsiveService.isSmallPhone ? 16 : 24,
+                                      vertical: ResponsiveService.isSmallPhone ? 12 : 16,
+                                    ),
                         itemCount: _filteredActiveLoans.length,
                         itemBuilder: (context, index) {
                           final loan = _filteredActiveLoans[index];
@@ -570,9 +665,13 @@ class _ActiveLoansScreenState extends State<ActiveLoansScreen>
             opacity: value,
             child: Center(
                             child: ConstrainedBox(
-                              constraints: const BoxConstraints(maxWidth: 600),
+                              constraints: BoxConstraints(
+                                maxWidth: ResponsiveService.isTablet ? 600 : double.infinity,
+                              ),
                 child: Container(
-                  margin: const EdgeInsets.only(bottom: 20),
+                  margin: EdgeInsets.only(
+                    bottom: ResponsiveService.isSmallPhone ? 16 : 20,
+                  ),
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
                       colors: [
@@ -590,78 +689,84 @@ class _ActiveLoansScreenState extends State<ActiveLoansScreen>
                     ],
                                 ),
                                 child: Padding(
-                    padding: const EdgeInsets.all(24),
+                    padding: EdgeInsets.all(ResponsiveService.isSmallPhone ? 16 : 24),
                                   child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
-                        // Student Information Section
-                                      Row(
-                                        children: [
-                                          Container(
-                              width: 60,
-                              height: 60,
-                              padding: const EdgeInsets.all(12),
-                                            decoration: BoxDecoration(
-                                gradient: LinearGradient(
-                                  colors: [
-                                    Theme.of(context).colorScheme.primary.withOpacity(0.15),
-                                    Theme.of(context).colorScheme.primary.withOpacity(0.05),
-                                  ],
-                                ),
-                                borderRadius: BorderRadius.circular(16),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Theme.of(context).colorScheme.primary.withOpacity(0.2),
-                                    blurRadius: 8,
-                                    offset: const Offset(0, 2),
-                                  ),
-                                ],
-                                            ),
-                                            child: Icon(
-                                              Icons.person_rounded,
-                                size: 36,
-                                color: Theme.of(context).colorScheme.primary,
-                                            ),
-                                          ),
-                            const SizedBox(width: 20),
-                                          Expanded(
-                              child: Container(
-                                padding: const EdgeInsets.all(16),
+                        // Student Information Section - Compact Top Layout with Background
+                        Container(
+                          padding: EdgeInsets.all(ResponsiveService.isSmallPhone ? 12 : 16),
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              colors: [
+                                Theme.of(context).colorScheme.primary.withOpacity(0.08),
+                                Theme.of(context).colorScheme.primary.withOpacity(0.02),
+                              ],
+                            ),
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(
+                              color: Theme.of(context).colorScheme.primary.withOpacity(0.15),
+                              width: 1.5,
+                            ),
+                          ),
+                          child: Row(
+                            children: [
+                              Container(
+                                width: ResponsiveService.isSmallPhone ? 40 : 48,
+                                height: ResponsiveService.isSmallPhone ? 40 : 48,
+                                padding: EdgeInsets.all(ResponsiveService.isSmallPhone ? 8 : 10),
                                 decoration: BoxDecoration(
                                   gradient: LinearGradient(
                                     colors: [
-                                      Theme.of(context).colorScheme.primary.withOpacity(0.08),
-                                      Theme.of(context).colorScheme.primary.withOpacity(0.02),
+                                      Theme.of(context).colorScheme.primary.withOpacity(0.15),
+                                      Theme.of(context).colorScheme.primary.withOpacity(0.05),
                                     ],
                                   ),
-                                  borderRadius: BorderRadius.circular(16),
-                                  border: Border.all(
-                                    color: Theme.of(context).colorScheme.primary.withOpacity(0.15),
-                                    width: 1.5,
-                                  ),
+                                  borderRadius: BorderRadius.circular(12),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Theme.of(context).colorScheme.primary.withOpacity(0.2),
+                                      blurRadius: 6,
+                                      offset: const Offset(0, 2),
+                                    ),
+                                  ],
                                 ),
-                                            child: Column(
+                                child: Icon(
+                                  Icons.person_rounded,
+                                  size: ResponsiveService.isSmallPhone ? 24 : 28,
+                                  color: Theme.of(context).colorScheme.primary,
+                                ),
+                              ),
+                              SizedBox(width: ResponsiveService.isSmallPhone ? 8 : 12),
+                              Expanded(
+                                child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
-                                              children: [
-                                    Text(
-                                                        toTitleCase(student['user']['display_name'] ?? '${student['user']['first_name']} ${student['user']['last_name']}'),
-                                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                        fontWeight: FontWeight.w700,
-                                        color: Theme.of(context).colorScheme.onSurface,
-                                        letterSpacing: 0.5,
-                                        fontSize: 18,
-                                      ),
+                                  children: [
+                                    // Name and Email on same line
+                                    Wrap(
+                                      crossAxisAlignment: WrapCrossAlignment.center,
+                                      children: [
+                                        Text(
+                                          toTitleCase(student['user']['display_name'] ?? '${student['user']['first_name']} ${student['user']['last_name']}'),
+                                          style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                            fontWeight: FontWeight.w700,
+                                            color: Theme.of(context).colorScheme.onSurface,
+                                            fontSize: ResponsiveService.isSmallPhone ? 16 : 18,
+                                          ),
+                                        ),
+                                        SizedBox(width: ResponsiveService.isSmallPhone ? 8 : 10),
+                                        Text(
+                                          student['user']['email'] ?? '',
+                                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                            color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+                                            fontWeight: FontWeight.w500,
+                                            fontSize: ResponsiveService.isSmallPhone ? 12 : 14,
+                                          ),
+                                        ),
+                                      ],
                                     ),
-                                    const SizedBox(height: 8),
-                                    Text(
-                                      student['user']['email'] ?? '',
-                                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                        color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
-                                        fontWeight: FontWeight.w500,
-                                      ),
-                                    ),
-                                    const SizedBox(height: 8),
-                                    // Student class information
+                                    SizedBox(height: ResponsiveService.isSmallPhone ? 6 : 8),
+                                    // Student class information - bigger
                                     Builder(
                                       builder: (context) {
                                         final studentId = student['student_id']?.toString() ?? '';
@@ -669,41 +774,47 @@ class _ActiveLoansScreenState extends State<ActiveLoansScreen>
                                         
                                         if (isTeacher) {
                                           return Container(
-                                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                            padding: EdgeInsets.symmetric(
+                                              horizontal: ResponsiveService.isSmallPhone ? 8 : 10, 
+                                              vertical: ResponsiveService.isSmallPhone ? 4 : 6
+                                            ),
                                             decoration: BoxDecoration(
                                               color: Colors.blue.withOpacity(0.1),
-                                              borderRadius: BorderRadius.circular(12),
+                                              borderRadius: BorderRadius.circular(10),
                                               border: Border.all(
-                                                color: Colors.blue.withOpacity(0.2),
-                                                width: 1,
+                                                color: Colors.blue.withOpacity(0.3),
+                                                width: 1.5,
                                               ),
                                             ),
                                             child: Text(
                                               'Profesor',
-                                              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                                                 color: Colors.blue[700],
-                                                fontWeight: FontWeight.w600,
-                                                fontSize: 12,
+                                                fontWeight: FontWeight.w700,
+                                                fontSize: ResponsiveService.isSmallPhone ? 11 : 13,
                                               ),
                                             ),
                                           );
                                         } else if (student['student_class'] != null || student['department'] != null) {
                                           return Container(
-                                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                            padding: EdgeInsets.symmetric(
+                                              horizontal: ResponsiveService.isSmallPhone ? 8 : 10, 
+                                              vertical: ResponsiveService.isSmallPhone ? 4 : 6
+                                            ),
                                             decoration: BoxDecoration(
                                               color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
-                                              borderRadius: BorderRadius.circular(12),
+                                              borderRadius: BorderRadius.circular(10),
                                               border: Border.all(
-                                                color: Theme.of(context).colorScheme.primary.withOpacity(0.2),
-                                                width: 1,
+                                                color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
+                                                width: 1.5,
                                               ),
                                             ),
                                             child: Text(
                                               '${student['school_type'] ?? ''} ${student['student_class'] ?? ''} ${student['department'] ?? ''}'.trim(),
-                                              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                                                 color: Theme.of(context).colorScheme.primary,
-                                                fontWeight: FontWeight.w600,
-                                                fontSize: 12,
+                                                fontWeight: FontWeight.w700,
+                                                fontSize: ResponsiveService.isSmallPhone ? 11 : 13,
                                               ),
                                             ),
                                           );
@@ -712,14 +823,14 @@ class _ActiveLoansScreenState extends State<ActiveLoansScreen>
                                       },
                                     ),
                                   ],
-                                                            ),
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
-                        const SizedBox(height: 24),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        SizedBox(height: ResponsiveService.isSmallPhone ? 12 : 16),
                         
-                        // Book Information Section with Photo First
+                        // Book Information Section - Cover left, Info with background right
                         Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -732,14 +843,14 @@ class _ActiveLoansScreenState extends State<ActiveLoansScreen>
                                     color: Colors.black.withOpacity(0.1),
                                     blurRadius: 8,
                                     offset: const Offset(0, 4),
-                                                ),
-                                              ],
-                                            ),
+                                  ),
+                                ],
+                              ),
                               child: ClipRRect(
                                 borderRadius: BorderRadius.circular(12),
                                 child: SizedBox(
-                                  width: 120,
-                                  height: 180,
+                                  width: ResponsiveService.isSmallPhone ? 70 : 90,
+                                  height: ResponsiveService.isSmallPhone ? 105 : 135,
                                   child: book['thumbnail_url'] != null && book['thumbnail_url'].isNotEmpty
                                       ? Image.network(
                                           book['thumbnail_url'],
@@ -747,260 +858,227 @@ class _ActiveLoansScreenState extends State<ActiveLoansScreen>
                                           errorBuilder: (context, error, stackTrace) {
                                             return Container(
                                               color: Colors.grey[300],
-                                              child: const Center(
-                                                child: Icon(Icons.image_not_supported, size: 40),
+                                              child: Center(
+                                                child: Icon(Icons.image_not_supported, 
+                                                  size: ResponsiveService.isSmallPhone ? 25 : 30),
                                               ),
                                             );
                                           },
                                         )
                                       : Container(
                                           color: Colors.grey[300],
-                                          child: const Center(
-                                            child: Icon(Icons.image_not_supported, size: 40),
+                                          child: Center(
+                                            child: Icon(Icons.image_not_supported, 
+                                              size: ResponsiveService.isSmallPhone ? 25 : 30),
                                           ),
                                         ),
                                 ),
                               ),
                             ),
-                            const SizedBox(width: 20),
+                            SizedBox(width: ResponsiveService.isSmallPhone ? 12 : 16),
                             Expanded(
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  // Book Title and Author
+                                  // Book Title and Author with Background - Same height as cover
                                   Container(
-                                    padding: const EdgeInsets.all(16),
+                                    height: ResponsiveService.isSmallPhone ? 105 : 135, // Match book cover height
+                                    padding: EdgeInsets.all(ResponsiveService.isSmallPhone ? 12 : 16),
                                     decoration: BoxDecoration(
                                       gradient: LinearGradient(
                                         colors: [
-                                          Theme.of(context).colorScheme.primary.withOpacity(0.08),
-                                          Theme.of(context).colorScheme.primary.withOpacity(0.02),
+                                          Theme.of(context).colorScheme.secondary.withOpacity(0.08),
+                                          Theme.of(context).colorScheme.secondary.withOpacity(0.02),
                                         ],
                                       ),
                                       borderRadius: BorderRadius.circular(12),
+                                      border: Border.all(
+                                        color: Theme.of(context).colorScheme.secondary.withOpacity(0.15),
+                                        width: 1.5,
+                                      ),
                                     ),
-                                    child: Row(
-                                        children: [
-                                          Container(
-                                          padding: const EdgeInsets.all(10),
-                                            decoration: BoxDecoration(
-                                            gradient: LinearGradient(
-                                              colors: [
-                                                Theme.of(context).colorScheme.primary.withOpacity(0.15),
-                                                Theme.of(context).colorScheme.primary.withOpacity(0.05),
-                                              ],
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.center, // Center content horizontally
+                                      mainAxisAlignment: MainAxisAlignment.center, // Center content vertically
+                                      children: [
+                                        // Book Title
+                                        Center(
+                                          child: Text(
+                                            book['name'] ?? 'Carte necunoscută',
+                                            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                              fontWeight: FontWeight.w600,
+                                              fontSize: ResponsiveService.isSmallPhone ? 14 : 16,
                                             ),
-                                            borderRadius: BorderRadius.circular(10),
-                                            ),
-                                            child: Icon(
-                                              Icons.book_rounded,
-                                            color: Theme.of(context).colorScheme.primary,
-                                            size: 24,
+                                            maxLines: 2, // Limit to 2 lines for better layout
+                                            overflow: TextOverflow.ellipsis,
+                                            textAlign: TextAlign.center, // Center the title text
                                           ),
                                         ),
-                                        const SizedBox(width: 16),
-                                          Expanded(
-                                            child: Column(
-                                            crossAxisAlignment: CrossAxisAlignment.start,
-                                              children: [
-                                                Text(
-                                                book['name'] ?? 'Carte necunoscută',
-                                                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                                  fontWeight: FontWeight.w600,
-                                                  fontSize: 18,
-                                                ),
-                                              ),
-                                              const SizedBox(height: 4),
-                                                Text(
-                                                  book['author'] ?? '',
-                                                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                                  color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
-                                                  fontWeight: FontWeight.w500,
-                                                ),
-                                                ),
-                                                // Class info for manuals
-                                                if (book['type'] == 'manual' && book['book_class'] != null) ...[
-                                                  const SizedBox(height: 4),
-                                                  Container(
-                                                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                                                    decoration: BoxDecoration(
-                                                      color: Theme.of(context).colorScheme.secondary.withOpacity(0.1),
-                                                      borderRadius: BorderRadius.circular(8),
-                                                      border: Border.all(
-                                                        color: Theme.of(context).colorScheme.secondary.withOpacity(0.3),
-                                                        width: 1,
-                                                      ),
-                                                    ),
-                                                    child: Row(
-                                                      mainAxisSize: MainAxisSize.min,
-                                                      children: [
-                                                        Icon(
-                                                          Icons.school_rounded,
-                                                          color: Theme.of(context).colorScheme.secondary,
-                                                          size: 12,
-                                                        ),
-                                                        const SizedBox(width: 3),
-                                                        Text(
-                                                          'Clasa ${book['book_class']}',
-                                                          style: TextStyle(
-                                                            color: Theme.of(context).colorScheme.secondary,
-                                                            fontWeight: FontWeight.w600,
-                                                            fontSize: 10,
-                                                          ),
-                                                        ),
-                                                      ],
-                                                    ),
-                                                  ),
-                                                ],
-                                              ],
+                                        SizedBox(height: ResponsiveService.isSmallPhone ? 8 : 12),
+                                        // Author - Centered
+                                        Center(
+                                          child: Text(
+                                            book['author'] ?? '',
+                                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                                              fontWeight: FontWeight.w500,
+                                              fontSize: ResponsiveService.isSmallPhone ? 12 : 14,
                                             ),
+                                            maxLines: 2, // Limit to 2 lines for better layout
+                                            overflow: TextOverflow.ellipsis,
+                                            textAlign: TextAlign.center, // Center the author text
                                           ),
-                                        ],
+                                        ),
+                                      ],
                                     ),
-                                      ),
-                                      const SizedBox(height: 16),
-                                  
-                                  // Dates Section
-                                  Column(
-                                    children: [
-                                      Container(
-                                        width: double.infinity,
-                                        padding: const EdgeInsets.all(16),
-                                        decoration: BoxDecoration(
-                                          gradient: LinearGradient(
-                                            colors: [
-                                              Colors.green.withOpacity(0.08),
-                                              Colors.green.withOpacity(0.02),
-                                            ],
-                                          ),
-                                          borderRadius: BorderRadius.circular(12),
-                                          border: Border.all(
-                                            color: Colors.green.withOpacity(0.2),
-                                            width: 1,
-                                          ),
-                                        ),
-                                        child: Row(
-                                        children: [
-                                          Container(
-                                            padding: const EdgeInsets.all(8),
-                                            decoration: BoxDecoration(
-                                                gradient: LinearGradient(
-                                                  colors: [
-                                                    Colors.green.withOpacity(0.15),
-                                                    Colors.green.withOpacity(0.05),
-                                                  ],
-                                                ),
-                                                borderRadius: BorderRadius.circular(8),
-                                            ),
-                                            child: Icon(
-                                              Icons.calendar_today_rounded,
-                                                color: Colors.green[700],
-                                                size: 20,
-                                              ),
-                                          ),
-                                          const SizedBox(width: 12),
-                                          Expanded(
-                                            child: Column(
-                                                crossAxisAlignment: CrossAxisAlignment.start,
-                                              children: [
-                                                Text(
-                                                  'Data împrumutului',
-                                                    style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                                                      fontWeight: FontWeight.w600,
-                                                      color: Colors.green[700],
-                                                      ),
-                                                ),
-                                                Text(
-                                                  pickupDate != null
-                                                      ? pickupDate.toString().split(' ')[0]
-                                                      : 'N/A',
-                                                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                                      color: Colors.green[600],
-                                                      fontWeight: FontWeight.w500,
-                                                      ),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                      ),
-                                      const SizedBox(height: 12),
-                                      Container(
-                                        width: double.infinity,
-                                        padding: const EdgeInsets.all(16),
-                                        decoration: BoxDecoration(
-                                          gradient: LinearGradient(
-                                            colors: [
-                                              Colors.orange.withOpacity(0.08),
-                                              Colors.orange.withOpacity(0.02),
-                                            ],
-                                          ),
-                                          borderRadius: BorderRadius.circular(12),
-                                          border: Border.all(
-                                            color: Colors.orange.withOpacity(0.2),
-                                            width: 1,
-                                          ),
-                                        ),
-                                        child: Row(
-                                        children: [
-                                          Container(
-                                            padding: const EdgeInsets.all(8),
-                                            decoration: BoxDecoration(
-                                                gradient: LinearGradient(
-                                                  colors: [
-                                                    Colors.orange.withOpacity(0.15),
-                                                    Colors.orange.withOpacity(0.05),
-                                                  ],
-                                                ),
-                                                borderRadius: BorderRadius.circular(8),
-                                            ),
-                                            child: Icon(
-                                              Icons.event_rounded,
-                                                color: Colors.orange[700],
-                                                size: 20,
-                                              ),
-                                          ),
-                                          const SizedBox(width: 12),
-                                          Expanded(
-                                            child: Column(
-                                                crossAxisAlignment: CrossAxisAlignment.start,
-                                              children: [
-                                                Text(
-                                                  'Data returnării',
-                                                    style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                                                      fontWeight: FontWeight.w600,
-                                                      color: Colors.orange[700],
-                                                      ),
-                                                ),
-                                                Text(
-                                                  dueDate != null
-                                                      ? dueDate.toString().split(' ')[0]
-                                                      : 'N/A',
-                                                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                                      color: Colors.orange[600],
-                                                      fontWeight: FontWeight.w500,
-                                                      ),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                      ),
-                                    ],
                                   ),
                                 ],
                               ),
                             ),
                           ],
                         ),
-                        const SizedBox(height: 24),
+                        SizedBox(height: ResponsiveService.isSmallPhone ? 12 : 16),
+                        
+                        // Dates Section - Below the book info
+                        Column(
+                          children: [
+                            // Pickup Date
+                            Container(
+                              width: double.infinity,
+                              padding: EdgeInsets.all(ResponsiveService.isSmallPhone ? 12 : 16),
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                  colors: [
+                                    Colors.green.withOpacity(0.08),
+                                    Colors.green.withOpacity(0.02),
+                                  ],
+                                ),
+                                borderRadius: BorderRadius.circular(8),
+                                border: Border.all(
+                                  color: Colors.green.withOpacity(0.2),
+                                  width: 1,
+                                ),
+                              ),
+                              child: Row(
+                                children: [
+                                  Container(
+                                    padding: EdgeInsets.all(ResponsiveService.isSmallPhone ? 6 : 8),
+                                    decoration: BoxDecoration(
+                                      gradient: LinearGradient(
+                                        colors: [
+                                          Colors.green.withOpacity(0.15),
+                                          Colors.green.withOpacity(0.05),
+                                        ],
+                                      ),
+                                      borderRadius: BorderRadius.circular(6),
+                                    ),
+                                    child: Icon(
+                                      Icons.calendar_today_rounded,
+                                      color: Colors.green[700],
+                                      size: ResponsiveService.isSmallPhone ? 16 : 18,
+                                    ),
+                                  ),
+                                  SizedBox(width: ResponsiveService.isSmallPhone ? 10 : 12),
+                                  Expanded(
+                                    child: RichText(
+                                      text: TextSpan(
+                                        text: 'Data ridicării: ',
+                                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                          color: Colors.green[700],
+                                          fontWeight: FontWeight.w700,
+                                          fontSize: ResponsiveService.isSmallPhone ? 13 : 15,
+                                        ),
+                                        children: [
+                                          TextSpan(
+                                            text: pickupDate != null
+                                                ? '${pickupDate.day.toString().padLeft(2, '0')}.${pickupDate.month.toString().padLeft(2, '0')}.${pickupDate.year}'
+                                                : 'Nu este disponibilă',
+                                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                              color: Colors.green[600],
+                                              fontWeight: FontWeight.w600,
+                                              fontSize: ResponsiveService.isSmallPhone ? 13 : 15,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            SizedBox(height: ResponsiveService.isSmallPhone ? 8 : 10),
+                            // Due Date
+                            Container(
+                              width: double.infinity,
+                              padding: EdgeInsets.all(ResponsiveService.isSmallPhone ? 12 : 16),
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                  colors: [
+                                    Colors.orange.withOpacity(0.08),
+                                    Colors.orange.withOpacity(0.02),
+                                  ],
+                                ),
+                                borderRadius: BorderRadius.circular(8),
+                                border: Border.all(
+                                  color: Colors.orange.withOpacity(0.2),
+                                  width: 1,
+                                ),
+                              ),
+                              child: Row(
+                                children: [
+                                  Container(
+                                    padding: EdgeInsets.all(ResponsiveService.isSmallPhone ? 6 : 8),
+                                    decoration: BoxDecoration(
+                                      gradient: LinearGradient(
+                                        colors: [
+                                          Colors.orange.withOpacity(0.15),
+                                          Colors.orange.withOpacity(0.05),
+                                        ],
+                                      ),
+                                      borderRadius: BorderRadius.circular(6),
+                                    ),
+                                    child: Icon(
+                                      Icons.event_rounded,
+                                      color: Colors.orange[700],
+                                      size: ResponsiveService.isSmallPhone ? 16 : 18,
+                                    ),
+                                  ),
+                                  SizedBox(width: ResponsiveService.isSmallPhone ? 10 : 12),
+                                  Expanded(
+                                    child: RichText(
+                                      text: TextSpan(
+                                        text: 'Data scadenței: ',
+                                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                          color: Colors.orange[700],
+                                          fontWeight: FontWeight.w700,
+                                          fontSize: ResponsiveService.isSmallPhone ? 13 : 15,
+                                        ),
+                                        children: [
+                                          TextSpan(
+                                            text: dueDate != null
+                                                ? '${dueDate.day.toString().padLeft(2, '0')}.${dueDate.month.toString().padLeft(2, '0')}.${dueDate.year}'
+                                                : 'Nu este disponibilă',
+                                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                              color: Colors.orange[600],
+                                              fontWeight: FontWeight.w600,
+                                              fontSize: ResponsiveService.isSmallPhone ? 13 : 15,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: ResponsiveService.isSmallPhone ? 16 : 20),
                         
                         // Action Button
                         Row(
                           mainAxisAlignment: MainAxisAlignment.end,
-                                        children: [
+                          children: [
                             Container(
                               decoration: BoxDecoration(
                                 gradient: LinearGradient(
@@ -1009,41 +1087,53 @@ class _ActiveLoansScreenState extends State<ActiveLoansScreen>
                                     Theme.of(context).colorScheme.primary.withOpacity(0.8),
                                   ],
                                 ),
-                                borderRadius: BorderRadius.circular(16),
+                                borderRadius: BorderRadius.circular(ResponsiveService.isSmallPhone ? 12 : 16),
                                 boxShadow: [
                                   BoxShadow(
                                     color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
-                                    blurRadius: 8,
+                                    blurRadius: ResponsiveService.isSmallPhone ? 6 : 8,
                                     offset: const Offset(0, 2),
                                   ),
                                 ],
                               ),
                               child: ElevatedButton.icon(
-                                            onPressed: _processingAction ? null : () => _returnBook(loan['id'].toString()),
+                                onPressed: _processingAction ? null : () => _returnBook(loan['id'].toString()),
                                 icon: _processingAction 
                                     ? SizedBox(
-                                        width: 20,
-                                        height: 20,
+                                        width: ResponsiveService.isSmallPhone ? 16 : 20,
+                                        height: ResponsiveService.isSmallPhone ? 16 : 20,
                                         child: CircularProgressIndicator(
                                           strokeWidth: 2,
                                           valueColor: AlwaysStoppedAnimation<Color>(Theme.of(context).colorScheme.onPrimary),
                                         ),
                                       )
-                                    : const Icon(Icons.assignment_return_rounded),
-                                label: Text(_processingAction ? 'Se procesează...' : 'Carte Returnată'),
-                                            style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.transparent,
-                                              foregroundColor: Theme.of(context).colorScheme.onPrimary,
-                                  elevation: 0,
-                                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-                                              shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(16),
-                                  ),
-                                              ),
-                                            ),
-                                          ),
-                                        ],
+                                    : Icon(
+                                        Icons.assignment_return_rounded,
+                                        size: ResponsiveService.isSmallPhone ? 18 : 20,
                                       ),
+                                label: Text(
+                                  _processingAction ? 'Se procesează...' : 'Carte Returnată',
+                                  style: TextStyle(
+                                    fontSize: ResponsiveService.isSmallPhone ? 12 : 14,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.transparent,
+                                  foregroundColor: Theme.of(context).colorScheme.onPrimary,
+                                  elevation: 0,
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: ResponsiveService.isSmallPhone ? 16 : 24, 
+                                    vertical: ResponsiveService.isSmallPhone ? 12 : 16,
+                                  ),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(ResponsiveService.isSmallPhone ? 12 : 16),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
                                     ],
                                   ),
                                 ),

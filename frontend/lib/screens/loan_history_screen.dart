@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
 import '../services/api_service.dart';
-import '../services/notification_service.dart';
-import 'package:url_launcher/url_launcher.dart';
-import '../services/responsive_service.dart' show getResponsiveSpacing, getResponsiveBorderRadius, getResponsiveIconSize, ResponsiveWidget;
 
 class LoanHistoryScreen extends StatefulWidget {
   const LoanHistoryScreen({Key? key}) : super(key: key);
@@ -12,7 +9,7 @@ class LoanHistoryScreen extends StatefulWidget {
 }
 
 class _LoanHistoryScreenState extends State<LoanHistoryScreen>
-    with TickerProviderStateMixin, ResponsiveWidget {
+    with TickerProviderStateMixin {
   List<dynamic> _loanHistory = [];
   List<dynamic> _filteredLoanHistory = [];
   bool _isLoading = false;
@@ -94,9 +91,90 @@ class _LoanHistoryScreenState extends State<LoanHistoryScreen>
 
     try {
       final history = await ApiService.getLoanHistory();
+      print('Raw API response: $history');
+      if (history.isNotEmpty) {
+        print('First loan item: ${history.first}');
+        print('First loan borrow_date: ${history.first['borrow_date']}');
+        print('First loan return_date: ${history.first['return_date']}');
+      }
+      
+      // Filter out loans with invalid borrow dates (but keep cancelled loans)
+      final validHistory = history.where((loan) {
+        final status = loan['status'] ?? '';
+        
+        // Keep cancelled loans - they'll be handled differently in the UI
+        if (status == 'ANULATA' || status == 'ANULATĂ') {
+          return true;
+        }
+        
+        // For non-cancelled loans, check if borrow_date is valid and parseable
+        final borrowDateValue = loan['borrow_date'];
+        if (borrowDateValue == null) return false;
+        
+        String dateStr = borrowDateValue.toString().trim();
+        if (dateStr.isEmpty || dateStr == 'null') return false;
+        
+        // Try to parse the date - if it fails, exclude this loan
+        try {
+          if (dateStr.contains('T') || dateStr.contains('-')) {
+            String isoStr = dateStr.split('T')[0];
+            if (RegExp(r'^\d{4}-\d{2}-\d{2}$').hasMatch(isoStr)) {
+              DateTime.parse(isoStr);
+              return true;
+            }
+            DateTime.parse(dateStr);
+            return true;
+          }
+          
+          if (dateStr.contains('/')) {
+            List<String> parts = dateStr.split('/');
+            if (parts.length == 3) {
+              // Try parsing as different formats
+              try {
+                int day = int.parse(parts[0]);
+                int month = int.parse(parts[1]);
+                int year = int.parse(parts[2]);
+                if (day <= 31 && month <= 12 && year > 1900) {
+                  DateTime(year, month, day);
+                  return true;
+                }
+              } catch (_) {}
+              
+              try {
+                int month = int.parse(parts[0]);
+                int day = int.parse(parts[1]);
+                int year = int.parse(parts[2]);
+                if (day <= 31 && month <= 12 && year > 1900) {
+                  DateTime(year, month, day);
+                  return true;
+                }
+              } catch (_) {}
+              
+              try {
+                int year = int.parse(parts[0]);
+                int month = int.parse(parts[1]);
+                int day = int.parse(parts[2]);
+                if (day <= 31 && month <= 12 && year > 1900) {
+                  DateTime(year, month, day);
+                  return true;
+                }
+              } catch (_) {}
+            }
+          }
+          
+          DateTime.parse(dateStr);
+          return true;
+        } catch (e) {
+          print('Filtering out loan with invalid borrow_date: $dateStr - Status: $status');
+          return false;
+        }
+      }).toList();
+      
+            print('Filtered ${history.length - validHistory.length} loans (loans with invalid dates)');
+      
       setState(() {
-        _loanHistory = history;
-        _filteredLoanHistory = history;
+        _loanHistory = validHistory;
+        _filteredLoanHistory = validHistory;
       });
     } catch (e) {
       setState(() {
@@ -148,6 +226,85 @@ class _LoanHistoryScreenState extends State<LoanHistoryScreen>
       if (word.isEmpty) return word;
       return word[0].toUpperCase() + word.substring(1).toLowerCase();
     }).join(' ');
+  }
+
+  // Helper function to parse different date formats
+  DateTime? parseFlexibleDate(dynamic dateValue) {
+    if (dateValue == null) return null;
+    
+    String dateStr = dateValue.toString().trim();
+    if (dateStr.isEmpty || dateStr == 'null') return null;
+    
+    try {
+      // Try parsing ISO format first (most common from APIs)
+      if (dateStr.contains('T') || dateStr.contains('-')) {
+        // Handle ISO formats like: 2024-01-15T10:30:00Z, 2024-01-15T10:30:00, 2024-01-15
+        String isoStr = dateStr.split('T')[0]; // Get just the date part if it has time
+        if (RegExp(r'^\d{4}-\d{2}-\d{2}$').hasMatch(isoStr)) {
+          return DateTime.parse(isoStr).toLocal();
+        }
+        return DateTime.parse(dateStr).toLocal();
+      }
+      
+      // Try other common formats
+      if (dateStr.contains('/')) {
+        List<String> parts = dateStr.split('/');
+        if (parts.length == 3) {
+          // Try different date order assumptions
+          try {
+            // Try dd/MM/yyyy
+            int day = int.parse(parts[0]);
+            int month = int.parse(parts[1]);
+            int year = int.parse(parts[2]);
+            if (day <= 31 && month <= 12 && year > 1900) {
+              return DateTime(year, month, day).toLocal();
+            }
+          } catch (_) {}
+          
+          try {
+            // Try MM/dd/yyyy
+            int month = int.parse(parts[0]);
+            int day = int.parse(parts[1]);
+            int year = int.parse(parts[2]);
+            if (day <= 31 && month <= 12 && year > 1900) {
+              return DateTime(year, month, day).toLocal();
+            }
+          } catch (_) {}
+          
+          try {
+            // Try yyyy/MM/dd
+            int year = int.parse(parts[0]);
+            int month = int.parse(parts[1]);
+            int day = int.parse(parts[2]);
+            if (day <= 31 && month <= 12 && year > 1900) {
+              return DateTime(year, month, day).toLocal();
+            }
+          } catch (_) {}
+        }
+      }
+      
+      // Try dot-separated format (common in some regions)
+      if (dateStr.contains('.')) {
+        List<String> parts = dateStr.split('.');
+        if (parts.length == 3) {
+          try {
+            // Try dd.MM.yyyy
+            int day = int.parse(parts[0]);
+            int month = int.parse(parts[1]);
+            int year = int.parse(parts[2]);
+            if (day <= 31 && month <= 12 && year > 1900) {
+              return DateTime(year, month, day).toLocal();
+            }
+          } catch (_) {}
+        }
+      }
+      
+      // If all else fails, try direct parsing
+      return DateTime.parse(dateStr).toLocal();
+      
+    } catch (e) {
+      return null;
+    }
   }
 
   @override
@@ -210,20 +367,20 @@ class _LoanHistoryScreenState extends State<LoanHistoryScreen>
         ),
         automaticallyImplyLeading: false,
         leading: Container(
-          margin: EdgeInsets.only(left: getResponsiveSpacing(8)),
+          margin: const EdgeInsets.only(left: 8),
           padding: EdgeInsets.zero,
           decoration: BoxDecoration(
             color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
-            borderRadius: getResponsiveBorderRadius(6),
+            borderRadius: BorderRadius.circular(6),
           ),
           child: IconButton(
             icon: Icon(
               Icons.arrow_back_rounded,
               color: Theme.of(context).colorScheme.primary,
-              size: getResponsiveIconSize(20),
+              size: 20,
             ),
             padding: EdgeInsets.zero,
-            constraints: BoxConstraints(),
+            constraints: const BoxConstraints(),
             onPressed: () => Navigator.pop(context),
             tooltip: 'Înapoi',
           ),
@@ -543,42 +700,38 @@ class _LoanHistoryScreenState extends State<LoanHistoryScreen>
     final student = loan['student'];
     final status = loan['status'] ?? 'RETURNAT';
 
-    // Debug the actual date values
-    print('borrow_date: ${loan['borrow_date']}');
-    print('return_date: ${loan['return_date']}');
+    // Debug the actual date values and their types
+    print('Raw borrow_date: ${loan['borrow_date']} (type: ${loan['borrow_date'].runtimeType})');
+    print('Raw return_date: ${loan['return_date']} (type: ${loan['return_date'].runtimeType})');
 
     // Improved date parsing with better error handling
     DateTime? borrowDate;
     DateTime? returnDate;
     
-    try {
-      if (loan['borrow_date'] != null && loan['borrow_date'].toString().isNotEmpty) {
-        borrowDate = DateTime.parse(loan['borrow_date'].toString()).toLocal();
-      }
-    } catch (e) {
-      print('Error parsing borrow_date: ${loan['borrow_date']} - $e');
-    }
+    borrowDate = parseFlexibleDate(loan['borrow_date']);
+    returnDate = parseFlexibleDate(loan['return_date']);
     
-    try {
-      if (loan['return_date'] != null && loan['return_date'].toString().isNotEmpty) {
-        returnDate = DateTime.parse(loan['return_date'].toString()).toLocal();
-      }
-    } catch (e) {
-      print('Error parsing return_date: ${loan['return_date']} - $e');
-    }
+    print('Parsed borrow_date: $borrowDate');
+    print('Parsed return_date: $returnDate');
 
     // Helper function to format dates with better padding
-    String formatDate(DateTime? date) {
-      if (date == null) return 'N/A';
+    String formatDate(DateTime? date, {bool isReturnDate = false}) {
+      if (date == null) {
+        if (isReturnDate && status != 'RETURNAT') {
+          return 'Nu s-a returnat încă';
+        }
+        return 'N/A';
+      }
       return '${date.day.toString().padLeft(2, '0')}/${date.month.toString().padLeft(2, '0')}/${date.year}';
     }
 
-    final String statusText = status == 'RESPINS' ? 'Respins' : 'Returnat';
-    final Color statusColor = status == 'RESPINS' ? Colors.orange : Colors.green;
+    final String statusText = status == 'RESPINS' ? 'Respins' : 
+                          status == 'ANULATA' || status == 'ANULATĂ' ? 'Anulat' : 'Returnat';
+    final Color statusColor = status == 'RESPINS' ? Colors.orange : 
+                          status == 'ANULATA' || status == 'ANULATĂ' ? Colors.red : Colors.green;
 
     final studentId = student['student_id'] ?? '';
     final bool isTeacher = studentId.startsWith('T');
-    final schoolType = student['school_type'];
 
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
@@ -727,7 +880,9 @@ class _LoanHistoryScreenState extends State<LoanHistoryScreen>
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 Icon(
-                                  status == 'RESPINS' ? Icons.close_rounded : Icons.check_circle_rounded,
+                                  status == 'RESPINS' ? Icons.close_rounded : 
+                                  status == 'ANULATA' || status == 'ANULATĂ' ? Icons.cancel_rounded : 
+                                  Icons.check_circle_rounded,
                                   color: statusColor,
                                   size: 16,
                                 ),
@@ -794,22 +949,25 @@ class _LoanHistoryScreenState extends State<LoanHistoryScreen>
                                 fontWeight: FontWeight.w500,
                               ),
                             ),
-                            const SizedBox(height: 4),
-                            Text(
-                              isTeacher ? 'Profesor' : 'Student',
-                              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                color: Theme.of(context).colorScheme.primary,
-                                fontWeight: FontWeight.w600,
+                            // Show role only for teachers
+                            if (isTeacher) ...[
+                              const SizedBox(height: 4),
+                              Text(
+                                'Profesor',
+                                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                  color: Theme.of(context).colorScheme.primary,
+                                  fontWeight: FontWeight.w600,
+                                ),
                               ),
-                            ),
+                            ],
                             // Student class information (only for students)
                             if (!isTeacher && (student['student_class'] != null || student['department'] != null)) ...[
                               const SizedBox(height: 4),
                               Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                                 decoration: BoxDecoration(
                                   color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
-                                  borderRadius: BorderRadius.circular(8),
+                                  borderRadius: BorderRadius.circular(10),
                                   border: Border.all(
                                     color: Theme.of(context).colorScheme.primary.withOpacity(0.2),
                                     width: 1,
@@ -820,7 +978,7 @@ class _LoanHistoryScreenState extends State<LoanHistoryScreen>
                                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
                                     color: Theme.of(context).colorScheme.primary,
                                     fontWeight: FontWeight.w600,
-                                    fontSize: 10,
+                                    fontSize: 12,
                                   ),
                                 ),
                               ),
@@ -832,12 +990,66 @@ class _LoanHistoryScreenState extends State<LoanHistoryScreen>
                   ),
                 ),
                 const SizedBox(height: 16),
-                // Dates Section
-                Row(
-                  children: [
-                    // Borrow Date
-                    Expanded(
-                      child: Container(
+                // Dates Section - Different layout for cancelled vs regular loans
+                if (status == 'ANULATA' || status == 'ANULATĂ')
+                  // For cancelled loans, show only request date
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Colors.red.withOpacity(0.05),
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(
+                        color: Colors.red.withOpacity(0.2),
+                      ),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(6),
+                              decoration: BoxDecoration(
+                                color: Colors.red.withOpacity(0.15),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: const Icon(
+                                Icons.request_page_rounded,
+                                color: Colors.red,
+                                size: 16,
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: Text(
+                                'Data cererii',
+                                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                  color: Colors.red,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          formatDate(parseFlexibleDate(loan['created_at'] ?? loan['request_date'] ?? loan['borrow_date'])),
+                          style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: Theme.of(context).colorScheme.onSurface,
+                          ),
+                        ),
+                      ],
+                    ),
+                  )
+                else
+                  // For regular loans, show both borrow and return dates
+                  Column(
+                    children: [
+                      // Borrow Date
+                      Container(
+                        width: double.infinity,
                         padding: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
                           color: Colors.blue.withOpacity(0.05),
@@ -864,11 +1076,13 @@ class _LoanHistoryScreenState extends State<LoanHistoryScreen>
                                   ),
                                 ),
                                 const SizedBox(width: 8),
-                                Text(
-                                  'Data împrumutului',
-                                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                    color: Colors.blue,
-                                    fontWeight: FontWeight.bold,
+                                Expanded(
+                                  child: Text(
+                                    'Data împrumutului',
+                                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                      color: Colors.blue,
+                                      fontWeight: FontWeight.bold,
+                                    ),
                                   ),
                                 ),
                               ],
@@ -884,11 +1098,10 @@ class _LoanHistoryScreenState extends State<LoanHistoryScreen>
                           ],
                         ),
                       ),
-                    ),
-                    const SizedBox(width: 12),
-                    // Return Date
-                    Expanded(
-                      child: Container(
+                      const SizedBox(height: 12),
+                      // Return Date
+                      Container(
+                        width: double.infinity,
                         padding: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
                           color: Colors.green.withOpacity(0.05),
@@ -915,18 +1128,20 @@ class _LoanHistoryScreenState extends State<LoanHistoryScreen>
                                   ),
                                 ),
                                 const SizedBox(width: 8),
-                                Text(
-                                  'Data returnării',
-                                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                    color: Colors.green,
-                                    fontWeight: FontWeight.bold,
+                                Expanded(
+                                  child: Text(
+                                    'Data returnării',
+                                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                      color: Colors.green,
+                                      fontWeight: FontWeight.bold,
+                                    ),
                                   ),
                                 ),
                               ],
                             ),
                             const SizedBox(height: 8),
                             Text(
-                              formatDate(returnDate),
+                              formatDate(returnDate, isReturnDate: true),
                               style: Theme.of(context).textTheme.titleMedium?.copyWith(
                                 fontWeight: FontWeight.bold,
                                 color: Theme.of(context).colorScheme.onSurface,
@@ -935,9 +1150,8 @@ class _LoanHistoryScreenState extends State<LoanHistoryScreen>
                           ],
                         ),
                       ),
-                    ),
-                  ],
-                ),
+                    ],
+                  ),
               ],
             ),
           ),

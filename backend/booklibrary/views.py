@@ -1626,6 +1626,43 @@ def mark_all_notifications_read(request):
     
     return Response({'success': True})
 
+def delete_file_from_storage(file_path):
+    """Helper function to delete a file from storage"""
+    if file_path:
+        try:
+            # Handle different types of file paths
+            if isinstance(file_path, str):
+                # For thumbnail URLs that might be full URLs
+                if file_path.startswith('http'):
+                    # Extract just the media path from URL
+                    parts = file_path.split('/media/')
+                    if len(parts) > 1:
+                        file_path = parts[1]
+                    else:
+                        logging.warning(f"Could not extract media path from URL: {file_path}")
+                        return False
+                
+                # Remove leading slash if present
+                if file_path.startswith('/'):
+                    file_path = file_path[1:]
+                
+                # Remove media/ prefix if present
+                if file_path.startswith('media/'):
+                    file_path = file_path[6:]
+            
+            # Check if file exists and delete it
+            if default_storage.exists(file_path):
+                default_storage.delete(file_path)
+                logging.info(f"Successfully deleted file: {file_path}")
+                return True
+            else:
+                logging.warning(f"File not found for deletion: {file_path}")
+                return False
+        except Exception as e:
+            logging.error(f"Error deleting file {file_path}: {str(e)}")
+            return False
+    return False
+
 @api_view(['PUT'])
 @permission_classes([IsAuthenticated])
 @parser_classes([MultiPartParser, FormParser, JSONParser])
@@ -1653,8 +1690,6 @@ def update_book_details(request, book_id):
         book.description = data['description']
     if 'publication_year' in data:
         book.publication_year = data['publication_year']
-    if 'thumbnail_url' in data:
-        book.thumbnail_url = data['thumbnail_url']
     if 'stock' in data:
         book.stock = data['stock']
     if 'inventory' in data:
@@ -1662,12 +1697,30 @@ def update_book_details(request, book_id):
     if 'book_class' in data:
         book.book_class = data['book_class']
     
-    # Handle pdf_file upload
+    # Handle thumbnail_url deletion
+    if 'thumbnail_url' in data and (data['thumbnail_url'] == '' or data['thumbnail_url'] == 'null'):
+        # Delete the old thumbnail file from storage
+        if book.thumbnail_url:
+            delete_file_from_storage(book.thumbnail_url)
+        book.thumbnail_url = None
+    elif 'thumbnail_url' in data and data['thumbnail_url']:
+        # Setting new thumbnail URL
+        book.thumbnail_url = data['thumbnail_url']
+    
+    # Handle pdf_file upload and deletion
     if 'pdf_file' in request.FILES:
+        # Delete old PDF file if it exists
+        if book.pdf_file:
+            delete_file_from_storage(str(book.pdf_file))
         book.pdf_file = request.FILES['pdf_file']
     elif 'pdf_file' in data and (data['pdf_file'] is None or data['pdf_file'] == '' or data['pdf_file'] == 'null'):
-        # Allow deletion of PDF
+        # Delete the old PDF file from storage
+        if book.pdf_file:
+            delete_file_from_storage(str(book.pdf_file))
         book.pdf_file = None
+    elif 'pdf_file' in data and data['pdf_file']:
+        # Allow setting PDF path from URL/string (for already uploaded files)
+        book.pdf_file = data['pdf_file']
     
     book.save()
     

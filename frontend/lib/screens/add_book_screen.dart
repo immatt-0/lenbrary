@@ -6,7 +6,7 @@ import '../services/api_service.dart';
 import '../services/notification_service.dart';
 import 'package:flutter/foundation.dart';
 import '../services/responsive_service.dart';
-import 'dart:io';
+import 'dart:typed_data';
 
 // NOTE: Photo and PDF uploads are now deferred until the user presses the Add Book button. The Add Book button is always visible and functional.
 
@@ -43,10 +43,10 @@ class _AddBookScreenState extends State<AddBookScreen>
 
   // List of available classes for manuals
   final List<String> _availableClasses = [
-    'Gimaziu V',
-    'Gimaziu VI',
-    'Gimaziu VII',
-    'Gimaziu VIII',
+    'Gimnaziu V',
+    'Gimnaziu VI',
+    'Gimnaziu VII',
+    'Gimnaziu VIII',
     'Liceu IX',
     'Liceu X',
     'Liceu XI',
@@ -141,7 +141,12 @@ class _AddBookScreenState extends State<AddBookScreen>
         if (_pendingThumbnailFile != null || _pendingThumbnailBytes != null) {
           if (kIsWeb && _pendingThumbnailBytes != null) {
             thumbnailUrl = await ApiService.uploadThumbnail(_pendingThumbnailBytes!);
+          } else if (kIsWeb && _pendingThumbnailFile != null) {
+            // For web, read bytes from XFile
+            final bytes = await _pendingThumbnailFile!.readAsBytes();
+            thumbnailUrl = await ApiService.uploadThumbnail(bytes);
           } else if (_pendingThumbnailFile != null) {
+            // For mobile, use file path
             thumbnailUrl = await ApiService.uploadThumbnail(_pendingThumbnailFile!.path);
           }
         }
@@ -150,7 +155,11 @@ class _AddBookScreenState extends State<AddBookScreen>
         if (_pendingPdfFile != null || _pendingPdfBytes != null) {
           if (kIsWeb && _pendingPdfBytes != null) {
             pdfUrl = await ApiService.uploadPdf(_pendingPdfBytes!);
+          } else if (kIsWeb && _pendingPdfFile != null && _pendingPdfFile!.bytes != null) {
+            // For web, use bytes from PlatformFile
+            pdfUrl = await ApiService.uploadPdf(_pendingPdfFile!.bytes!);
           } else if (_pendingPdfFile != null && _pendingPdfFile!.path != null) {
+            // For mobile, use file path
             pdfUrl = await ApiService.uploadPdf(_pendingPdfFile!.path!);
           }
         }
@@ -1546,15 +1555,50 @@ class _AddBookScreenState extends State<AddBookScreen>
                         child: Container(
                           width: double.infinity,
                           height: double.infinity,
-                          child: kIsWeb && _pendingThumbnailBytes != null
-                              ? Image.memory(
-                                  _pendingThumbnailBytes!,
-                                  fit: BoxFit.cover,
-                                )
-                              : Image.file(
-                                  File(_pendingThumbnailFile!.path),
-                                  fit: BoxFit.cover,
-                                ),
+                          child: kIsWeb 
+                              ? (_pendingThumbnailBytes != null
+                                  ? Image.memory(
+                                      _pendingThumbnailBytes!,
+                                      fit: BoxFit.cover,
+                                    )
+                                  : Container(
+                                      decoration: BoxDecoration(
+                                        color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                                      ),
+                                      child: Icon(
+                                        Icons.image,
+                                        size: 50,
+                                        color: Theme.of(context).colorScheme.primary,
+                                      ),
+                                    ))
+                              : (_pendingThumbnailFile != null
+                                  ? FutureBuilder<Uint8List>(
+                                      future: _pendingThumbnailFile!.readAsBytes(),
+                                      builder: (context, snapshot) {
+                                        if (snapshot.hasData) {
+                                          return Image.memory(
+                                            snapshot.data!,
+                                            fit: BoxFit.cover,
+                                          );
+                                        }
+                                        return Container(
+                                          decoration: BoxDecoration(
+                                            color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                                          ),
+                                          child: CircularProgressIndicator(),
+                                        );
+                                      },
+                                    )
+                                  : Container(
+                                      decoration: BoxDecoration(
+                                        color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                                      ),
+                                      child: Icon(
+                                        Icons.image,
+                                        size: 50,
+                                        color: Theme.of(context).colorScheme.primary,
+                                      ),
+                                    )),
                         ),
                       ),
                       // Overlay with edit icon

@@ -996,8 +996,9 @@ class _PendingRequestsScreenState extends State<PendingRequestsScreen>
                               ),
                             ],
                             const SizedBox(height: 12),
-                            // Request details in a more compact format
-                            Row(
+                            // Request details in a vertical format
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 _buildInfoChip(
                                   icon: Icons.calendar_today_rounded,
@@ -1009,24 +1010,24 @@ class _PendingRequestsScreenState extends State<PendingRequestsScreen>
                                           .split(' ')[0]
                                       : 'N/A',
                                 ),
-                                const SizedBox(width: 12),
+                                const SizedBox(height: 8),
+                                _buildInfoChip(
+                                  icon: Icons.event_rounded,
+                                  label: 'Returnare',
+                                  value: request['due_date'] != null
+                                      ? DateTime.parse(request['due_date'])
+                                          .toLocal()
+                                          .toString()
+                                          .split(' ')[0]
+                                      : 'N/A',
+                                ),
+                                const SizedBox(height: 8),
                                 _buildInfoChip(
                                   icon: Icons.timer_rounded,
                                   label: 'Durată',
                                   value: '${request['loan_duration_days'] ?? 14} zile',
                                 ),
                               ],
-                            ),
-                            const SizedBox(height: 8),
-                            _buildInfoChip(
-                              icon: Icons.event_rounded,
-                              label: 'Returnare',
-                              value: request['due_date'] != null
-                                  ? DateTime.parse(request['due_date'])
-                                      .toLocal()
-                                      .toString()
-                                      .split(' ')[0]
-                                  : 'N/A',
                             ),
                           ],
                         ),

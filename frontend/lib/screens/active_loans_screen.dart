@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
 import '../services/api_service.dart';
-import '../services/notification_service.dart';
-import 'package:url_launcher/url_launcher.dart';
-import 'dart:convert';
+import '../services/responsive_service.dart' show ResponsiveWidget;
 import 'extension_requests_screen.dart';
-import '../services/responsive_service.dart' show getResponsiveSpacing, getResponsiveBorderRadius, getResponsiveIconSize, ResponsiveWidget;
 
 class ActiveLoansScreen extends StatefulWidget {
   const ActiveLoansScreen({Key? key}) : super(key: key);
@@ -20,22 +17,18 @@ class _ActiveLoansScreenState extends State<ActiveLoansScreen>
   List<dynamic> _filteredActiveLoans = [];
   String? _errorMessage;
   bool _processingAction = false;
-  bool _isLibrarian = false;
   final TextEditingController _searchController = TextEditingController();
   String _searchQuery = '';
 
   // Animation controllers
   late AnimationController _fadeController;
   late AnimationController _slideController;
-  late AnimationController _scaleController;
   late Animation<double> _fadeAnimation;
   late Animation<Offset> _slideAnimation;
-  late Animation<double> _scaleAnimation;
 
   @override
   void initState() {
     super.initState();
-    _loadUserInfo();
     _loadActiveLoans();
     _searchController.addListener(_filterActiveLoans);
     
@@ -46,10 +39,6 @@ class _ActiveLoansScreenState extends State<ActiveLoansScreen>
     );
     _slideController = AnimationController(
       duration: const Duration(milliseconds: 600),
-      vsync: this,
-    );
-    _scaleController = AnimationController(
-      duration: const Duration(milliseconds: 500),
       vsync: this,
     );
     
@@ -69,18 +58,9 @@ class _ActiveLoansScreenState extends State<ActiveLoansScreen>
       curve: Curves.easeOutCubic,
     ));
     
-    _scaleAnimation = Tween<double>(
-      begin: 0.9,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _scaleController,
-      curve: Curves.elasticOut,
-    ));
-    
     // Start animations
     _fadeController.forward();
     _slideController.forward();
-    _scaleController.forward();
   }
 
   @override
@@ -88,19 +68,7 @@ class _ActiveLoansScreenState extends State<ActiveLoansScreen>
     _searchController.dispose();
     _fadeController.dispose();
     _slideController.dispose();
-    _scaleController.dispose();
     super.dispose();
-  }
-
-  Future<void> _loadUserInfo() async {
-    try {
-      final userInfo = await ApiService.getUserInfo();
-      setState(() {
-        _isLibrarian = userInfo['is_librarian'] ?? false;
-      });
-    } catch (e) {
-      // Optionally handle error
-    }
   }
 
   Future<void> _loadActiveLoans() async {
@@ -142,36 +110,6 @@ class _ActiveLoansScreenState extends State<ActiveLoansScreen>
       setState(() {
         _processingAction = false;
       });
-    }
-  }
-
-  void _viewPdf(String pdfUrl) async {
-    try {
-      if (await canLaunch(pdfUrl)) {
-        await launch(pdfUrl);
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: const Text('Nu s-a putut deschide PDF-ul.'),
-            backgroundColor: Theme.of(context).colorScheme.error,
-            behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-          ),
-        );
-      }
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Eroare la deschiderea PDF-ului: ${e.toString()}'),
-          backgroundColor: Theme.of(context).colorScheme.error,
-          behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-        ),
-      );
     }
   }
 
@@ -244,17 +182,17 @@ class _ActiveLoansScreenState extends State<ActiveLoansScreen>
         leading: FadeTransition(
           opacity: _fadeAnimation,
           child: Container(
-            margin: EdgeInsets.only(left: getResponsiveSpacing(8)),
+            margin: const EdgeInsets.only(left: 8),
             padding: EdgeInsets.zero,
             decoration: BoxDecoration(
               color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
-              borderRadius: getResponsiveBorderRadius(6),
+              borderRadius: BorderRadius.circular(6),
             ),
             child: IconButton(
               icon: Icon(
                 Icons.arrow_back_rounded,
                 color: Theme.of(context).colorScheme.primary,
-                size: getResponsiveIconSize(20),
+                size: 20,
               ),
               padding: EdgeInsets.zero,
               constraints: BoxConstraints(),
@@ -319,120 +257,75 @@ class _ActiveLoansScreenState extends State<ActiveLoansScreen>
               )
             : Column(
                 children: [
-                  // Extension Requests Button Section (for librarians only)
-                  if (_isLibrarian)
-                    FadeTransition(
-                      opacity: _fadeAnimation,
-                      child: SlideTransition(
-                        position: _slideAnimation,
-                        child: Container(
-                          margin: const EdgeInsets.all(24),
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              colors: [
-                                Theme.of(context).colorScheme.surface,
-                                Theme.of(context).colorScheme.surface.withOpacity(0.8),
-                              ],
-                            ),
-                            borderRadius: BorderRadius.circular(16),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Theme.of(context).colorScheme.shadow.withOpacity(0.08),
-                                blurRadius: 12,
-                                offset: const Offset(0, 4),
+                  // Extension requests button section
+                  FadeTransition(
+                    opacity: _fadeAnimation,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                      child: Row(
+                        children: [
+                          Container(
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                colors: [
+                                  Theme.of(context).colorScheme.secondary,
+                                  Theme.of(context).colorScheme.secondary.withOpacity(0.8),
+                                ],
                               ),
-                            ],
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.all(20),
-                            child: Row(
-                              children: [
-                                Container(
-                                  padding: const EdgeInsets.all(12),
-                                  decoration: BoxDecoration(
-                                    gradient: LinearGradient(
-                                      colors: [
-                                        Theme.of(context).colorScheme.primary.withOpacity(0.15),
-                                        Theme.of(context).colorScheme.primary.withOpacity(0.05),
-                                      ],
-                                    ),
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                  child: Icon(
-                                    Icons.schedule_rounded,
-                                    color: Theme.of(context).colorScheme.primary,
-                                    size: 24,
-                                  ),
-                                ),
-                                const SizedBox(width: 16),
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        'Cereri de Extindere',
-                                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                          fontWeight: FontWeight.w700,
-                                          color: Colors.grey[800],
-                                        ),
-                                      ),
-                                      const SizedBox(height: 4),
-                                      Text(
-                                        'Gestionează cererile de extindere a termenului de împrumut',
-                                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                          color: Colors.grey[600],
-                                          fontWeight: FontWeight.w500,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                Container(
-                                  decoration: BoxDecoration(
-                                    gradient: LinearGradient(
-                                      colors: [
-                                        Theme.of(context).colorScheme.primary,
-                                        Theme.of(context).colorScheme.primary.withOpacity(0.8),
-                                      ],
-                                    ),
-                                    borderRadius: BorderRadius.circular(12),
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
-                                        blurRadius: 8,
-                                        offset: const Offset(0, 2),
-                                      ),
-                                    ],
-                                  ),
-                                  child: ElevatedButton.icon(
-                                    onPressed: () async {
-                                      await Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (context) => const ExtensionRequestsScreen(),
-                                        ),
-                                      );
-                                      await _loadActiveLoans();
-                                    },
-                                    icon: const Icon(Icons.arrow_forward_rounded),
-                                    label: const Text('Accesează'),
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor: Colors.transparent,
-                                      foregroundColor: Colors.white,
-                                      elevation: 0,
-                                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(12),
-                                      ),
-                                    ),
-                                  ),
+                              borderRadius: BorderRadius.circular(12),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Theme.of(context).colorScheme.secondary.withOpacity(0.3),
+                                  blurRadius: 8,
+                                  offset: const Offset(0, 2),
                                 ),
                               ],
                             ),
+                            child: ElevatedButton.icon(
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => const ExtensionRequestsScreen(),
+                                  ),
+                                );
+                              },
+                              icon: Icon(
+                                Icons.schedule_rounded,
+                                size: 20,
+                                color: Theme.of(context).colorScheme.onSecondary,
+                              ),
+                              label: Text(
+                                'Cereri Extindere',
+                                style: TextStyle(
+                                  color: Theme.of(context).colorScheme.onSecondary,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.transparent,
+                                elevation: 0,
+                                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                              ),
+                            ),
                           ),
-                        ),
+                          const SizedBox(width: 16),
+                          Expanded(
+                            child: Text(
+                              'Aici puteți vizualiza cererile de extindere',
+                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
+                  ),
                   
                   // Search Bar
                   FadeTransition(
@@ -440,7 +333,7 @@ class _ActiveLoansScreenState extends State<ActiveLoansScreen>
                     child: SlideTransition(
                       position: _slideAnimation,
                       child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+                        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
                         child: Container(
                           decoration: BoxDecoration(
                             gradient: LinearGradient(

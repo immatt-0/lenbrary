@@ -166,7 +166,7 @@ class _ExtensionRequestsScreenState extends State<ExtensionRequestsScreen>
                 ),
                 child: Icon(
                   Icons.schedule_rounded,
-                  color: Colors.white,
+                  color: Theme.of(context).colorScheme.onPrimary,
                   size: 24,
                 ),
               ),
@@ -318,10 +318,10 @@ class _ExtensionRequestsScreenState extends State<ExtensionRequestsScreen>
                           opacity: _fadeAnimation,
                           child: ElevatedButton.icon(
                             onPressed: _loadRequests,
-                            icon: const Icon(Icons.refresh_rounded, color: Colors.white),
-                            label: const Text(
+                            icon: Icon(Icons.refresh_rounded, color: Theme.of(context).colorScheme.onPrimary),
+                            label: Text(
                               'Reîncearcă',
-                              style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
+                              style: TextStyle(color: Theme.of(context).colorScheme.onPrimary, fontWeight: FontWeight.w600),
                             ),
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Theme.of(context).colorScheme.primary,
@@ -432,7 +432,7 @@ class _ExtensionRequestsScreenState extends State<ExtensionRequestsScreen>
       margin: const EdgeInsets.only(bottom: 16),
       child: Card(
         elevation: 8,
-        shadowColor: Colors.black.withOpacity(0.1),
+        shadowColor: Theme.of(context).colorScheme.shadow.withOpacity(0.1),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
         ),
@@ -440,8 +440,8 @@ class _ExtensionRequestsScreenState extends State<ExtensionRequestsScreen>
           decoration: BoxDecoration(
             gradient: LinearGradient(
               colors: [
-                Colors.white,
-                Colors.grey[50]!,
+                Theme.of(context).colorScheme.surface,
+                Theme.of(context).colorScheme.surface.withOpacity(0.8),
               ],
             ),
             borderRadius: BorderRadius.circular(20),
@@ -534,7 +534,7 @@ class _ExtensionRequestsScreenState extends State<ExtensionRequestsScreen>
                           ),
                           child: Icon(
                             Icons.person_rounded,
-                            color: Colors.white,
+                            color: Theme.of(context).colorScheme.onPrimary,
                             size: 24,
                           ),
                         ),
@@ -673,7 +673,7 @@ class _ExtensionRequestsScreenState extends State<ExtensionRequestsScreen>
                           ),
                           child: Icon(
                             Icons.book_rounded,
-                            color: Colors.white,
+                            color: Theme.of(context).colorScheme.onSecondary,
                             size: 24,
                           ),
                         ),
@@ -718,13 +718,13 @@ class _ExtensionRequestsScreenState extends State<ExtensionRequestsScreen>
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
                         colors: [
-                          Theme.of(context).colorScheme.tertiary.withOpacity(0.05),
-                          Theme.of(context).colorScheme.tertiary.withOpacity(0.02),
+                          Theme.of(context).colorScheme.primary.withOpacity(0.05),
+                          Theme.of(context).colorScheme.primary.withOpacity(0.02),
                         ],
                       ),
                       borderRadius: BorderRadius.circular(16),
                       border: Border.all(
-                        color: Theme.of(context).colorScheme.tertiary.withOpacity(0.1),
+                        color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
                       ),
                     ),
                     child: Row(
@@ -734,14 +734,14 @@ class _ExtensionRequestsScreenState extends State<ExtensionRequestsScreen>
                           decoration: BoxDecoration(
                             gradient: LinearGradient(
                               colors: [
-                                Theme.of(context).colorScheme.tertiary,
-                                Theme.of(context).colorScheme.tertiary.withOpacity(0.8),
+                                Theme.of(context).colorScheme.primary,
+                                Theme.of(context).colorScheme.primary.withOpacity(0.8),
                               ],
                             ),
                             borderRadius: BorderRadius.circular(12),
                             boxShadow: [
                               BoxShadow(
-                                color: Theme.of(context).colorScheme.tertiary.withOpacity(0.3),
+                                color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
                                 blurRadius: 8,
                                 offset: const Offset(0, 2),
                               ),
@@ -749,7 +749,7 @@ class _ExtensionRequestsScreenState extends State<ExtensionRequestsScreen>
                           ),
                           child: Icon(
                             Icons.timer_rounded,
-                            color: Colors.white,
+                            color: Theme.of(context).colorScheme.onPrimary,
                             size: 24,
                           ),
                         ),
@@ -762,7 +762,7 @@ class _ExtensionRequestsScreenState extends State<ExtensionRequestsScreen>
                                 'Extindere solicitată',
                                 style: Theme.of(context).textTheme.titleSmall?.copyWith(
                                   fontWeight: FontWeight.w600,
-                                  color: Theme.of(context).colorScheme.tertiary,
+                                  color: Theme.of(context).colorScheme.primary,
                                 ),
                               ),
                               const SizedBox(height: 4),
@@ -904,7 +904,7 @@ class ExtensionRequestDetailScreen extends StatelessWidget {
               ),
               child: Icon(
                 Icons.schedule_rounded,
-                color: Colors.white,
+                color: Theme.of(context).colorScheme.onPrimary,
                 size: 24,
               ),
             ),
@@ -957,7 +957,7 @@ class ExtensionRequestDetailScreen extends StatelessWidget {
                 margin: const EdgeInsets.only(bottom: 16),
                 child: Card(
                   elevation: 8,
-                  shadowColor: Colors.black.withOpacity(0.1),
+                  shadowColor: Theme.of(context).colorScheme.shadow.withOpacity(0.1),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(20),
                   ),
@@ -965,8 +965,8 @@ class ExtensionRequestDetailScreen extends StatelessWidget {
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
                         colors: [
-                          Colors.white,
-                          Colors.grey[50]!,
+                          Theme.of(context).colorScheme.surface,
+                          Theme.of(context).colorScheme.surface.withOpacity(0.8),
                         ],
                       ),
                       borderRadius: BorderRadius.circular(20),
@@ -998,7 +998,7 @@ class ExtensionRequestDetailScreen extends StatelessWidget {
                                 ),
                                 child: Icon(
                                   Icons.person_rounded,
-                                  color: Colors.white,
+                                  color: Theme.of(context).colorScheme.onPrimary,
                                   size: 24,
                                 ),
                               ),
@@ -1098,7 +1098,7 @@ class ExtensionRequestDetailScreen extends StatelessWidget {
                 margin: const EdgeInsets.only(bottom: 16),
                 child: Card(
                   elevation: 8,
-                  shadowColor: Colors.black.withOpacity(0.1),
+                  shadowColor: Theme.of(context).colorScheme.shadow.withOpacity(0.1),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(20),
                   ),
@@ -1106,8 +1106,8 @@ class ExtensionRequestDetailScreen extends StatelessWidget {
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
                         colors: [
-                          Colors.white,
-                          Colors.grey[50]!,
+                          Theme.of(context).colorScheme.surface,
+                          Theme.of(context).colorScheme.surface.withOpacity(0.8),
                         ],
                       ),
                       borderRadius: BorderRadius.circular(20),
@@ -1139,7 +1139,7 @@ class ExtensionRequestDetailScreen extends StatelessWidget {
                                 ),
                                 child: Icon(
                                   Icons.book_rounded,
-                                  color: Colors.white,
+                                  color: Theme.of(context).colorScheme.onSecondary,
                                   size: 24,
                                 ),
                               ),
@@ -1188,7 +1188,7 @@ class ExtensionRequestDetailScreen extends StatelessWidget {
                 margin: const EdgeInsets.only(bottom: 16),
                 child: Card(
                   elevation: 8,
-                  shadowColor: Colors.black.withOpacity(0.1),
+                  shadowColor: Theme.of(context).colorScheme.shadow.withOpacity(0.1),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(20),
                   ),
@@ -1196,8 +1196,8 @@ class ExtensionRequestDetailScreen extends StatelessWidget {
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
                         colors: [
-                          Colors.white,
-                          Colors.grey[50]!,
+                          Theme.of(context).colorScheme.surface,
+                          Theme.of(context).colorScheme.surface.withOpacity(0.8),
                         ],
                       ),
                       borderRadius: BorderRadius.circular(20),
@@ -1214,14 +1214,14 @@ class ExtensionRequestDetailScreen extends StatelessWidget {
                                 decoration: BoxDecoration(
                                   gradient: LinearGradient(
                                     colors: [
-                                      Theme.of(context).colorScheme.tertiary,
-                                      Theme.of(context).colorScheme.tertiary.withOpacity(0.8),
+                                      Theme.of(context).colorScheme.primary,
+                                      Theme.of(context).colorScheme.primary.withOpacity(0.8),
                                     ],
                                   ),
                                   borderRadius: BorderRadius.circular(12),
                                   boxShadow: [
                                     BoxShadow(
-                                      color: Theme.of(context).colorScheme.tertiary.withOpacity(0.3),
+                                      color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
                                       blurRadius: 8,
                                       offset: const Offset(0, 2),
                                     ),
@@ -1229,7 +1229,7 @@ class ExtensionRequestDetailScreen extends StatelessWidget {
                                 ),
                                 child: Icon(
                                   Icons.timer_rounded,
-                                  color: Colors.white,
+                                  color: Theme.of(context).colorScheme.onPrimary,
                                   size: 24,
                                 ),
                               ),
@@ -1242,7 +1242,7 @@ class ExtensionRequestDetailScreen extends StatelessWidget {
                                       'Zile solicitate',
                                       style: Theme.of(context).textTheme.titleSmall?.copyWith(
                                         fontWeight: FontWeight.w600,
-                                        color: Theme.of(context).colorScheme.tertiary,
+                                        color: Theme.of(context).colorScheme.primary,
                                       ),
                                     ),
                                     const SizedBox(height: 4),
@@ -1345,7 +1345,7 @@ class ExtensionRequestDetailScreen extends StatelessWidget {
                   margin: const EdgeInsets.only(bottom: 16),
                   child: Card(
                     elevation: 8,
-                    shadowColor: Colors.black.withOpacity(0.1),
+                    shadowColor: Theme.of(context).colorScheme.shadow.withOpacity(0.1),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(20),
                     ),
@@ -1353,8 +1353,8 @@ class ExtensionRequestDetailScreen extends StatelessWidget {
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
                           colors: [
-                            Colors.white,
-                            Colors.grey[50]!,
+                            Theme.of(context).colorScheme.surface,
+                            Theme.of(context).colorScheme.surface.withOpacity(0.8),
                           ],
                         ),
                         borderRadius: BorderRadius.circular(20),
@@ -1387,7 +1387,7 @@ class ExtensionRequestDetailScreen extends StatelessWidget {
                                   ),
                                   child: Icon(
                                     Icons.message_rounded,
-                                    color: Colors.white,
+                                    color: Theme.of(context).colorScheme.onPrimary,
                                     size: 24,
                                   ),
                                 ),
@@ -1473,19 +1473,28 @@ class ExtensionRequestDetailScreen extends StatelessWidget {
                           loan['has_been_extended'] == true 
                             ? Icons.block_rounded 
                             : Icons.check_rounded, 
-                          color: Colors.white
+                          color: loan['has_been_extended'] == true 
+                            ? Theme.of(context).colorScheme.onSurface.withOpacity(0.6)
+                            : Colors.white
                         ),
                         label: Text(
                           loan['has_been_extended'] == true 
                             ? 'Deja prelungit'
                             : 'Aprobă',
-                          style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
+                          style: TextStyle(
+                            color: loan['has_been_extended'] == true 
+                              ? Theme.of(context).colorScheme.onSurface.withOpacity(0.6)
+                              : Colors.white, 
+                            fontWeight: FontWeight.w600
+                          ),
                         ),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: loan['has_been_extended'] == true 
                             ? Colors.grey 
                             : Colors.green,
-                          foregroundColor: Colors.white,
+                          foregroundColor: loan['has_been_extended'] == true 
+                            ? Theme.of(context).colorScheme.onSurface.withOpacity(0.6)
+                            : Colors.white,
                           padding: const EdgeInsets.symmetric(vertical: 16),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(16),
@@ -1526,19 +1535,28 @@ class ExtensionRequestDetailScreen extends StatelessWidget {
                           loan['has_been_extended'] == true 
                             ? Icons.block_rounded 
                             : Icons.close_rounded, 
-                          color: Colors.white
+                          color: loan['has_been_extended'] == true 
+                            ? Theme.of(context).colorScheme.onSurface.withOpacity(0.6)
+                            : Colors.white
                         ),
                         label: Text(
                           loan['has_been_extended'] == true 
                             ? 'Deja prelungit'
                             : 'Respinge',
-                          style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
+                          style: TextStyle(
+                            color: loan['has_been_extended'] == true 
+                              ? Theme.of(context).colorScheme.onSurface.withOpacity(0.6)
+                              : Colors.white, 
+                            fontWeight: FontWeight.w600
+                          ),
                         ),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: loan['has_been_extended'] == true 
                             ? Colors.grey 
                             : Colors.red,
-                          foregroundColor: Colors.white,
+                          foregroundColor: loan['has_been_extended'] == true 
+                            ? Theme.of(context).colorScheme.onSurface.withOpacity(0.6)
+                            : Colors.white,
                           padding: const EdgeInsets.symmetric(vertical: 16),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(16),

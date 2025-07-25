@@ -557,7 +557,7 @@ class _ExamModelsAdminScreenState extends State<ExamModelsAdminScreen>
                                       children: [
                                         Icon(Icons.functions_rounded, color: _getCategoryColor('Matematica'), size: getResponsiveIconSize(16)),
                                         SizedBox(width: getResponsiveSpacing(6)),
-                                        Text('Matematică', style: ResponsiveTextStyles.getResponsiveTextStyle(fontSize: 14)),
+                                        Text('Mate', style: ResponsiveTextStyles.getResponsiveTextStyle(fontSize: 14)),
                                       ],
                                     ),
                                   ),
@@ -791,14 +791,14 @@ class _ExamModelsAdminScreenState extends State<ExamModelsAdminScreen>
                 // Header with icons and title
                 Row(
                   children: [
-                    // Type Icon
+                    // Combined Type & Category Icon
                     Container(
                       padding: EdgeInsets.all(getResponsiveSpacing(12)),
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
                           colors: [
                             typeColor,
-                            typeColor.withOpacity(0.8),
+                            categoryColor,
                           ],
                         ),
                         borderRadius: getResponsiveBorderRadius(12),
@@ -810,43 +810,28 @@ class _ExamModelsAdminScreenState extends State<ExamModelsAdminScreen>
                           ),
                         ],
                       ),
-                      child: Icon(
-                        _getTypeIcon(model['type']),
-                        color: Colors.white,
-                        size: getResponsiveIconSize(24),
-                      ),
-                    ),
-                    SizedBox(width: getResponsiveSpacing(12)),
-                    // Category Icon
-                    Container(
-                      padding: EdgeInsets.all(getResponsiveSpacing(12)),
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: [
-                            categoryColor,
-                            categoryColor.withOpacity(0.8),
-                          ],
-                        ),
-                        borderRadius: getResponsiveBorderRadius(12),
-                        boxShadow: [
-                          BoxShadow(
-                            color: categoryColor.withOpacity(0.3),
-                            blurRadius: getResponsiveSpacing(8),
-                            offset: Offset(0, getResponsiveSpacing(2)),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            _getTypeIcon(model['type']),
+                            color: Colors.white,
+                            size: getResponsiveIconSize(20),
+                          ),
+                          SizedBox(width: getResponsiveSpacing(4)),
+                          Icon(
+                            _getCategoryIcon(model['category']),
+                            color: Colors.white,
+                            size: getResponsiveIconSize(20),
                           ),
                         ],
-                      ),
-                      child: Icon(
-                        _getCategoryIcon(model['category']),
-                        color: Colors.white,
-                        size: getResponsiveIconSize(24),
                       ),
                     ),
                     SizedBox(width: getResponsiveSpacing(16)),
                     // Title and Info
                     Expanded(
                       child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           Text(
                             model['name'] ?? 'Model fără nume',
@@ -857,11 +842,11 @@ class _ExamModelsAdminScreenState extends State<ExamModelsAdminScreen>
                             ),
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
+                            textAlign: TextAlign.center,
                           ),
                           SizedBox(height: getResponsiveSpacing(8)),
-                          Wrap(
-                            spacing: getResponsiveSpacing(8),
-                            runSpacing: getResponsiveSpacing(4),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Tooltip(
                                 message: model['type'] == 'EN' ? 'Evaluare Națională' : 'Bacalaureat',
@@ -884,6 +869,7 @@ class _ExamModelsAdminScreenState extends State<ExamModelsAdminScreen>
                                   ),
                                 ),
                               ),
+                              SizedBox(width: getResponsiveSpacing(8)),
                               Container(
                                 padding: EdgeInsets.symmetric(horizontal: getResponsiveSpacing(8), vertical: getResponsiveSpacing(4)),
                                 decoration: BoxDecoration(
@@ -894,7 +880,7 @@ class _ExamModelsAdminScreenState extends State<ExamModelsAdminScreen>
                                   ),
                                 ),
                                 child: Text(
-                                  model['category'] == 'Matematica' ? 'Matematică' : 'Română',
+                                  model['category'] == 'Matematica' ? 'Mate' : 'Română',
                                   style: ResponsiveTextStyles.getResponsiveTextStyle(
                                     fontSize: 12,
                                     color: categoryColor,
@@ -907,6 +893,7 @@ class _ExamModelsAdminScreenState extends State<ExamModelsAdminScreen>
                         ],
                       ),
                     ),
+                    SizedBox(width: getResponsiveSpacing(16)),
                     // Action Buttons
                     Row(
                       mainAxisSize: MainAxisSize.min,

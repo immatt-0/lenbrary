@@ -749,18 +749,17 @@ class _ExamModelsScreenState extends State<ExamModelsScreen>
                 // Header with icons and title
                 Row(
                   children: [
-                    // Type Icon
+                    // Combined Type & Category Icon
                     Container(
-                      width: getResponsiveSpacing(44),
-                      height: getResponsiveSpacing(44),
+                      padding: EdgeInsets.all(getResponsiveSpacing(12)),
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
                           colors: [
                             typeColor,
-                            typeColor.withOpacity(0.8),
+                            categoryColor,
                           ],
                         ),
-                        borderRadius: BorderRadius.circular(getResponsiveSpacing(12)),
+                        borderRadius: getResponsiveBorderRadius(12),
                         boxShadow: [
                           BoxShadow(
                             color: typeColor.withOpacity(0.3),
@@ -769,48 +768,28 @@ class _ExamModelsScreenState extends State<ExamModelsScreen>
                           ),
                         ],
                       ),
-                      child: Center(
-                        child: Icon(
-                          _getTypeIcon(model['type']),
-                          color: Colors.white,
-                          size: getResponsiveIconSize(24),
-                        ),
-                      ),
-                    ),
-                    SizedBox(width: getResponsiveSpacing(12)),
-                    // Category Icon
-                    Container(
-                      width: getResponsiveSpacing(44),
-                      height: getResponsiveSpacing(44),
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: [
-                            categoryColor,
-                            categoryColor.withOpacity(0.8),
-                          ],
-                        ),
-                        borderRadius: BorderRadius.circular(getResponsiveSpacing(12)),
-                        boxShadow: [
-                          BoxShadow(
-                            color: categoryColor.withOpacity(0.3),
-                            blurRadius: getResponsiveSpacing(8),
-                            offset: Offset(0, getResponsiveSpacing(2)),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            _getTypeIcon(model['type']),
+                            color: Colors.white,
+                            size: getResponsiveIconSize(20),
+                          ),
+                          SizedBox(width: getResponsiveSpacing(4)),
+                          Icon(
+                            _getCategoryIcon(model['category']),
+                            color: Colors.white,
+                            size: getResponsiveIconSize(20),
                           ),
                         ],
-                      ),
-                      child: Center(
-                        child: Icon(
-                          _getCategoryIcon(model['category']),
-                          color: Colors.white,
-                          size: getResponsiveIconSize(24),
-                        ),
                       ),
                     ),
                     SizedBox(width: getResponsiveSpacing(16)),
                     // Title and Info
                     Expanded(
                       child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           Text(
                             model['name'] ?? 'Model fără nume',
@@ -821,11 +800,11 @@ class _ExamModelsScreenState extends State<ExamModelsScreen>
                             ),
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
+                            textAlign: TextAlign.center,
                           ),
                           SizedBox(height: getResponsiveSpacing(8)),
-                          Wrap(
-                            spacing: getResponsiveSpacing(8),
-                            runSpacing: getResponsiveSpacing(4),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Tooltip(
                                 message: model['type'] == 'EN' ? 'Evaluare Națională' : 'Bacalaureat',
@@ -851,6 +830,7 @@ class _ExamModelsScreenState extends State<ExamModelsScreen>
                                   ),
                                 ),
                               ),
+                              SizedBox(width: getResponsiveSpacing(8)),
                               Container(
                                 padding: EdgeInsets.symmetric(
                                   horizontal: getResponsiveSpacing(8), 
@@ -864,7 +844,7 @@ class _ExamModelsScreenState extends State<ExamModelsScreen>
                                   ),
                                 ),
                                 child: Text(
-                                  model['category'] == 'Matematica' ? 'Matematică' : 'Română',
+                                  model['category'] == 'Matematica' ? 'Mate' : 'Română',
                                   style: ResponsiveTextStyles.getResponsiveTextStyle(
                                     fontSize: 12,
                                     color: categoryColor,
@@ -877,6 +857,7 @@ class _ExamModelsScreenState extends State<ExamModelsScreen>
                         ],
                       ),
                     ),
+                    SizedBox(width: getResponsiveSpacing(16)),
                     // PDF Button
                     if (pdfUrl != null)
                       Container(

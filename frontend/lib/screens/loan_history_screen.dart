@@ -1003,154 +1003,149 @@ class _LoanHistoryScreenState extends State<LoanHistoryScreen>
                         color: Colors.red.withOpacity(0.2),
                       ),
                     ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                    child: Row(
                       children: [
-                        Row(
+                        Container(
+                          padding: const EdgeInsets.all(6),
+                          decoration: BoxDecoration(
+                            color: Colors.red.withOpacity(0.15),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: const Icon(
+                            Icons.request_page_rounded,
+                            color: Colors.red,
+                            size: 16,
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Container(
-                              padding: const EdgeInsets.all(6),
-                              decoration: BoxDecoration(
-                                color: Colors.red.withOpacity(0.15),
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              child: const Icon(
-                                Icons.request_page_rounded,
+                            Text(
+                              'Data cererii',
+                              style: Theme.of(context).textTheme.bodySmall?.copyWith(
                                 color: Colors.red,
-                                size: 16,
+                                fontWeight: FontWeight.bold,
                               ),
                             ),
-                            const SizedBox(width: 8),
-                            Expanded(
-                              child: Text(
-                                'Data cererii',
-                                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                  color: Colors.red,
-                                  fontWeight: FontWeight.bold,
-                                ),
+                            const SizedBox(height: 2),
+                            Text(
+                              formatDate(parseFlexibleDate(loan['created_at'] ?? loan['request_date'] ?? loan['borrow_date'])),
+                              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                fontWeight: FontWeight.bold,
+                                color: Theme.of(context).colorScheme.onSurface,
                               ),
                             ),
                           ],
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          formatDate(parseFlexibleDate(loan['created_at'] ?? loan['request_date'] ?? loan['borrow_date'])),
-                          style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.bold,
-                            color: Theme.of(context).colorScheme.onSurface,
-                          ),
                         ),
                       ],
                     ),
                   )
                 else
-                  // For regular loans, show both borrow and return dates
-                  Column(
-                    children: [
-                      // Borrow Date
-                      Container(
-                        width: double.infinity,
-                        padding: const EdgeInsets.all(16),
-                        decoration: BoxDecoration(
-                          color: Colors.blue.withOpacity(0.05),
-                          borderRadius: BorderRadius.circular(16),
-                          border: Border.all(
-                            color: Colors.blue.withOpacity(0.2),
+                  // For regular loans, show both borrow and return dates in one row
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.primary.withOpacity(0.05),
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(
+                        color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                      ),
+                    ),
+                    child: Row(
+                      children: [
+                        // Borrow Date
+                        Expanded(
+                          child: Row(
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.all(6),
+                                decoration: BoxDecoration(
+                                  color: Colors.blue.withOpacity(0.15),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: const Icon(
+                                  Icons.calendar_today_rounded,
+                                  color: Colors.blue,
+                                  size: 16,
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      'Împrumutat',
+                                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                        color: Colors.blue,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 11,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 2),
+                                    Text(
+                                      formatDate(borrowDate),
+                                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                        fontWeight: FontWeight.bold,
+                                        color: Theme.of(context).colorScheme.onSurface,
+                                        fontSize: 13,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
                           ),
                         ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              children: [
-                                Container(
-                                  padding: const EdgeInsets.all(6),
-                                  decoration: BoxDecoration(
-                                    color: Colors.blue.withOpacity(0.15),
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                  child: const Icon(
-                                    Icons.calendar_today_rounded,
-                                    color: Colors.blue,
-                                    size: 16,
-                                  ),
+                        const SizedBox(width: 16),
+                        // Return Date
+                        Expanded(
+                          child: Row(
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.all(6),
+                                decoration: BoxDecoration(
+                                  color: Colors.green.withOpacity(0.15),
+                                  borderRadius: BorderRadius.circular(8),
                                 ),
-                                const SizedBox(width: 8),
-                                Expanded(
-                                  child: Text(
-                                    'Data împrumutului',
-                                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                      color: Colors.blue,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
+                                child: const Icon(
+                                  Icons.event_rounded,
+                                  color: Colors.green,
+                                  size: 16,
                                 ),
-                              ],
-                            ),
-                            const SizedBox(height: 8),
-                            Text(
-                              formatDate(borrowDate),
-                              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                fontWeight: FontWeight.bold,
-                                color: Theme.of(context).colorScheme.onSurface,
                               ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(height: 12),
-                      // Return Date
-                      Container(
-                        width: double.infinity,
-                        padding: const EdgeInsets.all(16),
-                        decoration: BoxDecoration(
-                          color: Colors.green.withOpacity(0.05),
-                          borderRadius: BorderRadius.circular(16),
-                          border: Border.all(
-                            color: Colors.green.withOpacity(0.2),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      'Returnat',
+                                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                        color: Colors.green,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 11,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 2),
+                                    Text(
+                                      formatDate(returnDate, isReturnDate: true),
+                                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                        fontWeight: FontWeight.bold,
+                                        color: Theme.of(context).colorScheme.onSurface,
+                                        fontSize: 13,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
                           ),
                         ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              children: [
-                                Container(
-                                  padding: const EdgeInsets.all(6),
-                                  decoration: BoxDecoration(
-                                    color: Colors.green.withOpacity(0.15),
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                  child: const Icon(
-                                    Icons.event_rounded,
-                                    color: Colors.green,
-                                    size: 16,
-                                  ),
-                                ),
-                                const SizedBox(width: 8),
-                                Expanded(
-                                  child: Text(
-                                    'Data returnării',
-                                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                      color: Colors.green,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 8),
-                            Text(
-                              formatDate(returnDate, isReturnDate: true),
-                              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                fontWeight: FontWeight.bold,
-                                color: Theme.of(context).colorScheme.onSurface,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
               ],
             ),

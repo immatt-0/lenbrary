@@ -331,7 +331,7 @@ class _BookDetailsScreenState extends State<BookDetailsScreen> with ResponsiveWi
                                     ],
                                   ),
                                 ],
-                                if (book['available_copies'] != null) ...[
+                                if (book['available_copies'] != null && book['type'] != 'manual') ...[
                                   if (book['available_copies'] > 0) ...[
                                     const SizedBox(height: 8),
                                     Row(

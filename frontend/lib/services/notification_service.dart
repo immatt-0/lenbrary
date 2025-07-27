@@ -96,6 +96,8 @@ class NotificationService {
         return Icons.event_busy;
       case 'request_cancelled':
         return Icons.cancel_presentation;
+      case 'request_approved':
+        return Icons.check_circle_outline_rounded; // Special icon for approved requests
       case 'teacher_registered':
         return Icons.person_add;
       case 'book_added':
@@ -135,6 +137,8 @@ class NotificationService {
         return Colors.deepOrange;
       case 'request_cancelled':
         return Colors.redAccent;
+      case 'request_approved':
+        return Colors.green; // Green for approved requests
       case 'teacher_registered':
         return Colors.teal;
       case 'book_added':

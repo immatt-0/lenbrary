@@ -1511,11 +1511,11 @@ class _EditBookScreenState extends State<EditBookScreen>
                     icon: Icon(Icons.cancel_rounded, size: ResponsiveService.isSmallPhone ? 16 : 18),
                     label: Text(
                       'Anulează',
-                      style: TextStyle(fontSize: ResponsiveService.isSmallPhone ? 10 : 12),
+                      style: TextStyle(fontSize: ResponsiveService.isSmallPhone ? 9 : 12),
                     ),
                     style: OutlinedButton.styleFrom(
                       padding: EdgeInsets.symmetric(
-                        horizontal: ResponsiveService.isSmallPhone ? 16 : 20,
+                        horizontal: ResponsiveService.isSmallPhone ? 12 : 20,
                         vertical: ResponsiveService.isSmallPhone ? 12 : 16,
                       ),
                     ),

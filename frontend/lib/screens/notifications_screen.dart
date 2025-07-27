@@ -215,6 +215,8 @@ class _NotificationsScreenState extends State<NotificationsScreen>
         return 'Extindere respinsă';
       case 'request_cancelled':
         return 'Cerere anulată';
+      case 'request_approved':
+        return 'Cerere aprobată';
       case 'teacher_registered':
         return 'Profesor înregistrat';
       case 'book_added':
@@ -828,6 +830,7 @@ class _NotificationsScreenState extends State<NotificationsScreen>
       'extension_approved',
       'extension_rejected',
       'request_cancelled',
+      'request_approved',
       'book_added',
       'book_modified',
       'book_updated',
@@ -874,6 +877,9 @@ class _NotificationsScreenState extends State<NotificationsScreen>
             break;
           case 'request_cancelled':
             options.add({'value': type, 'label': 'Cereri anulate'});
+            break;
+          case 'request_approved':
+            options.add({'value': type, 'label': 'Cereri aprobate'});
             break;
           case 'book_added':
             options.add({'value': type, 'label': 'Cărți adăugate'});

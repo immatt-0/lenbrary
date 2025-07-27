@@ -335,6 +335,36 @@ class _MyRequestsScreenState extends State<MyRequestsScreen>
     return request['has_been_extended'] == true;
   }
 
+  DateTime? _calculateExpectedDueDate(Map<String, dynamic> request) {
+    final status = request['status']?.toString() ?? '';
+    final dueDateStr = request['due_date']?.toString();
+    final requestDateStr = request['request_date']?.toString();
+    final loanDurationDays = request['loan_duration_days'] ?? 14; // Default to 14 days
+
+    // For waiting, approved, or ready for pickup status, calculate expected due date
+    if (_isEstimatedDueDate(status)) {
+      DateTime? baseDate;
+      
+      // Try to use request date as base
+      if (requestDateStr != null && requestDateStr.isNotEmpty) {
+        baseDate = DateTime.tryParse(requestDateStr);
+      }
+      
+      // If no request date, use current date
+      baseDate ??= DateTime.now();
+      
+      // Calculate expected due date by adding loan duration to base date
+      return baseDate.add(Duration(days: loanDurationDays));
+    }
+    
+    // For other statuses, use the actual due date from database
+    if (dueDateStr != null && dueDateStr.isNotEmpty) {
+      return DateTime.tryParse(dueDateStr);
+    }
+    
+    return null;
+  }
+
   Widget _buildRequestCard(Map<String, dynamic> request) {
     final book = request['book'] ?? {};
     final status = request['status']?.toString() ?? 'Necunoscut';
@@ -343,7 +373,6 @@ class _MyRequestsScreenState extends State<MyRequestsScreen>
     final bookAuthor = book['author']?.toString() ?? 'Autor necunoscut';
     final thumbnailRaw = book['thumbnail_url']?.toString();
     final requestDateStr = request['request_date']?.toString();
-    final dueDateStr = request['due_date']?.toString();
 
     DateTime? requestDate;
     DateTime? dueDate;
@@ -351,9 +380,8 @@ class _MyRequestsScreenState extends State<MyRequestsScreen>
       if (requestDateStr != null && requestDateStr.isNotEmpty) {
         requestDate = DateTime.tryParse(requestDateStr);
       }
-      if (dueDateStr != null && dueDateStr.isNotEmpty) {
-        dueDate = DateTime.tryParse(dueDateStr);
-      }
+      // Use the new calculation method for due date
+      dueDate = _calculateExpectedDueDate(request);
     } catch (e) {
       // ignore parse errors
     }

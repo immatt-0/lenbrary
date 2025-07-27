@@ -3,7 +3,6 @@ import 'dart:async';
 import '../services/api_service.dart';
 import '../services/notification_service.dart';
 import '../services/responsive_service.dart';
-import 'package:url_launcher/url_launcher.dart';
 import '../widgets/responsive_book_card.dart';
 import 'book_details_screen.dart';
 
@@ -19,7 +18,6 @@ class _SearchBooksScreenState extends State<SearchBooksScreen>
   late TabController _tabController;
   final _searchController = TextEditingController();
   bool _isLoading = false;
-  List<dynamic> _searchResults = [];
   List<dynamic> _filteredResults = [];
   String? _errorMessage;
   String _searchQuery = '';
@@ -36,8 +34,6 @@ class _SearchBooksScreenState extends State<SearchBooksScreen>
     // Initialize category based on initial tab (first tab is carti)
     _selectedCategory = 'carte'; // Default to carte tab
     
-    print('Initializing SearchBooksScreen - Category: $_selectedCategory');
-    _testAuthentication();
     _loadBooks(); // Load all books when screen opens
   }
 
@@ -72,26 +68,14 @@ class _SearchBooksScreenState extends State<SearchBooksScreen>
 
   void _filterBooks() {
     try {
-      print('Filtering books...');
-      print('All books: ${_allBooks.length}');
-      print('Search query: "$_searchQuery"');
-      print('Selected category: $_selectedCategory');
-      
       List<dynamic> filtered = _allBooks;
       
       // Filter by category (tab)
       if (_selectedCategory.isNotEmpty) {
         filtered = filtered.where((book) {
-          try {
-            final bookType = book['type'] ?? 'carte';
-            print('Book: ${book['name']}, Type: $bookType, Selected: $_selectedCategory');
-            return bookType == _selectedCategory;
-          } catch (e) {
-            print('Error filtering book by category: $e');
-            return false;
-          }
+          final bookType = book['type'] ?? 'carte';
+          return bookType == _selectedCategory;
         }).toList();
-        print('After category filter: ${filtered.length}');
       }
       
       // Filter by search query
@@ -128,20 +112,15 @@ class _SearchBooksScreenState extends State<SearchBooksScreen>
             
             return false;
           } catch (e) {
-            print('Error filtering book by search query: $e');
             return false;
           }
         }).toList();
-        print('After search filter: ${filtered.length}');
       }
       
       setState(() {
         _filteredResults = filtered;
       });
-      
-      print('Final filtered results: ${_filteredResults.length}');
     } catch (e) {
-      print('Error in _filterBooks: $e');
       setState(() {
         _filteredResults = [];
       });
@@ -151,139 +130,30 @@ class _SearchBooksScreenState extends State<SearchBooksScreen>
   Future<void> _loadBooks() async {
     setState(() {
       _isLoading = true;
+      _errorMessage = null;
     });
 
     try {
-      print('=== LOADING BOOKS DEBUG ===');
-      print('Loading books...');
-      
-      // Check authentication first
-      final token = await ApiService.getAccessToken();
-      print('Authentication token: ${token != null ? "Present" : "Missing"}');
-      if (token != null) {
-        print('Token preview: ${token.substring(0, 20)}...');
-      }
-      
       final books = await ApiService.getBooks();
-      print('Books loaded: ${books.length}');
-      print('Books data: $books');
       
       if (!mounted) return;
 
-      // Add some test data if no books are loaded
-      List<dynamic> finalBooks = books;
-      if (books.isEmpty) {
-        print('No books from API, adding test data');
-        finalBooks = [
-          {
-            'id': 1,
-            'name': 'Test Carte 1',
-            'author': 'Test Autor 1',
-            'category': 'Ficțiune',
-            'type': 'carte',
-            'thumbnail_url': null,
-            'available_copies': 5,
-            'inventory': 10,
-          },
-          {
-            'id': 2,
-            'name': 'Test Manual 1',
-            'author': 'Test Autor 2',
-            'category': 'Matematică',
-            'type': 'manual',
-            'book_class': 'VIII',
-            'thumbnail_url': null,
-            'available_copies': 3,
-            'inventory': 8,
-          },
-          {
-            'id': 3,
-            'name': 'Test Carte 2',
-            'author': 'Test Autor 3',
-            'category': 'Istorie',
-            'type': 'carte',
-            'thumbnail_url': null,
-            'available_copies': 0,
-            'inventory': 5,
-          },
-        ];
-      }
-
       setState(() {
-        _allBooks = finalBooks;
+        _allBooks = books;
         _isLoading = false;
       });
       
       // Apply initial filtering after loading books
       _filterBooks();
-      
-      print('Books set in state: ${_allBooks.length}');
-      print('Filtered results: ${_filteredResults.length}');
-      print('=== END LOADING BOOKS DEBUG ===');
     } catch (e) {
-      print('=== ERROR LOADING BOOKS ===');
-      print('Error loading books: $e');
-      print('Error type: ${e.runtimeType}');
       if (!mounted) return;
       
-      // Add test data even if API fails
-      print('API failed, adding test data');
-      final testBooks = [
-        {
-          'id': 1,
-          'name': 'Test Carte 1',
-          'author': 'Test Autor 1',
-          'category': 'Ficțiune',
-          'type': 'carte',
-          'thumbnail_url': null,
-          'available_copies': 5,
-          'inventory': 10,
-        },
-        {
-          'id': 2,
-          'name': 'Test Manual 1',
-          'author': 'Test Autor 2',
-          'category': 'Matematică',
-          'type': 'manual',
-          'book_class': 'VIII',
-          'thumbnail_url': null,
-          'available_copies': 3,
-          'inventory': 8,
-        },
-      ];
-      
       setState(() {
-        _allBooks = testBooks;
+        _allBooks = [];
         _isLoading = false;
-        _errorMessage = null;
+        _errorMessage = 'Eroare la încărcarea cărților: ${e.toString()}';
       });
-      
-      // Apply initial filtering after loading test data
-      _filterBooks();
-      
-      print('=== END ERROR LOADING BOOKS ===');
     }
-  }
-
-  void _onSearchChanged(String value) {
-    // Cancel previous timer
-    _debounceTimer?.cancel();
-    
-    // Do immediate local filtering for responsive UI
-    _filterBooks();
-    
-    // If search is empty, just apply local filtering without reloading from server
-    if (value.isEmpty) {
-      // Don't reload from server, just show all books for current category
-      return;
-    }
-    
-    // Set a new timer for debounced search
-    _debounceTimer = Timer(const Duration(milliseconds: 500), () {
-      if (mounted) {
-        _loadBooks();
-      }
-    });
   }
 
   Future<void> _showLoanDurationDialog(int bookId) async {
@@ -379,31 +249,9 @@ class _SearchBooksScreenState extends State<SearchBooksScreen>
     }
   }
 
-  void _viewPdf(String pdfUrl) async {
-    try {
-      if (await canLaunch(pdfUrl)) {
-        await launch(pdfUrl);
-      } else {
-        NotificationService.showError(
-          context: context,
-          message: 'Nu s-a putut deschide PDF-ul.',
-        );
-      }
-    } catch (e) {
-      NotificationService.showError(
-        context: context,
-        message: 'Eroare la deschiderea PDF-ului: ${e.toString()}',
-      );
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     ResponsiveService.init(context);
-    
-    print('Building SearchBooksScreen');
-    print('Filtered results count: ${_filteredResults.length}');
-    print('Is loading: $_isLoading');
     
     return DefaultTabController(
       length: 2,
@@ -696,9 +544,6 @@ class _SearchBooksScreenState extends State<SearchBooksScreen>
   }
 
   Widget _buildTabContent(String category) {
-    print('Building tab content for category: $category');
-    print('Filtered results: ${_filteredResults.length}');
-    
     // DO NOT update _selectedCategory or call _filterBooks here!
     // Just use the filtered list as is.
 
@@ -714,7 +559,6 @@ class _SearchBooksScreenState extends State<SearchBooksScreen>
     if (_errorMessage != null) {
       return Center(child: Text(_errorMessage!));
     }
-    print('Rendering ListView with itemCount: ${_filteredResults.length}');
     try {
       return ListView.builder(
         padding: EdgeInsets.symmetric(
@@ -723,7 +567,6 @@ class _SearchBooksScreenState extends State<SearchBooksScreen>
         ),
         itemCount: _filteredResults.length,
         itemBuilder: (context, index) {
-          print('Building item $index of ${_filteredResults.length}');
           if (index < _filteredResults.length) {
             return _buildBookCard(_filteredResults[index]);
           } else {
@@ -731,8 +574,7 @@ class _SearchBooksScreenState extends State<SearchBooksScreen>
           }
         },
       );
-    } catch (e, st) {
-      print('ERROR in ListView.builder: $e\n$st');
+    } catch (e) {
       return Center(child: Text('Eroare la afișare: $e'));
     }
   }
@@ -741,7 +583,6 @@ class _SearchBooksScreenState extends State<SearchBooksScreen>
     try {
       // Validate book data
       if (book == null) {
-        print('Book is null');
         return Container(
           margin: EdgeInsets.only(bottom: getResponsiveSpacing(6)),
           child: Card(
@@ -756,12 +597,6 @@ class _SearchBooksScreenState extends State<SearchBooksScreen>
         );
       }
 
-      // Construct PDF URL like in exam models
-      final pdfUrl = book['pdf_file'] != null && book['pdf_file'].toString().isNotEmpty
-          ? (book['pdf_file'].toString().startsWith('http')
-              ? book['pdf_file']
-              : ApiService.baseUrl + book['pdf_file'])
-          : null;
       // Construct thumbnail URL robustly
       final thumbnailUrl = book['thumbnail_url'] != null && book['thumbnail_url'].toString().isNotEmpty
           ? (book['thumbnail_url'].toString().startsWith('http')
@@ -794,7 +629,6 @@ class _SearchBooksScreenState extends State<SearchBooksScreen>
         ),
       );
     } catch (e) {
-      print('Error building book card: $e');
       return Container(
         margin: EdgeInsets.only(bottom: getResponsiveSpacing(6)),
         child: Card(
@@ -807,45 +641,6 @@ class _SearchBooksScreenState extends State<SearchBooksScreen>
           ),
         ),
       );
-    }
-  }
-
-  void _openPdf(String pdfUrl) async {
-    print('Opening PDF: $pdfUrl');
-    try {
-      if (await canLaunch(pdfUrl)) {
-        await launch(pdfUrl);
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: const Text('Nu s-a putut deschide PDF-ul.'),
-            backgroundColor: Theme.of(context).colorScheme.error,
-          ),
-        );
-      }
-    } catch (e) {
-      print('Error opening PDF: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Eroare la deschiderea PDF-ului: $e'),
-          backgroundColor: Theme.of(context).colorScheme.error,
-        ),
-      );
-    }
-  }
-
-  Future<void> _testAuthentication() async {
-    try {
-      print('=== TESTING AUTHENTICATION ===');
-      final token = await ApiService.getAccessToken();
-      print('Token exists: ${token != null}');
-      if (token != null) {
-        print('Token length: ${token.length}');
-        print('Token preview: ${token.substring(0, 20)}...');
-      }
-      print('=== END AUTHENTICATION TEST ===');
-    } catch (e) {
-      print('Authentication test error: $e');
     }
   }
 }
@@ -882,41 +677,6 @@ int _romanToArabic(String roman) {
       result -= currentValue;
     }
     prevValue = currentValue;
-  }
-
-  return result;
-}
-
-// Utility function to convert Arabic numerals to Roman numerals
-String _arabicToRoman(int arabic) {
-  if (arabic <= 0) return '';
-  
-  final romanNumerals = [
-    [1000, 'M'],
-    [900, 'CM'],
-    [500, 'D'],
-    [400, 'CD'],
-    [100, 'C'],
-    [90, 'XC'],
-    [50, 'L'],
-    [40, 'XL'],
-    [10, 'X'],
-    [9, 'IX'],
-    [5, 'V'],
-    [4, 'IV'],
-    [1, 'I'],
-  ];
-
-  String result = '';
-  int remaining = arabic;
-
-  for (final pair in romanNumerals) {
-    final value = pair[0] as int;
-    final numeral = pair[1] as String;
-    while (remaining >= value) {
-      result += numeral;
-      remaining -= value;
-    }
   }
 
   return result;

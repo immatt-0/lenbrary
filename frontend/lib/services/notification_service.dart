@@ -84,6 +84,8 @@ class NotificationService {
         return Icons.cancel;
       case 'book_returned':
         return Icons.assignment_return;
+      case 'teacher_registered':
+        return Icons.person_add;
       case 'message':
         return Icons.message;
       default:
@@ -102,6 +104,8 @@ class NotificationService {
         return Colors.red;
       case 'book_returned':
         return Colors.blue;
+      case 'teacher_registered':
+        return Colors.teal;
       case 'message':
         return Colors.purple;
       default:

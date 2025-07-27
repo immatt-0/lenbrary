@@ -204,6 +204,8 @@ class _NotificationsScreenState extends State<NotificationsScreen>
         return 'Carte respinsă';
       case 'book_returned':
         return 'Carte returnată';
+      case 'teacher_registered':
+        return 'Profesor înregistrat';
       case 'message':
         return 'Mesaj nou';
       default:

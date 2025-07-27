@@ -644,7 +644,7 @@ class _SuccessScreenState extends State<SuccessScreen>
                                         crossAxisAlignment: CrossAxisAlignment.start,
                                         children: [
                                           Text(
-                                            'Bun venit, $_userName!',
+                                            'Bun venit, doamna Bibliotecară!',
                                             style: ResponsiveTextStyles.getResponsiveTitleStyle(
                                               fontSize: 28,
                                               fontWeight: FontWeight.w700,
@@ -653,7 +653,7 @@ class _SuccessScreenState extends State<SuccessScreen>
                                           ),
                                           SizedBox(height: getResponsiveSpacing(12.0)),
                                           Text(
-                                            'Panou de administrare bibliotă',
+                                            'Panou de administrare bibliotecă',
                                             style: ResponsiveTextStyles.getResponsiveBodyStyle(
                                               fontSize: 18,
                                               fontWeight: FontWeight.w500,

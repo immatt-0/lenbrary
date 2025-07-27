@@ -206,8 +206,8 @@ class ResponsiveBookCard extends StatelessWidget {
                         if (bookClass != null && bookClass!.isNotEmpty)
                           Container(
                             padding: EdgeInsets.symmetric(
-                              horizontal: ResponsiveService.getSpacing(10),
-                              vertical: ResponsiveService.getSpacing(5),
+                              horizontal: ResponsiveService.getSpacing(12),
+                              vertical: ResponsiveService.getSpacing(6),
                             ),
                             decoration: BoxDecoration(
                               color: Theme.of(context).colorScheme.secondary.withOpacity(0.13),
@@ -228,8 +228,8 @@ class ResponsiveBookCard extends StatelessWidget {
                                 Text(
                                   'Clasa $bookClass',
                                   style: TextStyle(
-                                    fontSize: ResponsiveService.getFontSize(14),
-                                    fontWeight: FontWeight.w700,
+                                    fontSize: categoryFontSize,
+                                    fontWeight: FontWeight.w900,
                                     color: Theme.of(context).colorScheme.secondary,
                                   ),
                                 ),

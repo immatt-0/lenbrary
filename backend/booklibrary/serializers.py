@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User, Group
-from .models import Book, Student, BookBorrowing, Message, ExamModel, EmailVerification, InvitationCode
+from .models import Book, Student, BookBorrowing, Message, ExamModel, EmailVerification, InvitationCode, Notification
 from .utils import get_display_name
 import re
 import logging
@@ -138,6 +138,14 @@ class RegistrationSerializer(serializers.Serializer):
             if invitation_code:
                 invitation = InvitationCode.objects.get(code=invitation_code.upper())
                 usage_info = invitation.use_code(user)
+                
+                # Create notification for librarians about teacher registration
+                Notification.objects.create(
+                    notification_type='teacher_registered',
+                    message=f'Un nou profesor s-a înregistrat: {user.first_name} {user.last_name} ({user.email}) folosind codul {invitation_code.upper()}',
+                    created_by=user,
+                    for_librarians=True
+                )
                 
                 # Log the invitation code usage
                 logger = logging.getLogger('invitation_code_logger')

@@ -16,6 +16,9 @@ class _NotificationsScreenState extends State<NotificationsScreen>
     with TickerProviderStateMixin, ResponsiveWidget {
   final NotificationService _notificationService = NotificationService();
   
+  // Filter state
+  String _selectedFilter = 'all';
+  
   // Animation controllers
   late AnimationController _fadeController;
   late AnimationController _slideController;
@@ -196,20 +199,36 @@ class _NotificationsScreenState extends State<NotificationsScreen>
   
   String _getNotificationTitle(String type) {
     switch (type) {
-      case 'book_request':
-        return 'Cerere de împrumut';
+      case 'book_requested':
+        return 'Cerere de carte';
       case 'book_accepted':
         return 'Carte acceptată';
       case 'book_rejected':
         return 'Carte respinsă';
       case 'book_returned':
         return 'Carte returnată';
+      case 'extension_requested':
+        return 'Cerere de extindere';
+      case 'extension_approved':
+        return 'Extindere aprobată';
+      case 'extension_rejected':
+        return 'Extindere respinsă';
+      case 'request_cancelled':
+        return 'Cerere anulată';
       case 'teacher_registered':
         return 'Profesor înregistrat';
+      case 'book_added':
+        return 'Carte adăugată';
+      case 'book_deleted':
+        return 'Carte ștearsă';
+      case 'book_updated':
+        return 'Carte actualizată';
       case 'message':
         return 'Mesaj nou';
+      case 'unknown':
+        return 'Notificare necunoscută';
       default:
-        return 'Notificare';
+        return 'Notificare ($type)';
     }
   }
   
@@ -283,6 +302,55 @@ class _NotificationsScreenState extends State<NotificationsScreen>
           ),
         ),
         actions: [
+          // Filter dropdown
+          PopupMenuButton<String>(
+            icon: Container(
+              padding: EdgeInsets.all(getResponsiveSpacing(8)),
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                borderRadius: getResponsiveBorderRadius(10),
+              ),
+              child: Icon(
+                Icons.filter_list_rounded,
+                color: Theme.of(context).colorScheme.primary,
+                size: getResponsiveIconSize(20),
+              ),
+            ),
+            onSelected: (String value) {
+              setState(() {
+                _selectedFilter = value;
+              });
+            },
+            itemBuilder: (BuildContext context) {
+              return _getFilterOptions().map((option) {
+                return PopupMenuItem<String>(
+                  value: option['value'],
+                  child: Row(
+                    children: [
+                      Icon(
+                        _selectedFilter == option['value'] 
+                            ? Icons.radio_button_checked
+                            : Icons.radio_button_unchecked,
+                        color: Theme.of(context).colorScheme.primary,
+                        size: getResponsiveIconSize(18),
+                      ),
+                      SizedBox(width: getResponsiveSpacing(8)),
+                      Text(
+                        option['label']!,
+                        style: ResponsiveTextStyles.getResponsiveBodyStyle(
+                          fontSize: 14,
+                          fontWeight: _selectedFilter == option['value'] 
+                              ? FontWeight.w600 
+                              : FontWeight.w400,
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              }).toList();
+            },
+            tooltip: 'Filtrează notificările',
+          ),
           if (_notificationService.notifications.isNotEmpty)
             IconButton(
               icon: Container(
@@ -315,7 +383,77 @@ class _NotificationsScreenState extends State<NotificationsScreen>
             stops: const [0.0, 0.5, 1.0],
           ),
         ),
-        child: _notificationService.isLoading
+        child: Column(
+          children: [
+            // Filter indicator
+            if (_notificationService.notifications.isNotEmpty)
+              Container(
+                margin: EdgeInsets.symmetric(
+                  horizontal: getResponsiveSpacing(16),
+                  vertical: getResponsiveSpacing(8),
+                ),
+                padding: EdgeInsets.symmetric(
+                  horizontal: getResponsiveSpacing(16),
+                  vertical: getResponsiveSpacing(12),
+                ),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                      Theme.of(context).colorScheme.surface,
+                    ],
+                  ),
+                  borderRadius: getResponsiveBorderRadius(12),
+                  border: Border.all(
+                    color: Theme.of(context).colorScheme.primary.withOpacity(0.2),
+                  ),
+                ),
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.filter_list_rounded,
+                      color: Theme.of(context).colorScheme.primary,
+                      size: getResponsiveIconSize(18),
+                    ),
+                    SizedBox(width: getResponsiveSpacing(8)),
+                    Expanded(
+                      child: Text(
+                        _selectedFilter == 'all' 
+                            ? 'Se afișează toate notificările (${_getFilteredNotifications().length})'
+                            : 'Filtru activ: ${_getFilterOptions().firstWhere((o) => o['value'] == _selectedFilter)['label']} (${_getFilteredNotifications().length})',
+                        style: ResponsiveTextStyles.getResponsiveBodyStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
+                      ),
+                    ),
+                    if (_selectedFilter != 'all')
+                      GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            _selectedFilter = 'all';
+                          });
+                        },
+                        child: Container(
+                          padding: EdgeInsets.all(getResponsiveSpacing(4)),
+                          decoration: BoxDecoration(
+                            color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                            borderRadius: getResponsiveBorderRadius(6),
+                          ),
+                          child: Icon(
+                            Icons.close_rounded,
+                            color: Theme.of(context).colorScheme.primary,
+                            size: getResponsiveIconSize(16),
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+            // Notifications content
+            Expanded(
+              child: _notificationService.isLoading
             ? Center(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -356,7 +494,7 @@ class _NotificationsScreenState extends State<NotificationsScreen>
                   ],
                 ),
               )
-            : _notificationService.notifications.isEmpty
+            : _getFilteredNotifications().isEmpty
                 ? Center(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -374,7 +512,9 @@ class _NotificationsScreenState extends State<NotificationsScreen>
                                   shape: BoxShape.circle,
                                 ),
                                 child: Icon(
-                                  Icons.notifications_none_rounded,
+                                  _selectedFilter == 'all' 
+                                      ? Icons.notifications_none_rounded 
+                                      : Icons.filter_list_off_rounded,
                                   size: getResponsiveIconSize(48),
                                   color: Theme.of(context).colorScheme.primary,
                                 ),
@@ -386,7 +526,9 @@ class _NotificationsScreenState extends State<NotificationsScreen>
                         FadeTransition(
                           opacity: _fadeAnimation,
                           child: Text(
-                            'Nu ai notificări',
+                            _selectedFilter == 'all' 
+                                ? 'Nu ai notificări' 
+                                : 'Nu ai notificări de acest tip',
                             style: ResponsiveTextStyles.getResponsiveTitleStyle(
                               fontSize: 18,
                               color: Theme.of(context).colorScheme.primary.withOpacity(0.7),
@@ -398,7 +540,9 @@ class _NotificationsScreenState extends State<NotificationsScreen>
                         FadeTransition(
                           opacity: _fadeAnimation,
                           child: Text(
-                            'Toate notificările tale vor apărea aici',
+                            _selectedFilter == 'all' 
+                                ? 'Toate notificările tale vor apărea aici'
+                                : 'Încearcă să schimbi filtrul pentru a vedea alte notificări',
                             style: ResponsiveTextStyles.getResponsiveBodyStyle(
                               fontSize: 14,
                               color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
@@ -415,9 +559,10 @@ class _NotificationsScreenState extends State<NotificationsScreen>
                       position: _slideAnimation,
                       child: ListView.builder(
                         padding: getResponsivePadding(all: 16.0),
-                        itemCount: _notificationService.notifications.length,
+                        itemCount: _getFilteredNotifications().length,
                         itemBuilder: (context, index) {
-                          final notification = _notificationService.notifications[index];
+                          final filteredNotifications = _getFilteredNotifications();
+                          final notification = filteredNotifications[index];
                           final isRead = notification['is_read'] ?? false;
                           final type = notification['type'] as String? ?? 'unknown';
                           final content = notification['content'] as String? ?? 'No content available';
@@ -439,6 +584,9 @@ class _NotificationsScreenState extends State<NotificationsScreen>
                       ),
                     ),
                   ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -640,5 +788,124 @@ class _NotificationsScreenState extends State<NotificationsScreen>
     } catch (e) {
       return 'Acum';
     }
+  }
+
+  List<Map<String, dynamic>> _getFilteredNotifications() {
+    if (_selectedFilter == 'all') {
+      return _notificationService.notifications;
+    }
+    
+    return _notificationService.notifications.where((notification) {
+      final type = notification['type'] as String? ?? 'unknown';
+      // Return notifications that exactly match the selected filter type
+      return type == _selectedFilter;
+    }).toList();
+  }
+
+  List<Map<String, String>> _getFilterOptions() {
+    // Get unique notification types from current notifications
+    final types = _notificationService.notifications
+        .map((n) => n['type'] as String? ?? 'unknown')
+        .toSet()
+        .toList();
+    
+    List<Map<String, String>> options = [
+      {'value': 'all', 'label': 'Toate notificările'},
+    ];
+    
+    // Define the preferred order for notification types
+    final preferredOrder = [
+      'teacher_registered',
+      'book_request',
+      'book_requested',
+      'book_accepted',
+      'book_rejected', 
+      'book_returned',
+      'book_extension_request',
+      'book_extension_approved',
+      'book_extension_rejected',
+      'extension_requested',
+      'extension_approved',
+      'extension_rejected',
+      'request_cancelled',
+      'book_added',
+      'book_modified',
+      'book_updated',
+      'book_deleted',
+      'message',
+    ];
+    
+    // Add filters in the preferred order if they exist in current notifications
+    for (String type in preferredOrder) {
+      if (types.contains(type)) {
+        switch (type) {
+          case 'teacher_registered':
+            options.add({'value': type, 'label': 'Profesori înregistrați'});
+            break;
+          case 'book_requested':
+            options.add({'value': type, 'label': 'Cereri de cărți'});
+            break;
+          case 'book_accepted':
+            options.add({'value': type, 'label': 'Cărți acceptate'});
+            break;
+          case 'book_rejected':
+            options.add({'value': type, 'label': 'Cărți respinse'});
+            break;
+          case 'book_returned':
+            options.add({'value': type, 'label': 'Cărți returnate'});
+            break;
+          case 'book_extension_request':
+            options.add({'value': type, 'label': 'Cereri de extindere'});
+            break;
+          case 'book_extension_approved':
+            options.add({'value': type, 'label': 'Extinderi aprobate'});
+            break;
+          case 'book_extension_rejected':
+            options.add({'value': type, 'label': 'Extinderi respinse'});
+            break;
+          case 'extension_requested':
+            options.add({'value': type, 'label': 'Cereri de extindere'});
+            break;
+          case 'extension_approved':
+            options.add({'value': type, 'label': 'Extinderi aprobate'});
+            break;
+          case 'extension_rejected':
+            options.add({'value': type, 'label': 'Extinderi respinse'});
+            break;
+          case 'request_cancelled':
+            options.add({'value': type, 'label': 'Cereri anulate'});
+            break;
+          case 'book_added':
+            options.add({'value': type, 'label': 'Cărți adăugate'});
+            break;
+          case 'book_modified':
+            options.add({'value': type, 'label': 'Cărți actualizate'});
+            break;
+          case 'book_updated':
+            options.add({'value': type, 'label': 'Cărți actualizate'});
+            break;
+          case 'book_deleted':
+            options.add({'value': type, 'label': 'Cărți șterse'});
+            break;
+          case 'message':
+            options.add({'value': type, 'label': 'Mesaje'});
+            break;
+        }
+      }
+    }
+    
+    // Add any remaining types that weren't in the preferred order
+    for (String type in types) {
+      if (!preferredOrder.contains(type) && type != 'unknown') {
+        options.add({'value': type, 'label': 'Alte notificări ($type)'});
+      }
+    }
+    
+    // Only add "Alte notificări" option if there are actually unknown types
+    if (types.contains('unknown')) {
+      options.add({'value': 'unknown', 'label': 'Alte notificări'});
+    }
+    
+    return options;
   }
 } 

@@ -77,15 +77,34 @@ class NotificationService {
   IconData getNotificationIcon(String type) {
     switch (type.toLowerCase()) {
       case 'book_request':
-        return Icons.book;
+      case 'book_requested':
+        return Icons.book_rounded; // Special icon for book requests
       case 'book_accepted':
         return Icons.check_circle;
       case 'book_rejected':
         return Icons.cancel;
       case 'book_returned':
         return Icons.assignment_return;
+      case 'book_extension_request':
+      case 'extension_requested':
+        return Icons.extension_rounded; // Special icon for extension requests
+      case 'book_extension_approved':
+      case 'extension_approved':
+        return Icons.schedule_send;
+      case 'book_extension_rejected':
+      case 'extension_rejected':
+        return Icons.event_busy;
+      case 'request_cancelled':
+        return Icons.cancel_presentation;
       case 'teacher_registered':
         return Icons.person_add;
+      case 'book_added':
+        return Icons.library_add;
+      case 'book_deleted':
+        return Icons.delete;
+      case 'book_modified':
+      case 'book_updated':
+        return Icons.update_rounded; // Special icon for updated books
       case 'message':
         return Icons.message;
       default:
@@ -93,19 +112,38 @@ class NotificationService {
     }
   }
 
-  // Helper method to get notification color based on type
+    // Helper method to get notification color based on type
   Color getNotificationColor(String type) {
     switch (type.toLowerCase()) {
       case 'book_request':
-        return Colors.orange;
+      case 'book_requested':
+        return Colors.orange; // Orange for book requests
       case 'book_accepted':
         return Colors.green;
       case 'book_rejected':
         return Colors.red;
       case 'book_returned':
         return Colors.blue;
+      case 'book_extension_request':
+      case 'extension_requested':
+        return Colors.amber; // Amber for extension requests
+      case 'book_extension_approved':
+      case 'extension_approved':
+        return Colors.lightGreen;
+      case 'book_extension_rejected':
+      case 'extension_rejected':
+        return Colors.deepOrange;
+      case 'request_cancelled':
+        return Colors.redAccent;
       case 'teacher_registered':
         return Colors.teal;
+      case 'book_added':
+        return Colors.indigo;
+      case 'book_deleted':
+        return Colors.brown;
+      case 'book_modified':
+      case 'book_updated':
+        return Colors.deepPurple; // Deep purple for book updates
       case 'message':
         return Colors.purple;
       default:

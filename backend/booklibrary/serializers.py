@@ -142,7 +142,7 @@ class RegistrationSerializer(serializers.Serializer):
                 # Create notification for librarians about teacher registration
                 Notification.objects.create(
                     notification_type='teacher_registered',
-                    message=f'Un nou profesor s-a înregistrat: {user.first_name} {user.last_name} ({user.email}) folosind codul {invitation_code.upper()}',
+                    message=f'Un nou profesor s-a înregistrat: {user.first_name} {user.last_name} ({user.email}) folosind codul {invitation_code.upper()}.',
                     created_by=user,
                     for_librarians=True
                 )

@@ -90,8 +90,6 @@ Lenbrary is a comprehensive library management system designed for educational i
 - Full system administration
 - User management
 - Database management
-- **Create invitation codes for teachers**
-- **Manage invitation code system**
 
 ## 🔐 Authentication & Security
 
@@ -113,7 +111,7 @@ Lenbrary is a comprehensive library management system designed for educational i
 - **Teacher registration**: Teachers must use valid invitation codes
 
 **How it works:**
-1. **Admin creates invitation code** (superuser only)
+1. **Librarians creates invitation code**
 2. System generates unique 8-character uppercase code
 3. Teacher uses code during registration
 4. Code is consumed and cannot be reused

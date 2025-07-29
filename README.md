@@ -173,7 +173,7 @@ python manage.py shell
 - `POST /book-library/approve-request/` - Approve borrowing request (librarian only)
 - `POST /book-library/reject-request/` - Reject borrowing request (librarian only)
 
-### Invitation Codes (Admin Only)
+### Invitation Codes (Librarians Only)
 - `POST /book-library/invitation-codes/create/` - Create invitation code (admin only)
 - `GET /book-library/invitation-codes/` - List invitation codes (admin only)
 - `DELETE /book-library/invitation-codes/{id}/delete/` - Delete invitation code (admin only)

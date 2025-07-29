@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../l10n/app_localizations.dart';
 import 'package:flutter/services.dart';
 import 'dart:async';
 import '../services/api_service.dart';
@@ -239,11 +240,11 @@ class _EditBookScreenState extends State<EditBookScreen>
           content: const Text('Ești sigur că vrei să ștergi imaginea acestei cărți?'),
           actions: [
             TextButton(
-              child: const Text('Anulează'),
+              child: Text(AppLocalizations.of(context)!.cancel),
               onPressed: () => Navigator.of(context).pop(false),
             ),
             ElevatedButton(
-              child: const Text('Șterge'),
+              child: Text(AppLocalizations.of(context)!.delete),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Theme.of(context).colorScheme.error,
                 foregroundColor: Theme.of(context).colorScheme.onError,
@@ -370,11 +371,11 @@ class _EditBookScreenState extends State<EditBookScreen>
           content: const Text('Ești sigur că vrei să ștergi PDF-ul acestui manual?'),
           actions: [
             TextButton(
-              child: const Text('Anulează'),
+              child: Text(AppLocalizations.of(context)!.cancel),
               onPressed: () => Navigator.of(context).pop(false),
             ),
             ElevatedButton(
-              child: const Text('Șterge'),
+              child: Text(AppLocalizations.of(context)!.delete),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Theme.of(context).colorScheme.error,
                 foregroundColor: Theme.of(context).colorScheme.onError,
@@ -492,7 +493,7 @@ class _EditBookScreenState extends State<EditBookScreen>
               SizedBox(width: ResponsiveService.isSmallPhone ? 8 : 12),
               Flexible(
                 child: Text(
-                  ResponsiveService.isSmallPhone ? 'Editează' : 'Editează Carte',
+                  ResponsiveService.isSmallPhone ? AppLocalizations.of(context)!.edit : 'Editează Carte',
                   style: Theme.of(context).textTheme.titleLarge?.copyWith(
                     fontWeight: FontWeight.w700,
                     color: Theme.of(context).colorScheme.onSurface,
@@ -730,7 +731,7 @@ class _EditBookScreenState extends State<EditBookScreen>
                                   onPressed: _isProcessing ? null : _deleteThumbnail,
                                   icon: Icon(Icons.delete_rounded, size: ResponsiveService.isSmallPhone ? 16 : 18),
                                   label: Text(
-                                    'Șterge',
+                                    AppLocalizations.of(context)!.delete,
                                     style: TextStyle(fontSize: ResponsiveService.isSmallPhone ? 12 : 14),
                                   ),
                                   style: OutlinedButton.styleFrom(
@@ -760,7 +761,7 @@ class _EditBookScreenState extends State<EditBookScreen>
                               OutlinedButton.icon(
                                 onPressed: _isProcessing ? null : _deleteThumbnail,
                                 icon: const Icon(Icons.delete_rounded),
-                                label: const Text('Șterge'),
+                                label: Text(AppLocalizations.of(context)!.delete),
                                 style: OutlinedButton.styleFrom(
                                   padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                                 ),
@@ -915,9 +916,9 @@ class _EditBookScreenState extends State<EditBookScreen>
                     vertical: ResponsiveService.isSmallPhone ? 14 : 16
                   ),
                 ),
-                items: const [
-                  DropdownMenuItem(value: 'carte', child: Text('Carte')),
-                  DropdownMenuItem(value: 'manual', child: Text('Manual')),
+                items: [
+                  DropdownMenuItem(value: 'carte', child: Text(AppLocalizations.of(context)!.book)),
+                  DropdownMenuItem(value: 'manual', child: Text(AppLocalizations.of(context)!.manual)),
                 ],
                 onChanged: _isProcessing ? null : (value) {
                   if (value != null) {
@@ -1108,7 +1109,7 @@ class _EditBookScreenState extends State<EditBookScreen>
             // Category Field
             _buildStyledTextField(
               controller: _categoryController,
-              labelText: 'Categorie',
+              labelText: AppLocalizations.of(context)!.category,
               icon: Icons.local_offer_rounded,
               enabled: !_isProcessing,
             ),
@@ -1117,7 +1118,7 @@ class _EditBookScreenState extends State<EditBookScreen>
             // Description Field
             _buildStyledTextField(
               controller: _descriptionController,
-              labelText: 'Descriere',
+              labelText: AppLocalizations.of(context)!.description,
               icon: Icons.description_rounded,
               maxLines: ResponsiveService.isSmallPhone ? 3 : 4,
               enabled: !_isProcessing,
@@ -1226,7 +1227,7 @@ class _EditBookScreenState extends State<EditBookScreen>
             if (ResponsiveService.isSmallPhone) ...[
               _buildStyledTextField(
                 controller: _stockController,
-                labelText: 'Stoc',
+                labelText: AppLocalizations.of(context)!.stock,
                 icon: Icons.shopping_bag_rounded,
                 keyboardType: TextInputType.number,
                 inputFormatters: [FilteringTextInputFormatter.digitsOnly],
@@ -1247,7 +1248,7 @@ class _EditBookScreenState extends State<EditBookScreen>
                   Expanded(
                     child: _buildStyledTextField(
                       controller: _stockController,
-                      labelText: 'Stoc',
+                      labelText: AppLocalizations.of(context)!.stock,
                       icon: Icons.shopping_bag_rounded,
                       keyboardType: TextInputType.number,
                       inputFormatters: [FilteringTextInputFormatter.digitsOnly],
@@ -1510,7 +1511,7 @@ class _EditBookScreenState extends State<EditBookScreen>
                     onPressed: _isProcessing ? null : () => Navigator.of(context).pop(),
                     icon: Icon(Icons.cancel_rounded, size: ResponsiveService.isSmallPhone ? 16 : 18),
                     label: Text(
-                      'Anulează',
+                      AppLocalizations.of(context)!.cancel,
                       style: TextStyle(fontSize: ResponsiveService.isSmallPhone ? 9 : 12),
                     ),
                     style: OutlinedButton.styleFrom(
@@ -1556,7 +1557,7 @@ class _EditBookScreenState extends State<EditBookScreen>
                     child: OutlinedButton.icon(
                       onPressed: _isProcessing ? null : () => Navigator.of(context).pop(),
                       icon: const Icon(Icons.cancel_rounded),
-                      label: const Text('Anulează'),
+                      label: Text(AppLocalizations.of(context)!.cancel),
                       style: OutlinedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
                       ),

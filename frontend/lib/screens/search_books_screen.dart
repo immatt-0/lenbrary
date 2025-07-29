@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../l10n/app_localizations.dart';
 import 'dart:async';
 import '../services/api_service.dart';
 import '../services/notification_service.dart';
@@ -151,7 +152,7 @@ class _SearchBooksScreenState extends State<SearchBooksScreen>
       setState(() {
         _allBooks = [];
         _isLoading = false;
-        _errorMessage = 'Eroare la încărcarea cărților: ${e.toString()}';
+        _errorMessage = AppLocalizations.of(context)!.loadBooksError(e.toString());
       });
     }
   }
@@ -162,35 +163,35 @@ class _SearchBooksScreenState extends State<SearchBooksScreen>
     final result = await showDialog<int>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Selectează durata împrumutului'),
+        title: Text(AppLocalizations.of(context)!.selectLoanDuration),
         content: StatefulBuilder(
           builder: (context, setState) {
             return Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 RadioListTile<int>(
-                  title: const Text('1 Săptămână'),
+                  title: Text(AppLocalizations.of(context)!.oneWeek),
                   value: 7,
                   groupValue: selectedDuration,
                   onChanged: (value) =>
                       setState(() => selectedDuration = value!),
                 ),
                 RadioListTile<int>(
-                  title: const Text('2 Săptămâni'),
+                  title: Text(AppLocalizations.of(context)!.twoWeeks),
                   value: 14,
                   groupValue: selectedDuration,
                   onChanged: (value) =>
                       setState(() => selectedDuration = value!),
                 ),
                 RadioListTile<int>(
-                  title: const Text('1 Lună'),
+                  title: Text(AppLocalizations.of(context)!.oneMonth),
                   value: 30,
                   groupValue: selectedDuration,
                   onChanged: (value) =>
                       setState(() => selectedDuration = value!),
                 ),
                 RadioListTile<int>(
-                  title: const Text('2 Luni'),
+                  title: Text(AppLocalizations.of(context)!.twoMonths),
                   value: 60,
                   groupValue: selectedDuration,
                   onChanged: (value) =>
@@ -203,11 +204,11 @@ class _SearchBooksScreenState extends State<SearchBooksScreen>
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Anulează'),
+            child: Text(AppLocalizations.of(context)!.cancel),
           ),
           ElevatedButton(
             onPressed: () => Navigator.of(context).pop(selectedDuration),
-            child: const Text('Confirmă'),
+            child: Text(AppLocalizations.of(context)!.confirm),
           ),
         ],
       ),
@@ -233,14 +234,14 @@ class _SearchBooksScreenState extends State<SearchBooksScreen>
 
       NotificationService.showSuccess(
         context: context,
-        message: 'Cerere de împrumut înregistrată cu succes!',
+        message: AppLocalizations.of(context)!.loanRequestSuccess,
       );
     } catch (e) {
       if (!mounted) return;
 
       NotificationService.showError(
         context: context,
-        message: 'Eroare la solicitarea cărții/manualului: ${e.toString()}',
+        message: AppLocalizations.of(context)!.bookRequestError(e.toString()),
       );
     } finally {
       setState(() {
@@ -288,7 +289,7 @@ class _SearchBooksScreenState extends State<SearchBooksScreen>
               ),
               SizedBox(width: getResponsiveSpacing(12)),
               Text(
-                'Căutare Cărți',
+                AppLocalizations.of(context)!.searchBooksTitle,
                 style: ResponsiveTextStyles.getResponsiveTitleStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.w700,
@@ -317,7 +318,7 @@ class _SearchBooksScreenState extends State<SearchBooksScreen>
             onPressed: () {
               Navigator.pop(context);
             },
-            tooltip: 'Înapoi',
+            tooltip: AppLocalizations.of(context)!.back,
           ),
         ),
           bottom: PreferredSize(
@@ -383,7 +384,7 @@ class _SearchBooksScreenState extends State<SearchBooksScreen>
                         size: getResponsiveIconSize(24),
                       ),
                     ),
-                    text: 'Cărți',
+                    text: AppLocalizations.of(context)!.books,
                   ),
                   Tab(
                     icon: Container(
@@ -393,7 +394,7 @@ class _SearchBooksScreenState extends State<SearchBooksScreen>
                         size: getResponsiveIconSize(24),
                       ),
                     ),
-                    text: 'Manuale',
+                    text: AppLocalizations.of(context)!.manuals,
                   ),
                 ],
               ),
@@ -442,8 +443,8 @@ class _SearchBooksScreenState extends State<SearchBooksScreen>
                     controller: _searchController,
                     decoration: InputDecoration(
                       hintText: ResponsiveService.isSmallPhone 
-                          ? 'Caută cărți și manuale...'
-                          : 'Caută după titlu, autor, categorie sau clasă (ex: VIII sau 8)...',
+                          ? AppLocalizations.of(context)!.searchBooksShort
+                          : AppLocalizations.of(context)!.searchBooksLong,
                       hintStyle: ResponsiveTextStyles.getResponsiveTextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w500,
@@ -554,7 +555,7 @@ class _SearchBooksScreenState extends State<SearchBooksScreen>
     }
     // Only show the list if not loading and there are results
     if (!_isLoading && _filteredResults.isEmpty) {
-      return Center(child: Text('Nu există cărți/manuale.'));
+      return Center(child: Text(AppLocalizations.of(context)!.noBooksAvailable));
     }
     if (_errorMessage != null) {
       return Center(child: Text(_errorMessage!));
@@ -575,7 +576,7 @@ class _SearchBooksScreenState extends State<SearchBooksScreen>
         },
       );
     } catch (e) {
-      return Center(child: Text('Eroare la afișare: $e'));
+      return Center(child: Text(AppLocalizations.of(context)!.displayError(e.toString())));
     }
   }
 
@@ -589,7 +590,7 @@ class _SearchBooksScreenState extends State<SearchBooksScreen>
             child: Padding(
               padding: EdgeInsets.all(getResponsiveSpacing(16)),
               child: Text(
-                'Carte invalidă',
+                AppLocalizations.of(context)!.invalidBook,
                 style: TextStyle(color: Theme.of(context).colorScheme.error),
               ),
             ),
@@ -607,9 +608,9 @@ class _SearchBooksScreenState extends State<SearchBooksScreen>
       return Container(
         margin: EdgeInsets.only(bottom: getResponsiveSpacing(6)),
         child: ResponsiveBookCard(
-          title: book['name']?.toString() ?? 'Carte necunoscută',
-          author: book['author']?.toString() ?? 'Autor necunoscut',
-          category: book['category']?.toString() ?? 'Fără categorie',
+          title: book['name']?.toString() ?? AppLocalizations.of(context)!.unknownBook,
+          author: book['author']?.toString() ?? AppLocalizations.of(context)!.unknownAuthor,
+          category: book['category']?.toString() ?? AppLocalizations.of(context)!.noCategory,
           thumbnailUrl: thumbnailUrl,
           bookClass: book['book_class']?.toString(),
           bookType: book['type']?.toString() ?? 'carte',
@@ -635,7 +636,7 @@ class _SearchBooksScreenState extends State<SearchBooksScreen>
           child: Padding(
             padding: EdgeInsets.all(getResponsiveSpacing(16)),
             child: Text(
-              'Eroare la afișarea cărții',
+              AppLocalizations.of(context)!.bookDisplayError,
               style: TextStyle(color: Theme.of(context).colorScheme.error),
             ),
           ),

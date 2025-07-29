@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import '../l10n/app_localizations.dart';
 import 'dart:async';
 import '../services/api_service.dart';
-import 'package:flutter/foundation.dart';
 import '../services/responsive_service.dart';
 import 'edit_book_screen.dart';
 
@@ -144,7 +143,7 @@ class _ManageBooksScreenState extends State<ManageBooksScreen>
             SizedBox(width: ResponsiveService.isSmallPhone ? 8 : 12),
             Flexible(
               child: Text(
-                ResponsiveService.isSmallPhone ? 'Administrare' : 'Administrare Cărți',
+                ResponsiveService.isSmallPhone ? AppLocalizations.of(context)!.manageBooksShort : AppLocalizations.of(context)!.manageBooksLong,
                 style: Theme.of(context).textTheme.titleLarge?.copyWith(
                   fontWeight: FontWeight.w700,
                   color: Theme.of(context).colorScheme.onSurface,
@@ -174,7 +173,7 @@ class _ManageBooksScreenState extends State<ManageBooksScreen>
             onPressed: () {
               Navigator.pop(context);
             },
-            tooltip: 'Înapoi',
+            tooltip: AppLocalizations.of(context)!.backTooltip,
           ),
         ),
         bottom: PreferredSize(
@@ -243,7 +242,7 @@ class _ManageBooksScreenState extends State<ManageBooksScreen>
                         size: ResponsiveService.isSmallPhone ? 20 : 24,
                       ),
                     ),
-                    text: 'Cărți',
+                    text: AppLocalizations.of(context)!.books,
                   ),
                   Tab(
                     icon: Container(
@@ -253,7 +252,7 @@ class _ManageBooksScreenState extends State<ManageBooksScreen>
                         size: ResponsiveService.isSmallPhone ? 20 : 24,
                       ),
                     ),
-                    text: 'Manuale',
+                    text: AppLocalizations.of(context)!.manuals,
                   ),
                 ],
               ),
@@ -307,8 +306,8 @@ class _ManageBooksScreenState extends State<ManageBooksScreen>
                     controller: _searchController,
                     decoration: InputDecoration(
                       hintText: ResponsiveService.isSmallPhone 
-                          ? 'Caută cărți...'
-                          : 'Caută după titlu, autor sau categorie...',
+                          ? AppLocalizations.of(context)!.searchBooksShort
+                          : AppLocalizations.of(context)!.searchBooksLong,
                       hintStyle: Theme.of(context).textTheme.bodyLarge?.copyWith(
                         fontWeight: FontWeight.w500,
                         color: Theme.of(context).colorScheme.primary.withOpacity(0.6),
@@ -428,8 +427,8 @@ class _ManageBooksScreenState extends State<ManageBooksScreen>
               SizedBox(height: ResponsiveService.isSmallPhone ? 12 : 16),
               Text(
                 _searchQuery.isNotEmpty 
-                    ? 'Nicio carte găsită pentru "${_searchQuery}"'
-                    : 'Nu există ${category == 'carte' ? 'cărți' : 'manuale'} în bibliotecă',
+                    ? AppLocalizations.of(context)!.noBookFoundFor(_searchQuery)
+                    : category == 'carte' ? AppLocalizations.of(context)!.noBooksInLibrary : AppLocalizations.of(context)!.noManualsInLibrary,
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
                   color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
                   fontSize: ResponsiveService.isSmallPhone ? 14 : null,
@@ -467,7 +466,7 @@ class _ManageBooksScreenState extends State<ManageBooksScreen>
                 onPressed: _loadBooks,
                 icon: Icon(Icons.refresh, size: ResponsiveService.isSmallPhone ? 16 : 18),
                 label: Text(
-                  'Reîncarcă',
+                  AppLocalizations.of(context)!.reload,
                   style: TextStyle(fontSize: ResponsiveService.isSmallPhone ? 12 : null),
                 ),
                 style: ElevatedButton.styleFrom(
@@ -605,7 +604,7 @@ class _ManageBooksScreenState extends State<ManageBooksScreen>
                             children: [
                               // Title
                               Text(
-                                book['name'] ?? 'Carte necunoscută',
+                                book['name'] ?? AppLocalizations.of(context)!.unknownBook,
                                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
                                   fontWeight: FontWeight.bold,
                                   color: Theme.of(context).colorScheme.onSurface,
@@ -617,7 +616,7 @@ class _ManageBooksScreenState extends State<ManageBooksScreen>
                               SizedBox(height: ResponsiveService.isSmallPhone ? 2 : 4),
                               // Author
                               Text(
-                                book['author'] ?? 'Autor necunoscut',
+                                book['author'] ?? AppLocalizations.of(context)!.unknownAuthor,
                                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                                   color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
                                   fontWeight: FontWeight.w500,
@@ -688,7 +687,7 @@ class _ManageBooksScreenState extends State<ManageBooksScreen>
                                 ),
                                 SizedBox(width: ResponsiveService.isSmallPhone ? 1 : 2),
                                 Text(
-                                  'Clasa ${book['book_class']}',
+                                  AppLocalizations.of(context)!.classLabel(book['book_class']),
                                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
                                     color: Theme.of(context).colorScheme.primary,
                                     fontWeight: FontWeight.w600,
@@ -721,7 +720,7 @@ class _ManageBooksScreenState extends State<ManageBooksScreen>
                         SizedBox(width: ResponsiveService.isSmallPhone ? 6 : 8),
                         Expanded(
                           child: Text(
-                            'Stoc: ${book['stock']}/${book['inventory']}',
+                            AppLocalizations.of(context)!.stockLabel(book['stock'].toString(), book['inventory'].toString()),
                             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                               fontWeight: FontWeight.bold,
                               color: Theme.of(context).colorScheme.onSurface,
@@ -763,7 +762,7 @@ class _ManageBooksScreenState extends State<ManageBooksScreen>
                               ),
                               SizedBox(width: ResponsiveService.isSmallPhone ? 3 : 4),
                               Text(
-                                ResponsiveService.isSmallPhone ? 'Edit' : 'Editează',
+                                AppLocalizations.of(context)!.edit,
                                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
                                   color: Theme.of(context).colorScheme.onPrimary,
                                   fontWeight: FontWeight.w600,
@@ -835,7 +834,7 @@ class _ManageBooksScreenState extends State<ManageBooksScreen>
                         children: [
                           // Title
                           Text(
-                            book['name'] ?? 'Carte necunoscută',
+                            book['name'] ?? AppLocalizations.of(context)!.unknownBook,
                             style: Theme.of(context).textTheme.titleLarge?.copyWith(
                               fontWeight: FontWeight.bold,
                               color: Theme.of(context).colorScheme.onSurface,
@@ -847,7 +846,7 @@ class _ManageBooksScreenState extends State<ManageBooksScreen>
                           SizedBox(height: ResponsiveService.isMediumPhone ? 6 : 8),
                           // Author
                           Text(
-                            book['author'] ?? 'Autor necunoscut',
+                            book['author'] ?? AppLocalizations.of(context)!.unknownAuthor,
                             style: Theme.of(context).textTheme.titleMedium?.copyWith(
                               color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
                               fontWeight: FontWeight.w500,
@@ -906,7 +905,7 @@ class _ManageBooksScreenState extends State<ManageBooksScreen>
                                       ),
                                       const SizedBox(width: 4),
                                       Text(
-                                        'Clasa ${book['book_class']}',
+                                        AppLocalizations.of(context)!.classLabel(book['book_class']),
                                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                                           color: Theme.of(context).colorScheme.primary,
                                           fontWeight: FontWeight.w600,
@@ -938,7 +937,7 @@ class _ManageBooksScreenState extends State<ManageBooksScreen>
                               const SizedBox(width: 12),
                               Expanded(
                                 child: Text(
-                                  'Stoc: ${book['stock']}/${book['inventory']}',
+                                  AppLocalizations.of(context)!.stockLabel(book['stock'].toString(), book['inventory'].toString()),
                                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
                                     fontWeight: FontWeight.bold,
                                     color: Theme.of(context).colorScheme.onSurface,
@@ -977,7 +976,7 @@ class _ManageBooksScreenState extends State<ManageBooksScreen>
                                     ),
                                     const SizedBox(width: 6),
                                     Text(
-                                      'Editează',
+                                      AppLocalizations.of(context)!.edit,
                                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                                         color: Theme.of(context).colorScheme.onPrimary,
                                         fontWeight: FontWeight.w600,

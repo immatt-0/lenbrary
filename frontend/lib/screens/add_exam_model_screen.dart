@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'exam_models_admin_screen.dart';
+import '../l10n/app_localizations.dart';
 import '../services/api_service.dart';
 import '../services/notification_service.dart';
 import 'package:file_picker/file_picker.dart';
@@ -132,46 +132,24 @@ class _AddExamModelScreenState extends State<AddExamModelScreen>
         print('Error adding exam model: ' + e.toString());
         NotificationService.showError(
           context: context,
-          message: 'Eroare la adăugare: $e',
+          message: AppLocalizations.of(context)!.errorAddingItem(e.toString()),
         );
       }
     } else if (_pdfFilePath == null && _pdfFileBytes == null) {
       NotificationService.showFileUploadError(
         context: context,
-        message: 'Vă rugăm să selectați un fișier PDF.',
+        message: AppLocalizations.of(context)!.pleaseSelectPdfFile,
       );
     } else if (_examType == null) {
       NotificationService.showValidationError(
         context: context,
-        message: 'Vă rugăm să selectați tipul examenului.',
+        message: AppLocalizations.of(context)!.pleaseSelectExamType,
       );
     } else if (_category == null) {
       NotificationService.showValidationError(
         context: context,
-        message: 'Vă rugăm să selectați materia.',
+        message: AppLocalizations.of(context)!.pleaseSelectSubject,
       );
-    }
-  }
-
-  Color _getTypeColor(String type) {
-    switch (type) {
-      case 'EN':
-        return const Color(0xFF10B981); // Green
-      case 'BAC':
-        return const Color(0xFFF59E0B); // Orange
-      default:
-        return Theme.of(context).colorScheme.tertiary;
-    }
-  }
-
-  Color _getCategoryColor(String category) {
-    switch (category) {
-      case 'Matematica':
-        return const Color(0xFF3B82F6); // Blue
-      case 'Romana':
-        return const Color(0xFFEF4444); // Red
-      default:
-        return Theme.of(context).colorScheme.tertiary;
     }
   }
 
@@ -214,7 +192,7 @@ class _AddExamModelScreenState extends State<AddExamModelScreen>
               ),
               const SizedBox(width: 12),
               Text(
-                'Adaugă Model de Examen',
+                AppLocalizations.of(context)!.addExamModel,
                 style: Theme.of(context).textTheme.titleLarge?.copyWith(
                   fontWeight: FontWeight.w700,
                   letterSpacing: -0.5,
@@ -236,7 +214,7 @@ class _AddExamModelScreenState extends State<AddExamModelScreen>
               color: Theme.of(context).colorScheme.primary,
             ),
             onPressed: () => Navigator.pop(context),
-            tooltip: 'Înapoi',
+            tooltip: AppLocalizations.of(context)!.back,
           ),
         ),
       ),
@@ -337,7 +315,7 @@ class _AddExamModelScreenState extends State<AddExamModelScreen>
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
                                         Text(
-                                          'Model de Examen Nou',
+                                          AppLocalizations.of(context)!.newExamModel,
                                           style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                                             fontWeight: FontWeight.w700,
                                             color: Theme.of(context).colorScheme.onSurface,
@@ -345,7 +323,7 @@ class _AddExamModelScreenState extends State<AddExamModelScreen>
                                         ),
                                         const SizedBox(height: 4),
                                         Text(
-                                          'Completează detaliile modelului de examen',
+                                          AppLocalizations.of(context)!.fillExamModelDetails,
                                           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                                             color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
                                             fontWeight: FontWeight.w500,
@@ -361,26 +339,26 @@ class _AddExamModelScreenState extends State<AddExamModelScreen>
 
                             // Form Fields
                             _buildFormField(
-                              label: 'Nume model examen',
+                              label: AppLocalizations.of(context)!.examModelName,
                               icon: Icons.title_rounded,
                               validator: (value) => value == null || value.isEmpty
-                                  ? 'Introduceți un nume'
+                                  ? AppLocalizations.of(context)!.enterExamModelName
                                   : null,
                               onSaved: (value) => _examName = value,
                             ),
                             const SizedBox(height: 20),
                             _buildDropdown(
-                              label: 'Tip examen',
+                              label: AppLocalizations.of(context)!.examType,
                               icon: Icons.school_rounded,
                               value: _examType,
-                              items: const [
+                              items: [
                                 DropdownMenuItem(
                                   value: 'EN', 
                                   child: Row(
                                     children: [
                                       Icon(Icons.school_rounded, color: Color(0xFF10B981), size: 20),
                                       SizedBox(width: 8),
-                                      Text('Evaluare Națională (EN)'),
+                                      Text(AppLocalizations.of(context)!.nationalEvaluation),
                                     ],
                                   ),
                                 ),
@@ -390,28 +368,28 @@ class _AddExamModelScreenState extends State<AddExamModelScreen>
                                     children: [
                                       Icon(Icons.workspace_premium_rounded, color: Color(0xFFF59E0B), size: 20),
                                       SizedBox(width: 8),
-                                      Text('Bacalaureat (BAC)'),
+                                      Text(AppLocalizations.of(context)!.baccalaureate),
                                     ],
                                   ),
                                 ),
                               ],
                               onChanged: (value) => setState(() => _examType = value),
                               validator: (value) =>
-                                  value == null ? 'Selectați tipul examenului' : null,
+                                  value == null ? AppLocalizations.of(context)!.selectExamTypeValidator : null,
                             ),
                             const SizedBox(height: 20),
                             _buildDropdown(
-                              label: 'Materia',
+                              label: AppLocalizations.of(context)!.subject,
                               icon: Icons.book_rounded,
                               value: _category,
-                              items: const [
+                              items: [
                                 DropdownMenuItem(
                                   value: 'Matematica', 
                                   child: Row(
                                     children: [
                                       Icon(Icons.functions_rounded, color: Color(0xFF3B82F6), size: 20),
                                       SizedBox(width: 8),
-                                      Text('Matematică'),
+                                      Text(AppLocalizations.of(context)!.mathematics),
                                     ],
                                   ),
                                 ),
@@ -421,14 +399,14 @@ class _AddExamModelScreenState extends State<AddExamModelScreen>
                                     children: [
                                       Icon(Icons.menu_book_rounded, color: Color(0xFFEF4444), size: 20),
                                       SizedBox(width: 8),
-                                      Text('Română'),
+                                      Text(AppLocalizations.of(context)!.romanian),
                                     ],
                                   ),
                                 ),
                               ],
                               onChanged: (value) => setState(() => _category = value),
                               validator: (value) =>
-                                  value == null ? 'Selectați materia' : null,
+                                  value == null ? AppLocalizations.of(context)!.selectSubjectValidator : null,
                             ),
                             const SizedBox(height: 20),
                             _buildFilePicker(),
@@ -470,9 +448,9 @@ class _AddExamModelScreenState extends State<AddExamModelScreen>
                                     child: ElevatedButton.icon(
                                       onPressed: _submit,
                                       icon: const Icon(Icons.save_rounded, size: 24),
-                                      label: const Text(
-                                        'Adaugă modelul',
-                                        style: TextStyle(
+                                      label: Text(
+                                        AppLocalizations.of(context)!.addModel,
+                                        style: const TextStyle(
                                           fontSize: 16,
                                           fontWeight: FontWeight.w600,
                                         ),
@@ -714,7 +692,7 @@ class _AddExamModelScreenState extends State<AddExamModelScreen>
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      _pdfFileName == null ? 'Alege fișier PDF' : _pdfFileName!,
+                      _pdfFileName == null ? AppLocalizations.of(context)!.choosePdfFile : _pdfFileName!,
                       style: TextStyle(
                         fontSize: 16,
                         color: _pdfFileName == null 
@@ -725,7 +703,7 @@ class _AddExamModelScreenState extends State<AddExamModelScreen>
                     ),
                     if (_pdfFileName == null)
                       Text(
-                        'Apasă pentru a selecta un fișier PDF',
+                        AppLocalizations.of(context)!.tapToSelectPdfFile,
                         style: TextStyle(
                           fontSize: 14,
                           color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),

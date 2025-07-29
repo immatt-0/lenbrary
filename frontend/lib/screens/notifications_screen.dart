@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../l10n/app_localizations.dart';
 import '../services/api_service.dart';
 import '../services/notification_service.dart';
 import '../services/responsive_service.dart';
@@ -92,7 +93,7 @@ class _NotificationsScreenState extends State<NotificationsScreen>
       if (mounted) {
         NotificationService.showError(
           context: context,
-          message: 'Eroare la încărcarea notificărilor: \\${e.toString()}',
+          message: AppLocalizations.of(context)!.notificationLoadError(e.toString()),
         );
       }
     }
@@ -106,7 +107,7 @@ class _NotificationsScreenState extends State<NotificationsScreen>
       if (mounted) {
         NotificationService.showError(
           context: context,
-          message: 'Eroare la marcarea notificării ca citită: \\${e.toString()}',
+          message: AppLocalizations.of(context)!.markAsReadError(e.toString()),
         );
       }
     }
@@ -119,14 +120,14 @@ class _NotificationsScreenState extends State<NotificationsScreen>
       if (mounted) {
         NotificationService.showSuccess(
           context: context,
-          message: 'Toate notificările au fost marcate ca citite',
+          message: AppLocalizations.of(context)!.allNotificationsMarkedAsRead,
         );
       }
     } catch (e) {
       if (mounted) {
         NotificationService.showError(
           context: context,
-          message: 'Eroare la marcarea notificărilor ca citite: \\${e.toString()}',
+          message: AppLocalizations.of(context)!.markAllAsReadError(e.toString()),
         );
       }
     }
@@ -178,7 +179,7 @@ class _NotificationsScreenState extends State<NotificationsScreen>
             ),
             SizedBox(height: getResponsiveSpacing(16)),
             Text(
-              'Data: ${timestamp.day}/${timestamp.month}/${timestamp.year} ${timestamp.hour}:${timestamp.minute.toString().padLeft(2, '0')}',
+              AppLocalizations.of(context)!.date + ' ${timestamp.day}/${timestamp.month}/${timestamp.year} ${timestamp.hour}:${timestamp.minute.toString().padLeft(2, '0')}',
               style: ResponsiveTextStyles.getResponsiveTextStyle(
                 fontSize: 14,
                 color: Colors.grey[600],
@@ -188,7 +189,7 @@ class _NotificationsScreenState extends State<NotificationsScreen>
         ),
         actions: [
           ResponsiveButton(
-            text: 'Închide',
+            text: AppLocalizations.of(context)!.close,
             onPressed: () => Navigator.of(context).pop(),
             isOutlined: true,
           ),
@@ -200,37 +201,37 @@ class _NotificationsScreenState extends State<NotificationsScreen>
   String _getNotificationTitle(String type) {
     switch (type) {
       case 'book_requested':
-        return 'Cerere de carte';
+        return AppLocalizations.of(context)!.bookRequested;
       case 'book_accepted':
-        return 'Carte acceptată';
+        return AppLocalizations.of(context)!.bookAccepted;
       case 'book_rejected':
-        return 'Carte respinsă';
+        return AppLocalizations.of(context)!.bookRejected;
       case 'book_returned':
-        return 'Carte returnată';
+        return AppLocalizations.of(context)!.bookReturned;
       case 'extension_requested':
-        return 'Cerere de extindere';
+        return AppLocalizations.of(context)!.extensionRequested;
       case 'extension_approved':
-        return 'Extindere aprobată';
+        return AppLocalizations.of(context)!.extensionApproved;
       case 'extension_rejected':
-        return 'Extindere respinsă';
+        return AppLocalizations.of(context)!.extensionRejected;
       case 'request_cancelled':
-        return 'Cerere anulată';
+        return AppLocalizations.of(context)!.requestCancelled;
       case 'request_approved':
-        return 'Cerere aprobată';
+        return AppLocalizations.of(context)!.requestApproved;
       case 'teacher_registered':
-        return 'Profesor înregistrat';
+        return AppLocalizations.of(context)!.teacherRegistered;
       case 'book_added':
-        return 'Carte adăugată';
+        return AppLocalizations.of(context)!.bookAdded;
       case 'book_deleted':
-        return 'Carte ștearsă';
+        return AppLocalizations.of(context)!.bookDeleted;
       case 'book_updated':
-        return 'Carte actualizată';
+        return AppLocalizations.of(context)!.bookUpdated;
       case 'message':
-        return 'Mesaj nou';
+        return AppLocalizations.of(context)!.newMessage;
       case 'unknown':
-        return 'Notificare necunoscută';
+        return AppLocalizations.of(context)!.unknownNotification;
       default:
-        return 'Notificare ($type)';
+        return AppLocalizations.of(context)!.notificationWithType(type);
     }
   }
   
@@ -275,7 +276,7 @@ class _NotificationsScreenState extends State<NotificationsScreen>
               ),
               SizedBox(width: getResponsiveSpacing(12)),
               Text(
-                'Notificări',
+                AppLocalizations.of(context)!.notifications,
                 style: ResponsiveTextStyles.getResponsiveTitleStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.w700,
@@ -300,7 +301,7 @@ class _NotificationsScreenState extends State<NotificationsScreen>
             onPressed: () {
               Navigator.pop(context);
             },
-            tooltip: 'Înapoi',
+            tooltip: AppLocalizations.of(context)!.back,
           ),
         ),
         actions: [
@@ -351,7 +352,7 @@ class _NotificationsScreenState extends State<NotificationsScreen>
                 );
               }).toList();
             },
-            tooltip: 'Filtrează notificările',
+            tooltip: AppLocalizations.of(context)!.filterNotifications,
           ),
           if (_notificationService.notifications.isNotEmpty)
             IconButton(
@@ -368,7 +369,7 @@ class _NotificationsScreenState extends State<NotificationsScreen>
                 ),
               ),
               onPressed: _markAllAsRead,
-              tooltip: 'Marchează toate ca citite',
+              tooltip: AppLocalizations.of(context)!.markAllAsRead,
             ),
         ],
       ),
@@ -421,8 +422,8 @@ class _NotificationsScreenState extends State<NotificationsScreen>
                     Expanded(
                       child: Text(
                         _selectedFilter == 'all' 
-                            ? 'Se afișează toate notificările (${_getFilteredNotifications().length})'
-                            : 'Filtru activ: ${_getFilterOptions().firstWhere((o) => o['value'] == _selectedFilter)['label']} (${_getFilteredNotifications().length})',
+                            ? AppLocalizations.of(context)!.showingAllNotifications(_getFilteredNotifications().length)
+                            : AppLocalizations.of(context)!.activeFilter(_getFilterOptions().firstWhere((o) => o['value'] == _selectedFilter)['label']!, _getFilteredNotifications().length),
                         style: ResponsiveTextStyles.getResponsiveBodyStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w500,
@@ -486,7 +487,7 @@ class _NotificationsScreenState extends State<NotificationsScreen>
                     FadeTransition(
                       opacity: _fadeAnimation,
                       child: Text(
-                        'Se încarcă notificările...',
+                        AppLocalizations.of(context)!.loadingNotifications,
                         style: ResponsiveTextStyles.getResponsiveTitleStyle(
                           fontSize: 16,
                           color: Theme.of(context).colorScheme.primary,
@@ -529,8 +530,8 @@ class _NotificationsScreenState extends State<NotificationsScreen>
                           opacity: _fadeAnimation,
                           child: Text(
                             _selectedFilter == 'all' 
-                                ? 'Nu ai notificări' 
-                                : 'Nu ai notificări de acest tip',
+                                ? AppLocalizations.of(context)!.noNotifications
+                                : AppLocalizations.of(context)!.noNotificationsOfType,
                             style: ResponsiveTextStyles.getResponsiveTitleStyle(
                               fontSize: 18,
                               color: Theme.of(context).colorScheme.primary.withOpacity(0.7),
@@ -543,8 +544,8 @@ class _NotificationsScreenState extends State<NotificationsScreen>
                           opacity: _fadeAnimation,
                           child: Text(
                             _selectedFilter == 'all' 
-                                ? 'Toate notificările tale vor apărea aici'
-                                : 'Încearcă să schimbi filtrul pentru a vedea alte notificări',
+                                ? AppLocalizations.of(context)!.allNotificationsWillAppear
+                                : AppLocalizations.of(context)!.tryChangingFilter,
                             style: ResponsiveTextStyles.getResponsiveBodyStyle(
                               fontSize: 14,
                               color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
@@ -727,7 +728,7 @@ class _NotificationsScreenState extends State<NotificationsScreen>
                             borderRadius: getResponsiveBorderRadius(8),
                           ),
                           child: Text(
-                            isRead ? 'Citită' : 'Nouă',
+                            isRead ? AppLocalizations.of(context)!.read : AppLocalizations.of(context)!.newNotification,
                             style: ResponsiveTextStyles.getResponsiveTextStyle(
                               fontSize: 10,
                               color: isRead 
@@ -769,7 +770,7 @@ class _NotificationsScreenState extends State<NotificationsScreen>
   }
 
   String _formatTimestamp(String? timestamp) {
-    if (timestamp == null) return 'Acum';
+    if (timestamp == null) return AppLocalizations.of(context)!.now;
     
     try {
       final dateTime = DateTime.parse(timestamp).toLocal();
@@ -777,18 +778,18 @@ class _NotificationsScreenState extends State<NotificationsScreen>
       final difference = now.difference(dateTime);
       
       if (difference.inMinutes < 1) {
-        return 'Acum';
+        return AppLocalizations.of(context)!.now;
       } else if (difference.inMinutes < 60) {
-        return '${difference.inMinutes}m în urmă';
+        return AppLocalizations.of(context)!.minutesAgo(difference.inMinutes);
       } else if (difference.inHours < 24) {
-        return '${difference.inHours}h în urmă';
+        return AppLocalizations.of(context)!.hoursAgo(difference.inHours);
       } else if (difference.inDays < 7) {
-        return '${difference.inDays}z în urmă';
+        return AppLocalizations.of(context)!.daysAgo(difference.inDays);
       } else {
         return '${dateTime.day}/${dateTime.month}/${dateTime.year}';
       }
     } catch (e) {
-      return 'Acum';
+      return AppLocalizations.of(context)!.now;
     }
   }
 
@@ -812,7 +813,7 @@ class _NotificationsScreenState extends State<NotificationsScreen>
         .toList();
     
     List<Map<String, String>> options = [
-      {'value': 'all', 'label': 'Toate notificările'},
+      {'value': 'all', 'label': AppLocalizations.of(context)!.allNotifications},
     ];
     
     // Define the preferred order for notification types
@@ -843,58 +844,58 @@ class _NotificationsScreenState extends State<NotificationsScreen>
       if (types.contains(type)) {
         switch (type) {
           case 'teacher_registered':
-            options.add({'value': type, 'label': 'Profesori înregistrați'});
+            options.add({'value': type, 'label': AppLocalizations.of(context)!.registeredTeachers});
             break;
           case 'book_requested':
-            options.add({'value': type, 'label': 'Cereri de cărți'});
+            options.add({'value': type, 'label': AppLocalizations.of(context)!.bookRequests});
             break;
           case 'book_accepted':
-            options.add({'value': type, 'label': 'Cărți acceptate'});
+            options.add({'value': type, 'label': AppLocalizations.of(context)!.acceptedBooks});
             break;
           case 'book_rejected':
-            options.add({'value': type, 'label': 'Cărți respinse'});
+            options.add({'value': type, 'label': AppLocalizations.of(context)!.rejectedBooks});
             break;
           case 'book_returned':
-            options.add({'value': type, 'label': 'Cărți returnate'});
+            options.add({'value': type, 'label': AppLocalizations.of(context)!.returnedBooks});
             break;
           case 'book_extension_request':
-            options.add({'value': type, 'label': 'Cereri de extindere'});
+            options.add({'value': type, 'label': AppLocalizations.of(context)!.extensionRequests});
             break;
           case 'book_extension_approved':
-            options.add({'value': type, 'label': 'Extinderi aprobate'});
+            options.add({'value': type, 'label': AppLocalizations.of(context)!.approvedExtensions});
             break;
           case 'book_extension_rejected':
-            options.add({'value': type, 'label': 'Extinderi respinse'});
+            options.add({'value': type, 'label': AppLocalizations.of(context)!.rejectedExtensions});
             break;
           case 'extension_requested':
-            options.add({'value': type, 'label': 'Cereri de extindere'});
+            options.add({'value': type, 'label': AppLocalizations.of(context)!.extensionRequests});
             break;
           case 'extension_approved':
-            options.add({'value': type, 'label': 'Extinderi aprobate'});
+            options.add({'value': type, 'label': AppLocalizations.of(context)!.approvedExtensions});
             break;
           case 'extension_rejected':
-            options.add({'value': type, 'label': 'Extinderi respinse'});
+            options.add({'value': type, 'label': AppLocalizations.of(context)!.rejectedExtensions});
             break;
           case 'request_cancelled':
-            options.add({'value': type, 'label': 'Cereri anulate'});
+            options.add({'value': type, 'label': AppLocalizations.of(context)!.cancelledRequests});
             break;
           case 'request_approved':
-            options.add({'value': type, 'label': 'Cereri aprobate'});
+            options.add({'value': type, 'label': AppLocalizations.of(context)!.approvedRequests});
             break;
           case 'book_added':
-            options.add({'value': type, 'label': 'Cărți adăugate'});
+            options.add({'value': type, 'label': AppLocalizations.of(context)!.addedBooks});
             break;
           case 'book_modified':
-            options.add({'value': type, 'label': 'Cărți actualizate'});
+            options.add({'value': type, 'label': AppLocalizations.of(context)!.updatedBooks});
             break;
           case 'book_updated':
-            options.add({'value': type, 'label': 'Cărți actualizate'});
+            options.add({'value': type, 'label': AppLocalizations.of(context)!.updatedBooks});
             break;
           case 'book_deleted':
-            options.add({'value': type, 'label': 'Cărți șterse'});
+            options.add({'value': type, 'label': AppLocalizations.of(context)!.deletedBooks});
             break;
           case 'message':
-            options.add({'value': type, 'label': 'Mesaje'});
+            options.add({'value': type, 'label': AppLocalizations.of(context)!.messages});
             break;
         }
       }
@@ -903,13 +904,13 @@ class _NotificationsScreenState extends State<NotificationsScreen>
     // Add any remaining types that weren't in the preferred order
     for (String type in types) {
       if (!preferredOrder.contains(type) && type != 'unknown') {
-        options.add({'value': type, 'label': 'Alte notificări ($type)'});
+        options.add({'value': type, 'label': AppLocalizations.of(context)!.otherNotifications});
       }
     }
     
     // Only add "Alte notificări" option if there are actually unknown types
     if (types.contains('unknown')) {
-      options.add({'value': 'unknown', 'label': 'Alte notificări'});
+      options.add({'value': 'unknown', 'label': AppLocalizations.of(context)!.otherNotifications});
     }
     
     return options;

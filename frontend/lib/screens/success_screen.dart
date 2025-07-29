@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../l10n/app_localizations.dart';
 import '../services/api_service.dart';
 import '../services/notification_service.dart';
 import 'notifications_screen.dart';
@@ -6,6 +7,7 @@ import '../services/responsive_service.dart';
 import '../widgets/responsive_button.dart';
 import '../providers/theme_provider.dart';
 import 'package:provider/provider.dart';
+import '../l10n/app_localizations.dart';
 
 class SuccessScreen extends StatefulWidget {
   const SuccessScreen({Key? key}) : super(key: key);
@@ -212,7 +214,7 @@ class _SuccessScreenState extends State<SuccessScreen>
       return Scaffold(
         appBar: AppBar(
           title: Text(
-            'Se încarcă...',
+            AppLocalizations.of(context)!.loading,
             style: ResponsiveTextStyles.getResponsiveTitleStyle(
               fontSize: 18,
               fontWeight: FontWeight.w600,
@@ -273,7 +275,7 @@ class _SuccessScreenState extends State<SuccessScreen>
                 ),
                 SizedBox(width: getResponsiveSpacing(12)),
                 Text(
-                  'Lenbrary',
+                  AppLocalizations.of(context)!.appTitle,
                   style: ResponsiveTextStyles.getResponsiveTitleStyle(
                     fontSize: 26.0,
                     fontWeight: FontWeight.w800,
@@ -302,7 +304,7 @@ class _SuccessScreenState extends State<SuccessScreen>
             onPressed: () async {
               await Navigator.pushNamed(context, '/settings');
             },
-            tooltip: 'Setări',
+            tooltip: AppLocalizations.of(context)!.settings,
           ),
         ],
       ),
@@ -395,7 +397,7 @@ class _SuccessScreenState extends State<SuccessScreen>
                                         crossAxisAlignment: CrossAxisAlignment.start,
                                         children: [
                                           Text(
-                                            'Bun venit, $_userName!',
+                                            AppLocalizations.of(context)!.welcomeUser(_userName),
                                             style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                                               fontWeight: FontWeight.w700,
                                               color: Theme.of(context).colorScheme.onSurface,
@@ -405,7 +407,7 @@ class _SuccessScreenState extends State<SuccessScreen>
                                           ),
                                           SizedBox(height: getResponsiveSpacing(12.0)),
                                           Text(
-                                            'Ce doriți să faceți astăzi?',
+                                            AppLocalizations.of(context)!.whatDoYouWantToday,
                                             style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                                               color: Theme.of(context).colorScheme.onSurface.withOpacity(0.8),
                                               fontWeight: FontWeight.w500,
@@ -435,8 +437,8 @@ class _SuccessScreenState extends State<SuccessScreen>
                             // Search Books Button
                             _buildEnhancedMenuButton(
                               icon: Icons.search_rounded,
-                              title: 'Caută cărți',
-                              description: 'Explorează catalogul bibliotecii',
+                              title: AppLocalizations.of(context)!.searchBooks,
+                              description: AppLocalizations.of(context)!.exploreCatalog,
                               color: Colors.green[600]!,
                               onTap: () {
                                 Navigator.pushNamed(context, '/search-books');
@@ -447,8 +449,8 @@ class _SuccessScreenState extends State<SuccessScreen>
                             // My Requests Button
                             _buildEnhancedMenuButton(
                               icon: Icons.book_rounded,
-                              title: 'Cererile mele',
-                              description: 'Vizualizează și gestionează cererile tale',
+                              title: AppLocalizations.of(context)!.myRequests,
+                              description: AppLocalizations.of(context)!.viewManageRequests,
                               color: Colors.orange[600]!,
                               onTap: () {
                                 Navigator.pushNamed(context, '/my-requests');
@@ -459,8 +461,8 @@ class _SuccessScreenState extends State<SuccessScreen>
                             // Exam Models Button
                             _buildEnhancedMenuButton(
                               icon: Icons.description_rounded,
-                              title: 'Modele de teste',
-                              description: 'Găsește modele de teste pentru studiu',
+                              title: AppLocalizations.of(context)!.examModels,
+                              description: AppLocalizations.of(context)!.findExamModels,
                               color: Colors.purple[600]!,
                               onTap: () {
                                 Navigator.pushNamed(context, '/exam-models');
@@ -522,7 +524,7 @@ class _SuccessScreenState extends State<SuccessScreen>
                 ),
                 SizedBox(width: getResponsiveSpacing(12)),
                 Text(
-                  'Lenbrary',
+                  AppLocalizations.of(context)!.appTitle,
                   style: ResponsiveTextStyles.getResponsiveTitleStyle(
                     fontSize: 26.0,
                     fontWeight: FontWeight.w800,
@@ -551,7 +553,7 @@ class _SuccessScreenState extends State<SuccessScreen>
             onPressed: () async {
               await Navigator.pushNamed(context, '/settings');
             },
-            tooltip: 'Setări',
+            tooltip: AppLocalizations.of(context)!.settings,
           ),
         ],
       ),
@@ -644,7 +646,7 @@ class _SuccessScreenState extends State<SuccessScreen>
                                         crossAxisAlignment: CrossAxisAlignment.start,
                                         children: [
                                           Text(
-                                            'Bun venit, doamna Bibliotecară!',
+                                            AppLocalizations.of(context)!.welcomeLibrarian,
                                             style: ResponsiveTextStyles.getResponsiveTitleStyle(
                                               fontSize: 28,
                                               fontWeight: FontWeight.w700,
@@ -653,7 +655,7 @@ class _SuccessScreenState extends State<SuccessScreen>
                                           ),
                                           SizedBox(height: getResponsiveSpacing(12.0)),
                                           Text(
-                                            'Panou de administrare bibliotecă',
+                                            AppLocalizations.of(context)!.adminPanel,
                                             style: ResponsiveTextStyles.getResponsiveBodyStyle(
                                               fontSize: 18,
                                               fontWeight: FontWeight.w500,
@@ -683,8 +685,8 @@ class _SuccessScreenState extends State<SuccessScreen>
                             // Add Book Button
                             _buildEnhancedMenuButton(
                               icon: Icons.add_circle_rounded,
-                              title: 'Adaugă carte',
-                              description: 'Adaugă o nouă carte în catalog',
+                              title: AppLocalizations.of(context)!.addBook,
+                              description: AppLocalizations.of(context)!.addNewBook,
                               color: Colors.green[600]!,
                               onTap: () {
                                 Navigator.pushNamed(context, '/add-book');
@@ -695,8 +697,8 @@ class _SuccessScreenState extends State<SuccessScreen>
                             // Manage Books Button
                             _buildEnhancedMenuButton(
                               icon: Icons.library_books_rounded,
-                              title: 'Gestionează cărți',
-                              description: 'Editează și șterge cărți din catalog',
+                              title: AppLocalizations.of(context)!.manageBooks,
+                              description: AppLocalizations.of(context)!.editDeleteBooks,
                               color: Colors.blue[600]!,
                               onTap: () {
                                 Navigator.pushNamed(context, '/manage-books');
@@ -707,8 +709,8 @@ class _SuccessScreenState extends State<SuccessScreen>
                             // Pending Requests Button
                             _buildEnhancedMenuButton(
                               icon: Icons.pending_actions_rounded,
-                              title: 'Cereri în așteptare',
-                              description: 'Gestionează cererile de împrumut',
+                              title: AppLocalizations.of(context)!.pendingRequests,
+                              description: AppLocalizations.of(context)!.manageLoanRequests,
                               color: Colors.orange[600]!,
                               onTap: () {
                                 Navigator.pushNamed(context, '/pending-requests');
@@ -719,8 +721,8 @@ class _SuccessScreenState extends State<SuccessScreen>
                             // Active Loans Button
                             _buildEnhancedMenuButton(
                               icon: Icons.book_online_rounded,
-                              title: 'Împrumuturi active',
-                              description: 'Vizualizează împrumuturile curente',
+                              title: AppLocalizations.of(context)!.activeLoans,
+                              description: AppLocalizations.of(context)!.viewCurrentLoans,
                               color: Colors.purple[600]!,
                               onTap: () {
                                 Navigator.pushNamed(context, '/active-loans');
@@ -731,8 +733,8 @@ class _SuccessScreenState extends State<SuccessScreen>
                             // Loan History Button
                             _buildEnhancedMenuButton(
                               icon: Icons.history_rounded,
-                              title: 'Istoric împrumuturi',
-                              description: 'Vizualizează istoricul împrumuturilor',
+                              title: AppLocalizations.of(context)!.loanHistory,
+                              description: AppLocalizations.of(context)!.viewLoanHistory,
                               color: Colors.indigo[600]!,
                               onTap: () {
                                 Navigator.pushNamed(context, '/loan-history');
@@ -743,8 +745,8 @@ class _SuccessScreenState extends State<SuccessScreen>
                             // Exam Models Admin Button
                             _buildEnhancedMenuButton(
                               icon: Icons.description_rounded,
-                              title: 'Modele de teste',
-                              description: 'Gestionează modelele de teste',
+                              title: AppLocalizations.of(context)!.examModels,
+                              description: AppLocalizations.of(context)!.manageExamModels,
                               color: Colors.teal[600]!,
                               onTap: () {
                                 Navigator.pushNamed(context, '/admin-exam-models');
@@ -756,7 +758,7 @@ class _SuccessScreenState extends State<SuccessScreen>
                             _buildEnhancedMenuButton(
                               icon: Icons.qr_code_2_rounded,
                               title: 'Creaza cod pentru profesori',
-                              description: 'Generează coduri de înregistrare pentru profesori',
+                              description: AppLocalizations.of(context)!.generateTeacherCodes,
                               color: Colors.indigo[600]!,
                               onTap: () {
                                 Navigator.pushNamed(context, '/teacher-code-generation');

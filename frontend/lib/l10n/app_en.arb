@@ -1,0 +1,891 @@
+{
+  "@@locale": "en",  "registerAsTeacher": "Register as teacher",
+  "enterTeacherCode": "Enter teacher code",
+  "back": "Back",
+  "appTitle": "Lenbrary",
+  "alreadyHaveAccount": "Already have an account? Sign in",
+  "addCover": "Add Cover",
+  "chooseCoverMethod": "Choose how you want to add the book cover:",
+  "addPdf": "Add PDF",
+  "choosePdfMethod": "Choose how you want to add the PDF:",
+  "takePhoto": "Take Photo",
+  "selectFromGallery": "Select from Gallery",
+  "selectFile": "Select File",
+  "isbn": "ISBN",
+  "title": "Title",
+  "author": "Author",
+  "description": "Description",
+  "pages": "Pages",
+  "language": "Language",
+  "category": "Category",
+  "price": "Price",
+  "stock": "Stock",
+  "appTitle": "Lenbrary",
+  "dashboard": "Dashboard",
+  "books": "Books",
+  "teacher": "Teacher",
+  "myRequests": "My Requests",
+  "notifications": "Notifications",
+  "settings": "Settings",
+  "profile": "Profile",
+  "logout": "Logout",
+  "login": "Login",
+  "email": "Email",
+  "password": "Password",
+  "confirmPassword": "Confirm Password",
+  "register": "Register",
+  "forgotPassword": "Forgot Password?",
+  "usernameOrEmail": "Username or Email",
+  "enterUsernameOrEmail": "Please enter your username or email address",
+  "enterPassword": "Please enter your password",
+  "authentication": "Authentication",
+  "noAccountRegister": "Don't have an account? Register",
+  "firstName": "First Name",
+  "lastName": "Last Name",
+  "enterFirstName": "Please enter your first name",
+  "enterLastName": "Please enter your last name",
+  "enterEmail": "Please enter your email address",
+  "schoolType": "School Type",
+  "selectSchoolType": "Please select a school type",
+  "classLevel": "Class",
+  "selectClass": "Please select a class",
+  "profile": "Profile",
+  "selectProfile": "Please select a profile",
+  "classLetter": "Class Letter",
+  "selectClassLetter": "Please select a class letter",
+  "invitationCode": "Invitation Code",
+  "enterInvitationCode": "Please enter the invitation code",
+  "alreadyHaveAccount": "Already have an account? Login",
+  "createAccount": "Create Account",
+  "creatingAccount": "Creating account...",
+  "registrationTitle": "Create your account",
+  "registrationSubtitle": "Fill in the details to register",
+  "loading": "Loading...",
+  "welcome": "Welcome",
+  "welcomeBack": "Welcome back",
+  "searchBooks": "Search Books",
+  "requestBook": "Request Book",
+  "myRequests": "My Requests",
+  "notifications": "Notifications",
+  "settings": "Settings",
+  "logout": "Logout",
+  "darkMode": "Dark Mode",
+  "lightMode": "Light Mode",
+  "theme": "Theme",
+  "language": "Language",
+  "bookAdded": "Book added successfully!",
+  "requestSent": "Request sent successfully!",
+  "requestFailed": "Failed to send request",
+  "retry": "Retry",
+  "noResults": "No results found",
+  "noResultsFor": "No results found for \"{query}\"",
+  "@noResultsFor": {
+    "placeholders": {
+      "query": {
+        "type": "String"
+      }
+    }
+  },
+  "noActiveLoans": "No active loans",
+  "selectDuration": "Select loan duration",
+  "oneWeek": "1 Week",
+  "twoWeeks": "2 Weeks", 
+  "oneMonth": "1 Month",
+  "twoMonths": "2 Months",
+  "loans": "Loans",
+  "activeLoans": "Active Loans",
+  "loadingLoans": "Loading loans...",
+  "loanHistory": "Loan History",
+  "pickupAndLoans": "Pickup & Loans",
+  "manageBooks": "Manage Books",
+  "addBook": "Add Book",
+  "editBook": "Edit Book",
+  "deleteBook": "Delete Book",
+  "bookDetails": "Book Details",
+  "addCover": "Add Cover",
+  "takePicture": "Take Picture",
+  "addFromGallery": "Add from Gallery",
+  "addPDF": "Add PDF",
+  "choosePDFFile": "Choose PDF File",
+  "resourceType": "Resource Type",
+  "required": "Required",
+  "basicInfo": "Basic Information",
+  "additionalDetails": "Additional Details",
+  "stockInfo": "Stock Information",
+  "totalInventory": "Total Inventory",
+  "availableStock": "Available Stock",
+  "fillBookDetails": "Fill in the book/manual details",
+  "requiredFields": "Fields marked with * are required",
+  "emailDomainError": "Email must be from nlenau.ro domain",
+  "passwordMismatch": "Passwords do not match",
+  "passwordMinLength": "Password must be at least 6 characters",
+  "teacherAccount": "Teacher account",
+  "studentInformation": "Student information",
+  "accountCreated": "Account created successfully!",
+  "generalSchool": "General School",
+  "highSchool": "High School",
+  "welcomeUser": "Welcome, {userName}!",
+  "whatDoYouWantToday": "What would you like to do today?",
+  "searchBooksShort": "Search Books",
+  "addNewBook": "Add New Book",
+  "manageBooks": "Manage Books",
+  "viewRequests": "View Requests",
+  "loanHistory": "Loan History",
+  "examModels": "Exam Models",
+  "generateCodes": "Generate Codes",
+  "dashboard": "Dashboard",
+  "quickActions": "Quick Actions",
+  "pleaseEnter": "Please enter",
+  "book": "Book",
+  "manual": "Manual",
+  "confirmPassword": "Confirm Password",
+  "lastName": "Last Name",
+  "name": "Name",
+  "loading": "Loading...",
+  "error": "Error",
+  "success": "Success",
+  "cancel": "Cancel",
+  "save": "Save",
+  "delete": "Delete",
+  "edit": "Edit",
+  "add": "Add",
+  "search": "Search",
+  "searchBooks": "Search Books",
+  "searchBooksShort": "🔍 Search books...",
+  "searchByBookName": "🔍 Search by book name...",
+  "filter": "Filter",
+  "all": "All",
+  "pending": "Pending",
+  "approved": "Approved",
+  "rejected": "Rejected",
+  "borrowed": "Borrowed",
+  "returned": "Returned",
+  "bookTitle": "Book Title",
+  "author": "Author",
+  "category": "Category",
+  "description": "Description",
+  "publicationYear": "Publication Year",
+  "inventory": "Inventory",
+  "stock": "Stock",
+  "requestBook": "Request Book",
+  "requestDuration": "Request Duration",
+  "days": "days",
+  "message": "Message",
+  "requestSent": "Request sent successfully!",
+  "requestFailed": "Failed to send request",
+  "welcome": "Welcome",
+  "returned": "Returned",
+  "borrowed": "Borrowed",
+  "approved": "Approved",
+  "rejected": "Rejected",
+  "filter": "Filter",
+  "all": "All",
+  "welcomeBack": "Welcome back",
+  "addNewBook": "Add New Book",
+  "bookDetails": "Book Details",
+  "noBooks": "No books available",
+  "noBooksFound": "No books found",
+  "noRequests": "No requests",
+  "noNotifications": "No notifications",
+  "markAllAsRead": "Mark all as read",
+  "readNotifications": "Read notifications",
+  "unreadNotifications": "Unread notifications",
+  "language": "Language",
+  "selectLanguage": "Select Language",
+  "romanian": "Romanian",
+  "english": "English",
+  "german": "German",
+  "languageChanged": "Language changed successfully",
+  "theme": "Theme",
+  "darkMode": "Dark Mode",
+  "lightMode": "Light Mode",
+  "systemMode": "System Mode",
+  "aboutApp": "About App",
+  "version": "Version",
+  "appDescription": "A comprehensive digital library management system",
+  "backToHome": "Back to Home",
+  "retry": "Retry",
+  "optional": "optional",
+  "required": "required",
+  "pleaseEnter": "Please enter",
+  "invalidInput": "Invalid input",
+  "mustBeNumber": "Must be a number",
+  "cannotExceed": "Cannot exceed",
+  "unknownBook": "Unknown book",
+  "pickupDate": "Pickup date:",
+  "bookAddedSuccessfully": "Book/manual has been added successfully!",
+  "takeAPhoto": "Take a photo",
+  "dueDate": "Due date:",
+  "notAvailable": "Not available",
+  "processing": "Processing...",
+  "bookReturned": "Book Returned",
+  "gimnaziuV": "Middle School V",
+  "gimnaziuVI": "Middle School VI",
+  "gimnaziuVII": "Middle School VII",
+  "gimnaziuVIII": "Middle School VIII",
+  "liceulIX": "High School IX",
+  "liceulX": "High School X",
+  "liceulXI": "High School XI",
+  "liceulXII": "High School XII",
+  "bookAdded": "Book added successfully!",
+  "bookUpdated": "Book updated successfully!",
+  "bookDeleted": "Book deleted successfully!",
+  "requestApproved": "Request approved successfully!",
+  "requestRejected": "Request rejected successfully!",
+  "extensionRequested": "Extension requested successfully!",
+  "extensionApproved": "Extension approved successfully!",
+  "extensionRejected": "Extension rejected successfully!",
+  "bookType": "Book Type",
+  "book": "Book",
+  "manual": "Manual",
+  "classLevel": "Class",
+  "selectClass": "Select Class",
+  "cover": "Cover",
+  "addCover": "Add Cover",
+  "takePicture": "Take Picture",
+  "addFromGallery": "Add from Gallery",
+  "addPdf": "Add PDF",
+  "choosePdfFile": "Choose PDF File",
+  "basicInfo": "Basic Information",
+  "additionalDetails": "Additional Details",
+  "stockInfo": "Stock Information",
+  "totalCopies": "Total number of copies",
+  "availableCopies": "Number of copies available for borrowing",
+  "stockCannotExceedInventory": "Stock cannot exceed inventory",
+  "pendingRequests": "Pending Requests",
+  "extensionRequests": "Extension Requests",
+  "extensionRequestDescription": "Here you can view extension requests",
+  "approve": "Approve",
+  "reject": "Reject",
+  "reason": "Reason",
+  "approveRequest": "Approve Request",
+  "rejectRequest": "Reject Request",
+  "requestedOn": "Requested on",
+  "requestedBy": "Requested by",
+  "duration": "Duration",
+  "extend": "Extend",
+  "extensionReason": "Extension Reason",
+  "newDuration": "New Duration",
+  "requestExtension": "Request Extension",
+  "viewDetails": "View Details",
+  "close": "Close",
+  "confirm": "Confirm",
+  "adminPanel": "Admin Panel",
+  "manageBooks": "Manage Books",
+  "manageUsers": "Manage Users",
+  "manageRequests": "Manage Requests",
+  "reports": "Reports",
+  "statistics": "Statistics",
+  "pleaseEnterPassword": "Please enter a password",
+  "passwordNoSpaces": "Password cannot contain spaces",
+  "passwordUppercase": "Password must contain at least one uppercase letter",
+  "passwordDigit": "Password must contain at least one digit", 
+  "passwordSpecialChar": "Password must contain at least one special character",
+  "pleaseConfirmPassword": "Please confirm password",
+  "passwordsDoNotMatch": "Passwords do not match",
+  "pleaseSelectTitle": "Please enter a title",
+  "pleaseSelectAuthor": "Please enter an author",
+  "pleaseSelectCategory": "Please enter a category", 
+  "pleaseSelectDescription": "Please enter a description",
+  "pleaseEnterValidYear": "Please enter a valid year",
+  "basicInformation": "Basic Information",
+  "additionalDetails": "Additional Details",
+  "stockInformation": "Stock Information",
+  "pleaseEnterTotalInventory": "Please enter total inventory",
+  "inventoryMustBeNumber": "Inventory must be a number",
+  "totalCopiesNumber": "Total number of copies",
+  "pleaseEnterAvailableStock": "Please enter available stock",
+  "stockMustBeNumber": "Stock must be a number",
+  "stockCannotExceedInventory": "Stock cannot exceed inventory",
+  "availableCopiesNumber": "Number of copies available for loan",
+  "adding": "Adding...",
+  "errorCameraAccess": "Error accessing camera",
+  "errorGalleryAccess": "Error accessing gallery",
+  "errorReadingPdf": "Error reading PDF file",
+  "errorAccessingPdf": "Error accessing PDF file", 
+  "errorSelectingPdf": "Error selecting PDF file",
+  "choosePdfForManual": "Choose PDF file for manual:",
+  "fillBookDetails": "Fill in the details for the new book/manual",
+  "requiredFields": "Fields marked with * are required",
+  "pleaseSelectClass": "Please select a class",
+  "pleaseEnterTitle": "Please enter a title",
+  "pleaseEnterAuthor": "Please enter an author", 
+  "pleaseEnterCategory": "Please enter a category",
+  "pleaseEnterDescription": "Please enter a description",
+  "pleaseEnterValidYear": "Please enter a valid year",
+  "pleaseEnterTotalInventory": "Please enter total inventory",
+  "pleaseEnterAvailableStock": "Please enter available stock",
+  "inventoryMustBeNumber": "Inventory must be a number",
+  "stockMustBeNumber": "Stock must be a number",
+  "stockCannotExceedInventory": "Stock cannot be greater than inventory",
+  "manualPDF": "Manual PDF",
+  "uploadManualPdfFile": "Upload the manual PDF file",
+  "pdfFileSize": "PDF file ({size} KB)",
+  "@pdfFileSize": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "pdfFileSelected": "PDF file selected",
+  "tapToChange": "Tap to change",
+  "uploadPdfFile": "Upload PDF file",
+  "selectManualPdfFile": "Select the manual PDF file",
+  "tapToUpload": "Tap to upload",
+  "pdfSuccessfullyAdded": "PDF successfully added",
+  "pleaseSelectPdfFile": "Please select a PDF file.",
+  "pleaseSelectExamType": "Please select the exam type.",
+  "pleaseSelectSubject": "Please select the subject.",
+  "errorAddingItem": "Error adding item: {error}",
+  "@errorAddingItem": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "addExamModel": "Add Exam Model",
+  "newExamModel": "New Exam Model",
+  "fillExamModelDetails": "Fill in the exam model details",
+  "examModelName": "Exam model name",
+  "enterExamModelName": "Enter a name",
+  "examType": "Exam type",
+  "nationalEvaluation": "National Evaluation (EN)",
+  "baccalaureate": "Baccalaureate (BAC)",
+  "selectExamTypeValidator": "Select the exam type",
+  "subject": "Subject",
+  "mathematics": "Mathematics",
+  "romanian": "Romanian",
+  "selectSubjectValidator": "Select the subject",
+  "addModel": "Add model",
+  "choosePdfFile": "Choose PDF file",
+  "tapToSelectPdfFile": "Tap to select a PDF file",
+  "back": "Back",
+  "bookDetails": "Book Details",
+  "requestLoan": "Request Loan",
+  "loanDuration": "Loan Duration",
+  "oneWeek": "1 Week",
+  "twoWeeks": "2 Weeks",
+  "oneMonth": "1 Month",
+  "twoMonths": "2 Months",
+  "messageOptional": "Message (optional)",
+  "writeMessageForLibrarian": "Write a message for the librarian... (optional)",
+  "loanRequestSuccess": "Loan request registered successfully!",
+  "errorRequestingBook": "Error requesting book/manual: {error}",
+  "@errorRequestingBook": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "unknownBook": "Unknown Book",
+  "classLabel": "Class: {className}",
+  "@classLabel": {
+    "placeholders": {
+      "className": {
+        "type": "String"
+      }
+    }
+  },
+  "available": "Available: {count}",
+  "@available": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "unavailable": "Unavailable",
+  "openPdf": "Open PDF",
+  "pdfOpenError": "Could not open PDF.",
+  "pdfOpenErrorDetails": "Error opening PDF: {error}",
+  "@pdfOpenErrorDetails": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "sending": "Sending...",
+  "examModels": "Exam Models",
+  "refresh": "Refresh",
+  "searchExamModels": "🔍 Search exam models...",
+  "examType": "Exam Type",
+  "allTypes": "All Types",
+  "allSubjects": "All Subjects",
+  "math": "Math",
+  "mate": "Math",
+  "romanian": "Romanian",
+  "openPdf": "Open PDF",
+  "deleteModel": "Delete model",
+  "examModelsTitle": "Test Models",
+  "searchExamModelsHint": "Search test models...",
+  "testType": "Test type",
+  "subject": "Subject",
+  "allTestTypes": "All types",
+  "allSubjects": "All subjects",
+  "modelWithoutName": "Model without name",
+  "noTestsAvailable": "No tests available",
+  "noTestsForSearch": "No tests found for your search",
+  "modelsWillAppear": "Models will appear here after they are added",
+  "modifySearchTerms": "Try modifying the search terms",
+  "couldNotOpenPdf": "Could not open PDF.",
+  "extensionRequestsTitle": "Extension Requests",
+  "refreshTooltip": "Refresh",
+  "loadingRequests": "Loading requests...",
+  "noExtensionRequests": "No extension requests",
+  "extensionRequestsWillAppear": "Extension requests will appear here",
+  "alreadyExtendedMessage": "This book has already been extended once. It cannot be extended again.",
+  "student": "Student",
+  "unknownBook": "Unknown book",
+  "extensionRequested": "Extension requested",
+  "days": "days",
+  "fromLabel": "From:",
+  "toLabel": "To:",
+  "teacher": "Teacher",
+  "extensionRequestDetailsTitle": "Extension request details",
+  "currentReturnDate": "Current return date",
+  "extendedReturnDate": "Extended return date",
+  "studentMessage": "Student message",
+  "extensionApprovedMessage": "Extension approved successfully!",
+  "approve": "Approve",
+  "approving": "Approving...",
+  "extensionRejectedMessage": "Extension rejected successfully!",
+  "reject": "Reject",
+  "rejecting": "Rejecting...",
+  "unknown": "unknown",
+  "alreadyExtended": "Already extended",
+  "errorRejecting": "Error rejecting: {error}",
+  "@errorRejecting": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "addExamModelButton": "Add exam model",
+  "loadingModels": "Loading models...",
+  "futureSubject": "We will add {subject} tests in the future",
+  "@futureSubject": {
+    "placeholders": {
+      "subject": {
+        "type": "String"
+      }
+    }
+  },
+  "noModelsFound": "No models found for your search",
+  "noModelsExist": "No exam models exist",
+  "focusOnMainSubjects": "Currently we focus on mathematics and Romanian",
+  "tryModifyingSearch": "Try modifying the search terms",
+  "addFirstModel": "Add the first exam model",
+  "modelWithoutName": "Model without name",
+  "openPdfTooltip": "Open PDF",
+  "deleteModelTooltip": "Delete model",
+  "errorLoadingModels": "Error loading models: {error}",
+  "@errorLoadingModels": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "errorDeleting": "Error deleting: {error}",
+  "@errorDeleting": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "addItem": "Add {item}",
+  "@addItem": {
+    "placeholders": {
+      "item": {
+        "type": "String"
+      }
+    }
+  },
+  "loanHistoryTitle": "Loan History",
+  "recordsCount": "{count} records",
+  "@recordsCount": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "backTooltip": "Back",
+  "searchBooksPlaceholder": "🔍 Search by name, author or title...",
+  "loadingHistory": "Loading history...",
+  "noSearchResults": "No results found for \"{query}\"",
+  "@noSearchResults": {
+    "placeholders": {
+      "query": {
+        "type": "String"
+      }
+    }
+  },
+  "noLoanHistory": "No loan history exists",
+  "tryModifyingSearchTerms": "Try modifying the search terms",
+  "historyWillAppear": "History will appear here after loans are made",
+  "notReturnedYet": "Not returned yet",
+  "cancelled": "Cancelled",
+  "unknownBook": "Unknown book",
+  "unknownAuthor": "Unknown author",
+  "classLabel": "Class {className}",
+  "@classLabel": {
+    "placeholders": {
+      "className": {
+        "type": "String"
+      }
+    }
+  },
+  "teacher": "Teacher",
+  "requestDate": "Request date",
+  "loginHintShort": "first.last",
+  "loginHintLong": "first.last or first.last@nlenau.ro",
+  "manageBooksShort": "Manage",
+  "manageBooksLong": "Manage Books",
+  "manuals": "Manuals",
+  "searchBooksShort": "Search books...",
+  "searchBooksLong": "Search by title, author or category...",
+  "noBookFoundFor": "No book found for \"{query}\"",
+  "@noBookFoundFor": {
+    "placeholders": {
+      "query": {
+        "type": "String"
+      }
+    }
+  },
+  "noBooksInLibrary": "No books in library",
+  "noManualsInLibrary": "No manuals in library",
+  "reload": "Reload",
+  "stockLabel": "Stock: {current}/{total}",
+  "@stockLabel": {
+    "placeholders": {
+      "current": {
+        "type": "String"
+      },
+      "total": {
+        "type": "String"
+      }
+    }
+  },
+  "myRequests": "My Requests",
+  "loadingRequests": "Loading requests...",
+  "noLoanRequests": "You have no loan requests",
+  "requestsWillAppear": "Your requests will appear here after you request books",
+  "readyForPickup": "Ready for pickup",
+  "overdue": "Overdue",
+  "cancelled": "Cancelled",
+  "unknown": "Unknown",
+  "unknownAuthor": "Unknown author",
+  "request": "Request",
+  "estimated": "Estimated",
+  "dueDate": "Due date",
+  "tapToExtend": "Tap to extend",
+  "cancelRequest": "Cancel request",
+  "confirmCancelRequest": "Are you sure you want to cancel this request?",
+  "messageForLibrarian": "Message for librarian (optional):",
+  "addMessage": "Add a message...",
+  "giveUp": "Give up",
+  "requestCancelledSuccess": "Request has been cancelled successfully.",
+  "cancelError": "Error cancelling: {error}",
+  "@cancelError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "extendLoan": "Extend loan",
+  "extensionPeriod": "Extension period:",
+  "daysLabel": "{days} days",
+  "@daysLabel": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "messageOptional": "Message (optional):",
+  "submitRequest": "Submit request",
+  "extensionRequestSuccess": "Extension request has been sent successfully!",
+  "bookAlreadyExtended": "This book has already been extended once and cannot be extended again.",
+  "loadingNotifications": "Loading notifications...",
+  "notificationLoadError": "Error loading notifications: {error}",
+  "@notificationLoadError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "markAsReadError": "Error marking notification as read: {error}",
+  "@markAsReadError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "markAllAsReadError": "Error marking notifications as read: {error}",
+  "@markAllAsReadError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "allNotificationsMarkedAsRead": "All notifications have been marked as read",
+  "date": "Date:",
+  "close": "Close",
+  "bookRequested": "Book request",
+  "bookAccepted": "Book accepted",
+  "bookRejected": "Book rejected",
+  "bookReturned": "Book returned",
+  "extensionRequested": "Extension request",
+  "extensionApproved": "Extension approved",
+  "extensionRejected": "Extension rejected",
+  "requestCancelled": "Request cancelled",
+  "requestApproved": "Request approved",
+  "teacherRegistered": "Teacher registered",
+  "bookAdded": "Book added",
+  "bookDeleted": "Book deleted",
+  "bookUpdated": "Book updated",
+  "newMessage": "New message",
+  "unknownNotification": "Unknown notification",
+  "notificationWithType": "Notification ({type})",
+  "@notificationWithType": {
+    "placeholders": {
+      "type": {
+        "type": "String"
+      }
+    }
+  },
+  "filterNotifications": "Filter notifications",
+  "markAllAsRead": "Mark all as read",
+  "showingAllNotifications": "Showing all notifications ({count})",
+  "@showingAllNotifications": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "activeFilter": "Active filter: {filterName} ({count})",
+  "@activeFilter": {
+    "placeholders": {
+      "filterName": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "noNotificationsOfType": "You have no notifications of this type",
+  "allNotificationsWillAppear": "All your notifications will appear here",
+  "tryChangingFilter": "Try changing the filter to see other notifications",
+  "read": "Read",
+  "newNotification": "New",
+  "now": "Now",
+  "minutesAgo": "{minutes}m ago",
+  "@minutesAgo": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "hoursAgo": "{hours}h ago",
+  "@hoursAgo": {
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      }
+    }
+  },
+  "daysAgo": "{days}d ago",
+  "@daysAgo": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "allNotifications": "All notifications",
+  "registeredTeachers": "Registered teachers",
+  "bookRequests": "Book requests",
+  "acceptedBooks": "Accepted books",
+  "rejectedBooks": "Rejected books",
+  "returnedBooks": "Returned books",
+  "extensionRequests": "Extension requests",
+  "approvedExtensions": "Approved extensions",
+  "rejectedExtensions": "Rejected extensions",
+  "cancelledRequests": "Cancelled requests",
+  "approvedRequests": "Approved requests",
+  "addedBooks": "Added books",
+  "updatedBooks": "Updated books",
+  "deletedBooks": "Deleted books",
+  "messages": "Messages",
+  "otherNotifications": "Other notifications",
+  "requestApprovedSuccess": "Request approved successfully!",
+  "requestRejectedSuccess": "Request rejected successfully!",
+  "bookRequestsTitle": "Book Requests",
+  "bookManualsRequestsTitle": "Book and Manual Requests",
+  "loadingRequests": "Loading requests...",
+  "searchPlaceholder": "🔍 Search...",
+  "searchDetailedPlaceholder": "🔍 Search by book name or student name...",
+  "noPendingRequests": "No pending requests",
+  "noApprovedRequests": "No approved requests",
+  "noSearchResults": "No results found for \"{query}\"",
+  "@noSearchResults": {
+    "placeholders": {
+      "query": {
+        "type": "String"
+      }
+    }
+  },
+  "modifySearchTerms": "Try modifying the search terms",
+  "noRequestsNeedApproval": "No requests need approval",
+  "noApprovedRequestsCurrently": "No approved requests at the moment",
+  "unknownBook": "Unknown book",
+  "notAvailable": "Not available",
+  "dueDateLabel": "Due date: ",
+  "loanDurationLabel": "Loan duration: ",
+  "approve": "Approve",
+  "reject": "Reject",
+  "markAsPickedUp": "Mark as picked up",
+  "requestDate": "Request date: ",
+  "dueDate": "Due date: ",
+  "loanDuration": "Loan duration: ",
+  "days": "days",
+  "bookMarkedAsPickedUp": "The book/manual has been marked as picked up!",
+  "markingPickedUp": "Mark Picked Up",
+  "pickupAndLoans": "Pickup & Loans",
+  "searchBookStudentPlaceholder": "Search by book name or student name...",
+  "toPickup": "To Pickup",
+  "activeLoans": "Active Loans",
+  "noPickupRequests": "No pickup requests",
+  "noActiveLoans": "No active loans",
+  "approvedAt": "Approved at",
+  "dueAt": "Due at",
+  "borrowedAt": "Borrowed at",
+  "loan": "Loan",
+  "duration": "Duration",
+  "unknownUser": "Unknown user",
+  "classLabel": "Class {className}",
+  "@classLabel": {
+    "placeholders": {
+      "className": {
+        "type": "String"
+      }
+    }
+  },
+  "days": "days",
+  "backTooltip": "Back",
+  "teacher": "Teacher",
+  "unknownBook": "Unknown book",
+  "schoolType": "School Type",
+  "classLabel2": "Class",
+  "profile": "Profile",
+  "classLetter": "Class Letter",
+  "invitationCode": "Invitation Code",
+  "schoolTypeGenerala": "Middle School",
+  "schoolTypeLiceu": "High School",
+  "pleaseEnterPassword": "Please enter a password",
+  "passwordMinLength": "Password must be at least 8 characters long",
+  "passwordNoSpaces": "Password cannot contain spaces",
+  "passwordNeedsUppercase": "Password must contain at least one uppercase letter",
+  "passwordNeedsNumber": "Password must contain at least one number",
+  "passwordNeedsSpecialChar": "Password must contain at least one special character",
+  "pleaseConfirmPassword": "Please confirm the password",
+  "passwordsDoNotMatch": "Passwords do not match",
+  "emailMustBeNlenau": "Email must be from the nlenau.ro domain",
+  "pleaseSelectSchoolType": "Please select school type",
+  "pleaseSelectClass": "Please select class",
+  "pleaseSelectProfile": "Please select profile",
+  "pleaseSelectClassLetter": "Please select class letter",
+  "pleaseEnterInvitationCode": "Please enter invitation code",
+  "registrationError": "Registration error. Please try again.",
+  "registrationSuccess": "Registration successful! Check your inbox to activate your account.",
+  "searchBooksTitle": "Search Books",
+  "manuals": "Manuals",
+  "searchBooksShort": "Search books and manuals...",
+  "searchBooksLong": "Search by title, author, category or class (e.g. VIII or 8)...",
+  "selectLoanDuration": "Select loan duration",
+  "oneWeek": "1 Week",
+  "twoWeeks": "2 Weeks",
+  "oneMonth": "1 Month",
+  "twoMonths": "2 Months",
+  "loanRequestSuccess": "Loan request registered successfully!",
+  "bookRequestError": "Error requesting book/manual: {error}",
+  "loadBooksError": "Error loading books: {error}",
+  "noBooksAvailable": "No books/manuals available.",
+  "displayError": "Display error: {error}",
+  "invalidBook": "Invalid book",
+  "unknownBook": "Unknown book",
+  "unknownAuthor": "Unknown author",
+  "noCategory": "No category",
+  "bookDisplayError": "Error displaying book",
+  "appSettings": "App Settings",
+  "aboutApp": "About App",
+  "logout": "Logout",
+  "appTheme": "App Theme",
+  "lightThemeActive": "Light theme activated",
+  "darkThemeActive": "Dark theme activated",
+  "appLanguage": "App Language",
+  "languageChangedSuccess": "Language changed successfully",
+  "themeDescription": "Switch between light and dark theme",
+  "libraryManagementSystem": "Library Management System",
+  "welcomeLibrarian": "Welcome, Mrs. Librarian!",
+  "searchBooks": "Search books",
+  "myRequests": "My requests",
+  "viewManageRequests": "View and manage your requests",
+  "examModels": "Test models",
+  "findExamModels": "Find test models for studying",
+  "manageBooks": "Manage books",
+  "editDeleteBooks": "Edit and delete books from catalog",
+  "pendingRequests": "Pending requests",
+  "manageLoanRequests": "Manage loan requests",
+  "activeLoans": "Active loans",
+  "viewCurrentLoans": "View current loans",
+  "loanHistory": "Loan history",
+  "viewLoanHistory": "View loan history",
+  "manageExamModels": "Manage test models",
+  "exploreCatalog": "Explore library catalog",
+  "adminPanel": "Library administration panel",
+  "addBook": "Add book",
+  "addNewBook": "Add a new book to catalog",
+  "generateTeacherCodes": "Generate registration codes for teachers",
+  "teacherCodes": "Teacher codes",
+  "aboutTeacherCodes": "About teacher codes",
+  "teacherCodeDescription": "Generated codes are used by teachers to register in the system. Each code can be used only once and expires after 6 hours.",
+  "generateNewCode": "Generate new code",
+  "generating": "Generating...",
+  "codeGeneratedSuccess": "Code generated successfully!",
+  "copyCode": "Copy code",
+  "existingCodes": "Existing codes",
+  "noCodesGenerated": "No codes generated",
+  "generateFirstCode": "Generate the first code for teachers",
+  "codeAvailable": "Available",
+  "codeExpired": "Expired",
+  "createdAt": "Created: {date}",
+  "expiresAt": "Expires: {date}",
+  "deleteCode": "Delete code",
+  "deleteConfirmation": "Delete confirmation",
+  "deleteCodeConfirmText": "Are you sure you want to delete this code? This action cannot be undone.",
+  "loadCodesError": "Error loading codes: {error}",
+  "generateCodeError": "Error generating code: {error}",
+  "copyCodeSuccess": "Code copied to clipboard!",
+  "deleteCodeSuccess": "Code deleted successfully!",
+  "deleteCodeError": "Error deleting code: {error}",
+  "language": "Language",
+  "theme": "Theme",
+  "switchToLightMode": "Switch to Light Mode",
+  "switchToDarkMode": "Switch to Dark Mode",
+  "settingsMenu": "Settings Menu"
+}

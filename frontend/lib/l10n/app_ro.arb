@@ -1,0 +1,868 @@
+{
+  "@@locale": "ro",
+  "appTitle": "Lenbrary",
+  "dashboard": "Tablou de bord",
+  "books": "Cărți",
+  "teacher":"Profesor",
+  "myRequests": "Cererile Mele",
+  "notifications": "Notificări",
+  "settings": "Setări",
+  "profile": "Profil",
+  "logout": "Deconectare",
+  "login": "Conectare",  
+  "stockCannotExceedInventory": "Stocul nu poate fi mai mare decât inventarul",
+  "manualPDF": "Manual PDF",
+  "uploadManualPdfFile": "Încarcă fișierul PDF al manualului",
+  "pdfFileSize": "Fișier PDF ({size} KB)",
+  "@pdfFileSize": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "pdfFileSelected": "Fișier PDF selectat",
+  "tapToChange": "Apasă pentru a schimba",
+  "uploadPdfFile": "Încarcă fișier PDF",
+  "selectManualPdfFile": "Selectează fișierul PDF al manualului",
+  "tapToUpload": "Apasă pentru a încărca",
+  "addItem": "Adaugă {item}",
+  "email": "Email",
+  "password": "Parolă",
+  "confirmPassword": "Confirmă Parola",
+  "register": "Înregistrare",
+  "forgotPassword": "Ai uitat parola?",
+  "usernameOrEmail": "Username sau Email",
+  "enterUsernameOrEmail": "Vă rugăm să introduceți username-ul sau adresa de email",
+  "enterPassword": "Vă rugăm să introduceți parola",
+  "authentication": "Autentificare",
+  "noAccountRegister": "Nu ai cont? Înregistrează-te",
+  "firstName": "Prenume",
+  "lastName": "Nume",
+  "enterFirstName": "Vă rugăm să introduceți prenumele",
+  "enterLastName": "Vă rugăm să introduceți numele",
+  "enterEmail": "Vă rugăm să introduceți adresa de email",
+  "schoolType": "Tip Școală",
+  "selectSchoolType": "Vă rugăm să selectați tipul de școală",
+  "classLevel": "Clasă",
+  "selectClass": "Vă rugăm să selectați clasa",
+  "profile": "Profil",
+  "selectProfile": "Vă rugăm să selectați profilul",
+  "classLetter": "Litera clasei",
+  "selectClassLetter": "Vă rugăm să selectați litera clasei",
+  "invitationCode": "Cod de invitație",
+  "enterInvitationCode": "Vă rugăm să introduceți codul de invitație",
+  "alreadyHaveAccount": "Ai deja cont? Conectează-te",
+  "createAccount": "Creează cont",
+  "creatingAccount": "Se creează contul...",
+  "registrationTitle": "Creează-ți contul",
+  "registrationSubtitle": "Completează detaliile pentru a te înregistra",
+  "loading": "Se încarcă...",
+  "welcome": "Bun venit",
+  "welcomeBack": "Bun venit înapoi",
+  "searchBooks": "Caută Cărți",
+  "requestBook": "Solicită Carte",
+  "myRequests": "Cererile Mele",
+  "notifications": "Notificări",
+  "settings": "Setări",
+  "logout": "Deconectare",
+  "darkMode": "Modul Întunecat",
+  "lightMode": "Modul Luminos",
+  "theme": "Temă",
+  "language": "Limba",
+  "bookAdded": "Cartea a fost adăugată cu succes!",
+  "requestSent": "Cererea a fost trimisă cu succes!",
+  "requestFailed": "Trimiterea cererii a eșuat",
+  "retry": "Reîncearcă",
+  "noResults": "Nu s-au găsit rezultate",
+  "noResultsFor": "Nu s-au găsit rezultate pentru \"{query}\"",
+  "@noResultsFor": {
+    "placeholders": {
+      "query": {
+        "type": "String"
+      }
+    }
+  },
+  "noActiveLoans": "Nu există împrumuturi active",
+  "selectDuration": "Selectează durata împrumutului",
+  "oneWeek": "1 Săptămână",
+  "twoWeeks": "2 Săptămâni", 
+  "oneMonth": "1 Lună",
+  "twoMonths": "2 Luni",
+  "loans": "Împrumuturi",
+  "activeLoans": "Împrumuturi Active",
+  "loadingLoans": "Se încarcă împrumuturile...",
+  "loanHistory": "Istoric Împrumuturi",
+  "pickupAndLoans": "Ridicare & Împrumuturi",
+  "manageBooks": "Gestionează Cărți",
+  "addBook": "Adaugă Carte",
+  "editBook": "Editează Carte",
+  "deleteBook": "Șterge Carte",
+  "bookDetails": "Detalii Carte",
+  "addCover": "Adaugă Copertă",
+  "takePicture": "Fă o Poză",
+  "addFromGallery": "Adaugă din Galerie",
+  "addPDF": "Adaugă PDF",
+  "choosePDFFile": "Alege Fișier PDF",
+  "resourceType": "Tip Resursă",
+  "required": "Obligatoriu",
+  "basicInfo": "Informații de Bază",
+  "additionalDetails": "Detalii Suplimentare",
+  "stockInfo": "Informații Stoc",
+  "totalInventory": "Inventar Total",
+  "availableStock": "Stoc Disponibil",
+  "fillBookDetails": "Completează detaliile pentru noua carte/manual",
+  "requiredFields": "Câmpurile marcate cu * sunt obligatorii",
+  "emailDomainError": "Email-ul trebuie să fie din domeniul nlenau.ro",
+  "passwordMismatch": "Parolele nu se potrivesc",
+  "passwordMinLength": "Parola trebuie să aibă cel puțin 6 caractere",
+  "teacherAccount": "Cont de profesor",
+  "studentInformation": "Informații elev",
+  "accountCreated": "Contul a fost creat cu succes!",
+  "generalSchool": "Generala",
+  "highSchool": "Liceu",
+  "welcomeUser": "Bun venit, {userName}!",
+  "whatDoYouWantToday": "Ce doriți să faceți astăzi?",
+  "searchBooksShort": "Caută Cărți",
+  "addNewBook": "Adaugă Carte Nouă",
+  "manageBooks": "Gestionează Cărți",
+  "viewRequests": "Vizualizează Cereri",
+  "loanHistory": "Istoric Împrumuturi",
+  "examModels": "Modele Examen",
+  "generateCodes": "Generează Coduri",
+  "dashboard": "Tablou de Bord",
+  "quickActions": "Acțiuni Rapide",
+  "pleaseEnter": "Vă rugăm să introduceți",
+  "book": "Carte",
+  "manual": "Manual",
+  "confirmPassword": "Confirmă Parola",
+  "lastName": "Nume",
+  "registerAsTeacher": "Înregistrare ca profesor",
+  "enterTeacherCode": "Introduceți codul de profesor",
+  "back": "Înapoi",
+  "appTitle": "Lenbrary",
+  "alreadyHaveAccount": "Ai deja un cont? Autentifică-te",
+  "addCover": "Adaugă copertă",
+  "chooseCoverMethod": "Alegeți cum doriți să adăugați coperta cărții:",
+  "addPdf": "Adaugă PDF",
+  "choosePdfMethod": "Alegeți cum doriți să adăugați PDF-ul:",
+  "takePhoto": "Fă poză",
+  "selectFromGallery": "Selectează din galerie",
+  "selectFile": "Selectează fișier",
+  "isbn": "ISBN",
+  "title": "Titlu",
+  "author": "Autor",
+  "description": "Descriere",
+  "pages": "Pagini",
+  "language": "Limbă",
+  "category": "Categorie",
+  "price": "Preț",
+  "stock": "Stoc",
+  "name": "Nume",
+  "loading": "Se încarcă...",
+  "error": "Eroare",
+  "success": "Succes",
+  "cancel": "Anulează",
+  "save": "Salvează",
+  "delete": "Șterge",
+  "edit": "Editează",
+  "add": "Adaugă",
+  "search": "Caută",
+  "searchBooks": "Caută Cărți",
+  "searchBooksShort": "🔍 Caută cărți...",
+  "searchByBookName": "🔍 Caută după numele cărții...",
+  "filter": "Filtrează",
+  "all": "Toate",
+  "pending": "În așteptare",
+  "approved": "Aprobat",
+  "rejected": "Respins",
+  "borrowed": "Împrumutat",
+  "returned": "Returnat",
+  "bookTitle": "Titlul Cărții",
+  "author": "Autor",
+  "category": "Categorie",
+  "description": "Descriere",
+  "publicationYear": "Anul Publicării",
+  "inventory": "Inventar",
+  "stock": "Stoc",
+  "requestBook": "Solicită Cartea",
+  "requestDuration": "Durata Cererii",
+  "days": "zile",
+  "message": "Mesaj",
+  "requestSent": "Cererea a fost trimisă cu succes!",
+  "requestFailed": "Trimiterea cererii a eșuat",
+  "welcome": "Bine ai venit",
+  "welcomeBack": "Bine ai revenit",
+  "addNewBook": "Adaugă Carte Nouă",
+  "bookDetails": "Detalii Carte",
+  "noBooks": "Nu sunt cărți disponibile",
+  "noBooksFound": "Nu s-au găsit cărți",
+  "noRequests": "Nu sunt cereri",
+  "noNotifications": "Nu sunt notificări",
+  "markAllAsRead": "Marchează toate ca citite",
+  "readNotifications": "Notificări citite",
+  "unreadNotifications": "Notificări necitite",
+  "language": "Limba",
+  "selectLanguage": "Selectează Limba",
+  "romanian": "Română",
+  "english": "Engleză",
+  "german": "Germană",
+  "languageChanged": "Limba a fost schimbată cu succes",
+  "theme": "Temă",
+  "darkMode": "Mod Întunecat",
+  "lightMode": "Mod Luminos",
+  "systemMode": "Mod Sistem",
+  "aboutApp": "Despre Aplicație",
+  "version": "Versiune",
+  "appDescription": "Un sistem cuprinzător de management digital pentru biblioteci",
+  "backToHome": "Înapoi la Acasă",
+  "retry": "Încearcă din nou",
+  "optional": "opțional",
+  "required": "obligatoriu",
+  "pleaseEnter": "Vă rugăm să introduceți",
+  "invalidInput": "Intrare invalidă",
+  "mustBeNumber": "Trebuie să fie un număr",
+  "cannotExceed": "Nu poate depăși",
+  "unknownBook": "Carte necunoscută",
+  "pickupDate": "Data ridicării:",
+  "bookAddedSuccessfully": "Cartea/manualul a fost adăugat cu succes!",
+  "takeAPhoto": "Fă o poză",
+  "gimnaziuV": "Gimnaziu V",
+  "gimnaziuVI": "Gimnaziu VI",
+  "gimnaziuVII": "Gimnaziu VII",
+  "gimnaziuVIII": "Gimnaziu VIII",
+  "liceulIX": "Liceu IX",
+  "liceulX": "Liceu X",
+  "liceulXI": "Liceu XI",
+  "liceulXII": "Liceu XII",
+  "dueDate": "Data scadenței:",
+  "notAvailable": "Nu este disponibilă",
+  "processing": "Se procesează...",
+  "bookReturned": "Carte Returnată",
+  "bookAdded": "Cartea a fost adăugată cu succes!",
+  "bookUpdated": "Cartea a fost actualizată cu succes!",
+  "bookDeleted": "Cartea a fost ștearsă cu succes!",
+  "requestApproved": "Cererea a fost aprobată cu succes!",
+  "requestRejected": "Cererea a fost respinsă cu succes!",
+  "extensionRequested": "Prelungirea a fost solicitată cu succes!",
+  "extensionApproved": "Prelungirea a fost aprobată cu succes!",
+  "extensionRejected": "Prelungirea a fost respinsă cu succes!",
+  "bookType": "Tip Resursă",
+  "book": "Carte",
+  "manual": "Manual",
+  "classLevel": "Clasă",
+  "selectClass": "Selectează Clasa",
+  "cover": "Copertă",
+  "addCover": "Adaugă Copertă",
+  "takePicture": "Fă o poză",
+  "addPdf": "Adaugă PDF",
+  "choosePdfFile": "Alege fișier PDF",
+  "basicInfo": "Informații de bază",
+  "additionalDetails": "Detalii suplimentare",
+  "stockInfo": "Informații stoc",
+  "totalCopies": "Numărul total de exemplare",
+  "availableCopies": "Numărul de exemplare disponibile pentru împrumut",
+  "stockCannotExceedInventory": "Stocul nu poate depăși inventarul",
+  "pendingRequests": "Cereri în Așteptare",
+  "extensionRequests": "Cereri de Prelungire",
+  "extensionRequestDescription": "Aici puteți vizualiza cererile de extindere",
+  "approve": "Aprobă",
+  "reject": "Respinge",
+  "reason": "Motiv",
+  "approveRequest": "Aprobă Cererea",
+  "rejectRequest": "Respinge Cererea",
+  "requestedOn": "Cerută pe",
+  "requestedBy": "Cerută de",
+  "duration": "Durata",
+  "extend": "Prelungește",
+  "extensionReason": "Motivul Prelungirii",
+  "newDuration": "Durata Nouă",
+  "requestExtension": "Solicită Prelungire",
+  "viewDetails": "Vezi Detalii",
+  "close": "Închide",
+  "confirm": "Confirmă",
+  "adminPanel": "Panoul Admin",
+  "manageBooks": "Gestionează Cărțile",
+  "manageUsers": "Gestionează Utilizatorii",
+  "manageRequests": "Gestionează Cererile",
+  "reports": "Rapoarte",
+  "statistics": "Statistici",
+  "borrowed": "Împrumutat",
+  "returned": "Returnat",
+  "adding": "Se adaugă...",
+  "errorCameraAccess": "Eroare la accesarea camerei",
+  "errorGalleryAccess": "Eroare la accesarea galeriei", 
+  "errorReadingPdf": "Eroare la citirea fișierului PDF",
+  "errorAccessingPdf": "Eroare la accesarea fișierului PDF",
+  "errorSelectingPdf": "Eroare la selectarea fișierului PDF",
+  "choosePdfForManual": "Alegeți fișierul PDF pentru manual:",
+  "fillBookDetails": "Completează detaliile pentru noua carte/manual",
+  "requiredFields": "Câmpurile marcate cu * sunt obligatorii",
+  "pleaseSelectClass": "Vă rugăm să selectați o clasă",
+  "pleaseEnterTitle": "Vă rugăm să introduceți un titlu", 
+  "pleaseEnterAuthor": "Vă rugăm să introduceți un autor",
+  "pleaseEnterCategory": "Vă rugăm să introduceți o categorie",
+  "pleaseEnterDescription": "Vă rugăm să introduceți o descriere",
+  "pleaseEnterValidYear": "Vă rugăm să introduceți un an valid",
+  "pleaseEnterTotalInventory": "Vă rugăm să introduceți inventarul total",
+  "pleaseEnterAvailableStock": "Vă rugăm să introduceți stocul disponibil",
+  "inventoryMustBeNumber": "Inventarul trebuie să fie un număr",
+  "stockMustBeNumber": "Stocul trebuie să fie un număr",
+  "stockCannotExceedInventory": "Stocul nu poate fi mai mare decât inventarul",
+  "manualPDF":"Manual PDF",
+  "pdfSuccessfullyAdded":"PDF selectat cu succes",
+  "pleaseSelectPdfFile": "Vă rugăm să selectați un fișier PDF.",
+  "pleaseSelectExamType": "Vă rugăm să selectați tipul examenului.",
+  "pleaseSelectSubject": "Vă rugăm să selectați materia.",
+  "errorAddingItem": "Eroare la adăugare: {error}",
+  "@errorAddingItem": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "addExamModel": "Adaugă Model de Examen",
+  "newExamModel": "Model de Examen Nou",
+  "fillExamModelDetails": "Completează detaliile modelului de examen",
+  "examModelName": "Nume model examen",
+  "enterExamModelName": "Introduceți un nume",
+  "examType": "Tip examen",
+  "nationalEvaluation": "Evaluare Națională (EN)",
+  "baccalaureate": "Bacalaureat (BAC)",
+  "selectExamTypeValidator": "Selectați tipul examenului",
+  "subject": "Materia",
+  "mathematics": "Matematică",
+  "romanian": "Română",
+  "selectSubjectValidator": "Selectați materia",
+  "addModel": "Adaugă modelul",
+  "choosePdfFile": "Alege fișier PDF",
+  "tapToSelectPdfFile": "Apasă pentru a selecta un fișier PDF",
+  "back": "Înapoi",
+  "bookDetails": "Detalii Carte",
+  "requestLoan": "Solicită împrumut",
+  "loanDuration": "Durata împrumutului",
+  "oneWeek": "1 Săptămână",
+  "twoWeeks": "2 Săptămâni",
+  "oneMonth": "1 Lună",
+  "twoMonths": "2 Luni",
+  "messageOptional": "Mesaj (opțional)",
+  "writeMessageForLibrarian": "Scrie un mesaj pentru bibliotecar... (opțional)",
+  "loanRequestSuccess": "Cerere de împrumut înregistrată cu succes!",
+  "errorRequestingBook": "Eroare la solicitarea cărții/manualului: {error}",
+  "@errorRequestingBook": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "unknownBook": "Carte necunoscută",
+  "classLabel": "Clasa: {className}",
+  "@classLabel": {
+    "placeholders": {
+      "className": {
+        "type": "String"
+      }
+    }
+  },
+  "available": "Disponibile: {count}",
+  "@available": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "unavailable": "Indisponibil",
+  "openPdf": "Deschide PDF",
+  "pdfOpenError": "Nu s-a putut deschide PDF-ul.",
+  "pdfOpenErrorDetails": "Eroare la deschiderea PDF-ului: {error}",
+  "@pdfOpenErrorDetails": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "sending": "Se trimite...",
+  "examModels": "Modele de teste",
+  "refresh": "Reîmprospătează",
+  "searchExamModels": "🔍 Caută modele de teste...",
+  "examType": "Tip examen",
+  "allTypes": "Toate tipurile",
+  "allSubjects": "Toate materiile",
+  "math": "Mate",
+  "mate": "Mate",
+  "romanian": "Română",
+  "openPdf": "Deschide PDF",
+  "deleteModel": "Șterge model",
+  "examModelsTitle": "Modele de Teste",
+  "searchExamModelsHint": "Caută modele de teste...",
+  "testType": "Tip test",
+  "subject": "Materia",
+  "allTestTypes": "Toate tipurile",
+  "allSubjects": "Toate materiile",
+  "modelWithoutName": "Model fără nume",
+  "noTestsAvailable": "Nu există teste disponibile",
+  "noTestsForSearch": "Nu s-au găsit teste pentru căutarea ta",
+  "modelsWillAppear": "Modelele vor apărea aici după ce vor fi adăugate",
+  "modifySearchTerms": "Încearcă să modifici termenii de căutare",
+  "couldNotOpenPdf": "Nu s-a putut deschide PDF-ul.",
+  "extensionRequestsTitle": "Cereri de Extindere",
+  "refreshTooltip": "Reîmprospătează",
+  "loadingRequests": "Se încarcă cererile...",
+  "noExtensionRequests": "Nu există cereri de extindere",
+  "extensionRequestsWillAppear": "Cererile de extindere vor apărea aici",
+  "alreadyExtendedMessage": "Această carte a fost deja prelungită o dată. Nu se poate prelungi din nou.",
+  "student": "Student",
+  "unknownBook": "Carte necunoscută",
+  "extensionRequested": "Extindere solicitată",
+  "days": "zile",
+  "fromLabel": "De la:",
+  "toLabel": "Până la:",
+  "teacher": "Profesor",
+  "extensionRequestDetailsTitle": "Detalii cerere extindere",
+  "currentReturnDate": "Data curentă de returnare",
+  "extendedReturnDate": "Data extinsă de returnare",
+  "studentMessage": "Mesajul studentului",
+  "extensionApprovedMessage": "Extindere aprobată cu succes!",
+  "approve": "Aprobă",
+  "approving": "Se aprobă...",
+  "extensionRejectedMessage": "Extindere respinsă cu succes!",
+  "reject": "Respinge",
+  "rejecting": "Se respinge...",
+  "unknown": "necunoscut",
+  "alreadyExtended": "Deja prelungit",
+  "errorRejecting": "Eroare la respingere: {error}",
+  "@errorRejecting": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "addExamModelButton": "Adaugă model de examen",
+  "loadingModels": "Se încarcă modelele...",
+  "futureSubject": "Vom adăuga testele de {subject} în viitor",
+  "@futureSubject": {
+    "placeholders": {
+      "subject": {
+        "type": "String"
+      }
+    }
+  },
+  "noModelsFound": "Nu s-au găsit modele pentru căutarea ta",
+  "noModelsExist": "Nu există modele de teste",
+  "focusOnMainSubjects": "Momentan ne concentrăm pe matematica și română",
+  "tryModifyingSearch": "Încearcă să modifici termenii de căutare",
+  "addFirstModel": "Adaugă primul model de examen",
+  "modelWithoutName": "Model fără nume",
+  "openPdfTooltip": "Deschide PDF",
+  "deleteModelTooltip": "Șterge model",
+  "errorLoadingModels": "Eroare la încărcarea modelelor: {error}",
+  "@errorLoadingModels": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "errorDeleting": "Eroare la ștergere: {error}",
+  "@errorDeleting": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "addItem": "Adaugă {item}",
+  "@addItem": {
+    "placeholders": {
+      "item": {
+        "type": "String"
+      }
+    }
+  },
+  "loanHistoryTitle": "Istoric împrumuturi",
+  "recordsCount": "{count} înregistrări",
+  "@recordsCount": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "backTooltip": "Înapoi",
+  "searchBooksPlaceholder": "🔍 Caută după nume, autor sau titlu...",
+  "loadingHistory": "Se încarcă istoricul...",
+  "noSearchResults": "Nu s-au găsit rezultate pentru \"{query}\"",
+  "@noSearchResults": {
+    "placeholders": {
+      "query": {
+        "type": "String"
+      }
+    }
+  },
+  "noLoanHistory": "Nu există istoric de împrumuturi",
+  "tryModifyingSearchTerms": "Încearcă să modifici termenii de căutare",
+  "historyWillAppear": "Istoricul va apărea aici după ce se vor face împrumuturi",
+  "notReturnedYet": "Nu s-a returnat încă",
+  "cancelled": "Anulat",
+  "unknownBook": "Carte necunoscută",
+  "unknownAuthor": "Autor necunoscut",
+  "classLabel": "Clasa {className}",
+  "@classLabel": {
+    "placeholders": {
+      "className": {
+        "type": "String"
+      }
+    }
+  },
+  "teacher": "Profesor",
+  "requestDate": "Data cererii",
+  "loginHintShort": "nume.prenume",
+  "loginHintLong": "nume.prenume sau nume.prenume@nlenau.ro",
+  "manageBooksShort": "Administrare",
+  "manageBooksLong": "Administrare Cărți",
+  "manuals": "Manuale",
+  "searchBooksShort": "Caută cărți...",
+  "searchBooksLong": "Caută după titlu, autor sau categorie...",
+  "noBookFoundFor": "Nicio carte găsită pentru \"{query}\"",
+  "@noBookFoundFor": {
+    "placeholders": {
+      "query": {
+        "type": "String"
+      }
+    }
+  },
+  "noBooksInLibrary": "Nu există cărți în bibliotecă",
+  "noManualsInLibrary": "Nu există manuale în bibliotecă",
+  "reload": "Reîncarcă",
+  "stockLabel": "Stoc: {current}/{total}",
+  "@stockLabel": {
+    "placeholders": {
+      "current": {
+        "type": "String"
+      },
+      "total": {
+        "type": "String"
+      }
+    }
+  },
+  "myRequests": "Cererile mele",
+  "loadingRequests": "Se încarcă cererile...",
+  "noLoanRequests": "Nu aveți cereri de împrumut",
+  "requestsWillAppear": "Cererile tale vor apărea aici după ce vei solicita cărți",
+  "readyForPickup": "Gata de ridicare",
+  "overdue": "Întârziată",
+  "cancelled": "Anulată",
+  "unknown": "Necunoscut",
+  "unknownAuthor": "Autor necunoscut",
+  "request": "Cerere",
+  "estimated": "Estimat",
+  "dueDate": "Scadență",
+  "tapToExtend": "Apasă pentru prelungire",
+  "cancelRequest": "Anulează cererea",
+  "confirmCancelRequest": "Sigur vrei să anulezi această cerere?",
+  "messageForLibrarian": "Mesaj pentru bibliotecar (opțional):",
+  "addMessage": "Adaugă un mesaj...",
+  "giveUp": "Renunță",
+  "requestCancelledSuccess": "Cererea a fost anulată cu succes.",
+  "cancelError": "Eroare la anulare: {error}",
+  "@cancelError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "extendLoan": "Prelungire împrumut",
+  "extensionPeriod": "Perioada de prelungire:",
+  "daysLabel": "{days} zile",
+  "@daysLabel": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "messageOptional": "Mesaj (opțional):",
+  "submitRequest": "Trimite cererea",
+  "extensionRequestSuccess": "Cererea de prelungire a fost trimisă cu succes!",
+  "bookAlreadyExtended": "Această carte a fost deja prelungită o dată și nu mai poate fi prelungită.",
+  "loadingNotifications": "Se încarcă notificările...",
+  "notificationLoadError": "Eroare la încărcarea notificărilor: {error}",
+  "@notificationLoadError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "markAsReadError": "Eroare la marcarea notificării ca citită: {error}",
+  "@markAsReadError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "markAllAsReadError": "Eroare la marcarea notificărilor ca citite: {error}",
+  "@markAllAsReadError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "allNotificationsMarkedAsRead": "Toate notificările au fost marcate ca citite",
+  "date": "Data:",
+  "close": "Închide",
+  "bookRequested": "Cerere de carte",
+  "bookAccepted": "Carte acceptată",
+  "bookRejected": "Carte respinsă",
+  "bookReturned": "Carte returnată",
+  "extensionRequested": "Cerere de extindere",
+  "extensionApproved": "Extindere aprobată",
+  "extensionRejected": "Extindere respinsă",
+  "requestCancelled": "Cerere anulată",
+  "requestApproved": "Cerere aprobată",
+  "teacherRegistered": "Profesor înregistrat",
+  "bookAdded": "Carte adăugată",
+  "bookDeleted": "Carte ștearsă",
+  "bookUpdated": "Carte actualizată",
+  "newMessage": "Mesaj nou",
+  "unknownNotification": "Notificare necunoscută",
+  "notificationWithType": "Notificare ({type})",
+  "@notificationWithType": {
+    "placeholders": {
+      "type": {
+        "type": "String"
+      }
+    }
+  },
+  "filterNotifications": "Filtrează notificările",
+  "markAllAsRead": "Marchează toate ca citite",
+  "showingAllNotifications": "Se afișează toate notificările ({count})",
+  "@showingAllNotifications": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "activeFilter": "Filtru activ: {filterName} ({count})",
+  "@activeFilter": {
+    "placeholders": {
+      "filterName": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "noNotificationsOfType": "Nu ai notificări de acest tip",
+  "allNotificationsWillAppear": "Toate notificările tale vor apărea aici",
+  "tryChangingFilter": "Încearcă să schimbi filtrul pentru a vedea alte notificări",
+  "read": "Citită",
+  "newNotification": "Nouă",
+  "now": "Acum",
+  "minutesAgo": "{minutes}m în urmă",
+  "@minutesAgo": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "hoursAgo": "{hours}h în urmă",
+  "@hoursAgo": {
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      }
+    }
+  },
+  "daysAgo": "{days}z în urmă",
+  "@daysAgo": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "allNotifications": "Toate notificările",
+  "registeredTeachers": "Profesori înregistrați",
+  "bookRequests": "Cereri de cărți",
+  "acceptedBooks": "Cărți acceptate",
+  "rejectedBooks": "Cărți respinse",
+  "returnedBooks": "Cărți returnate",
+  "extensionRequests": "Cereri de extindere",
+  "approvedExtensions": "Extinderi aprobate",
+  "rejectedExtensions": "Extinderi respinse",
+  "cancelledRequests": "Cereri anulate",
+  "approvedRequests": "Cereri aprobate",
+  "addedBooks": "Cărți adăugate",
+  "updatedBooks": "Cărți actualizate",
+  "deletedBooks": "Cărți șterse",
+  "messages": "Mesaje",
+  "otherNotifications": "Alte notificări",
+  "requestApprovedSuccess": "Cerere aprobată cu succes!",
+  "requestRejectedSuccess": "Cerere respinsă cu succes!",
+  "bookRequestsTitle": "Cereri Cărți",
+  "bookManualsRequestsTitle": "Cereri de Cărți și Manuale",
+  "loadingRequests": "Se încarcă cererile...",
+  "searchPlaceholder": "🔍 Caută...",
+  "searchDetailedPlaceholder": "🔍 Caută după numele cărții sau studentului...",
+  "noPendingRequests": "Nu există cereri în așteptare",
+  "noApprovedRequests": "Nu există cereri aprobate",
+  "noSearchResults": "Nu s-au găsit rezultate pentru \"{query}\"",
+  "@noSearchResults": {
+    "placeholders": {
+      "query": {
+        "type": "String"
+      }
+    }
+  },
+  "modifySearchTerms": "Încearcă să modifici termenii de căutare",
+  "noRequestsNeedApproval": "Nu există cereri care necesită aprobare",
+  "noApprovedRequestsCurrently": "Nu există cereri aprobate în acest moment",
+  "unknownBook": "Carte necunoscută",
+  "notAvailable": "Nu este disponibilă",
+  "dueDateLabel": "Data scadenței: ",
+  "loanDurationLabel": "Durată împrumut: ",
+  "approve": "Aprobă",
+  "reject": "Respinge",
+  "markAsPickedUp": "Marchează ca ridicat",
+  "requestDate": "Data cererii: ",
+  "dueDate": "Data scadenței: ",
+  "loanDuration": "Durată împrumut: ",
+  "days": "zile",
+  "bookMarkedAsPickedUp": "Cartea/manualul a fost marcat ca ridicat!",
+  "markingPickedUp": "Marcare Ridicată",
+  "pickupAndLoans": "Ridicare & Împrumuturi",
+  "searchBookStudentPlaceholder": "Caută după numele cărții sau studentului...",
+  "toPickup": "De ridicat",
+  "activeLoans": "Împrumuturi active",
+  "noPickupRequests": "Nu există cereri de ridicat",
+  "noActiveLoans": "Nu există împrumuturi active",
+  "approvedAt": "Aprobat la",
+  "dueAt": "Scadentă la",
+  "borrowedAt": "Împrumutat la",
+  "loan": "Împrumut",
+  "duration": "Durată",
+  "unknownUser": "Utilizator necunoscut",
+  "classLabel": "Clasa {className}",
+  "@classLabel": {
+    "placeholders": {
+      "className": {
+        "type": "String"
+      }
+    }
+  },
+  "days": "zile",
+  "backTooltip": "Înapoi",
+  "teacher": "Profesor",
+  "unknownBook": "Carte necunoscută",
+  "schoolType": "Tip Școală",
+  "classLabel2": "Clasă",
+  "profile": "Profil",
+  "classLetter": "Litera clasei",
+  "invitationCode": "Cod de invitație",
+  "schoolTypeGenerala": "Generala",
+  "schoolTypeLiceu": "Liceu",
+  "pleaseEnterPassword": "Vă rugăm să introduceți o parolă",
+  "passwordMinLength": "Parola trebuie să aibă cel puțin 8 caractere",
+  "passwordNoSpaces": "Parola nu poate conține spații",
+  "passwordNeedsUppercase": "Parola trebuie să conțină cel puțin o literă mare",
+  "passwordNeedsNumber": "Parola trebuie să conțină cel puțin o cifră",
+  "passwordNeedsSpecialChar": "Parola trebuie să conțină cel puțin un caracter special",
+  "pleaseConfirmPassword": "Vă rugăm să confirmați parola",
+  "passwordsDoNotMatch": "Parolele nu se potrivesc",
+  "emailMustBeNlenau": "Email-ul trebuie să fie din domeniul nlenau.ro",
+  "pleaseSelectSchoolType": "Vă rugăm să selectați tipul de școală",
+  "pleaseSelectClass": "Vă rugăm să selectați clasa",
+  "pleaseSelectProfile": "Vă rugăm să selectați profilul",
+  "pleaseSelectClassLetter": "Vă rugăm să selectați litera clasei",
+  "pleaseEnterInvitationCode": "Vă rugăm să introduceți codul de invitație",
+  "registrationError": "Eroare la înregistrare. Vă rugăm să încercați din nou.",
+  "registrationSuccess": "Înregistrare reușită! Verifică inboxul pentru a-ți activa contul.",
+  "searchBooksTitle": "Căutare Cărți",
+  "manuals": "Manuale",
+  "searchBooksShort": "Caută cărți și manuale...",
+  "searchBooksLong": "Caută după titlu, autor, categorie sau clasă (ex: VIII sau 8)...",
+  "selectLoanDuration": "Selectează durata împrumutului",
+  "oneWeek": "1 Săptămână",
+  "twoWeeks": "2 Săptămâni",
+  "oneMonth": "1 Lună",
+  "twoMonths": "2 Luni",
+  "loanRequestSuccess": "Cerere de împrumut înregistrată cu succes!",
+  "bookRequestError": "Eroare la solicitarea cărții/manualului: {error}",
+  "loadBooksError": "Eroare la încărcarea cărților: {error}",
+  "noBooksAvailable": "Nu există cărți/manuale.",
+  "displayError": "Eroare la afișare: {error}",
+  "invalidBook": "Carte invalidă",
+  "unknownBook": "Carte necunoscută",
+  "unknownAuthor": "Autor necunoscut",
+  "noCategory": "Fără categorie",
+  "bookDisplayError": "Eroare la afișarea cărții",
+  "appSettings": "Setări aplicație",
+  "aboutApp": "Despre aplicație",
+  "logout": "Deconectare",
+  "appTheme": "Temă aplicație",
+  "lightThemeActive": "Tema deschisă activată",
+  "darkThemeActive": "Tema întunecată activată",
+  "appLanguage": "Limba aplicației",
+  "languageChangedSuccess": "Limba a fost schimbată cu succes",
+  "themeDescription": "Comută între tema deschisă și cea întunecată",
+  "libraryManagementSystem": "Sistem de gestionare bibliotecă",
+  "welcomeLibrarian": "Bun venit, doamna Bibliotecară!",
+  "searchBooks": "Caută cărți",
+  "myRequests": "Cererile mele",
+  "viewManageRequests": "Vizualizează și gestionează cererile tale",
+  "examModels": "Modele de teste",
+  "findExamModels": "Găsește modele de teste pentru studiu",
+  "manageBooks": "Gestionează cărți",
+  "editDeleteBooks": "Editează și șterge cărți din catalog",
+  "pendingRequests": "Cereri în așteptare",
+  "manageLoanRequests": "Gestionează cererile de împrumut",
+  "activeLoans": "Împrumuturi active",
+  "viewCurrentLoans": "Vizualizează împrumuturile curente",
+  "loanHistory": "Istoric împrumuturi",
+  "viewLoanHistory": "Vizualizează istoricul împrumuturilor",
+  "manageExamModels": "Gestionează modelele de teste",
+  "exploreCatalog": "Explorează catalogul bibliotecii",
+  "adminPanel": "Panou de administrare bibliotecă",
+  "addBook": "Adaugă carte",
+  "addNewBook": "Adaugă o nouă carte în catalog",
+  "generateTeacherCodes": "Generează coduri de înregistrare pentru profesori",
+  "teacherCodes": "Coduri pentru profesori",
+  "aboutTeacherCodes": "Despre codurile pentru profesori",
+  "teacherCodeDescription": "Codurile generate sunt folosite de profesori pentru a se înregistra în sistem. Fiecare cod poate fi folosit o singură dată și expiră după 6 ore.",
+  "generateNewCode": "Generează cod nou",
+  "generating": "Se generează...",
+  "codeGeneratedSuccess": "Cod generat cu succes!",
+  "copyCode": "Copiază codul",
+  "existingCodes": "Coduri existente",
+  "noCodesGenerated": "Nu există coduri generate",
+  "generateFirstCode": "Generează primul cod pentru profesori",
+  "codeAvailable": "Disponibil",
+  "codeExpired": "Expirat",
+  "createdAt": "Creat: {date}",
+  "expiresAt": "Expiră: {date}",
+  "deleteCode": "Șterge codul",
+  "deleteConfirmation": "Confirmare ștergere",
+  "deleteCodeConfirmText": "Ești sigur că vrei să ștergi acest cod? Această acțiune nu poate fi anulată.",
+  "loadCodesError": "Eroare la încărcarea codurilor: {error}",
+  "generateCodeError": "Eroare la generarea codului: {error}",
+  "copyCodeSuccess": "Cod copiat în clipboard!",
+  "deleteCodeSuccess": "Cod șters cu succes!",
+  "deleteCodeError": "Eroare la ștergerea codului: {error}",
+  "language": "Limbă",
+  "theme": "Temă",
+  "switchToLightMode": "Comută la tema luminoasă",
+  "switchToDarkMode": "Comută la tema întunecată",
+  "settingsMenu": "Meniu setări"
+}

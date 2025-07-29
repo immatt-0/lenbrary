@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import '../l10n/app_localizations.dart';
 import '../services/api_service.dart';
 import '../services/notification_service.dart';
 import 'package:url_launcher/url_launcher.dart';
-import '../services/responsive_service.dart' show ResponsiveWidget, getResponsiveSpacing, getResponsiveBorderRadius, getResponsiveIconSize, ResponsiveTextStyles;
+import '../services/responsive_service.dart';
 
 class BookDetailsScreen extends StatefulWidget {
   final dynamic book;
@@ -19,16 +20,16 @@ class _BookDetailsScreenState extends State<BookDetailsScreen> with ResponsiveWi
     int selectedDuration = 14; // Default to 2 weeks
     String? userMessage;
     final durations = [
-      {'label': '1 Săptămână', 'value': 7},
-      {'label': '2 Săptămâni', 'value': 14},
-      {'label': '1 Lună', 'value': 30},
-      {'label': '2 Luni', 'value': 60},
+      {'label': AppLocalizations.of(context)!.oneWeek, 'value': 7},
+      {'label': AppLocalizations.of(context)!.twoWeeks, 'value': 14},
+      {'label': AppLocalizations.of(context)!.oneMonth, 'value': 30},
+      {'label': AppLocalizations.of(context)!.twoMonths, 'value': 60},
     ];
     final result = await showDialog<Map<String, dynamic>>(
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: const Text('Solicită împrumut'),
+          title: Text(AppLocalizations.of(context)!.requestLoan),
           content: SingleChildScrollView(
             child: StatefulBuilder(
               builder: (context, setState) {
@@ -36,7 +37,7 @@ class _BookDetailsScreenState extends State<BookDetailsScreen> with ResponsiveWi
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Durata împrumutului', style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600)),
+                    Text(AppLocalizations.of(context)!.loanDuration, style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600)),
                     const SizedBox(height: 8),
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 8),
@@ -59,12 +60,12 @@ class _BookDetailsScreenState extends State<BookDetailsScreen> with ResponsiveWi
                       ),
                     ),
                     const SizedBox(height: 18),
-                    Text('Mesaj (opțional)', style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600)),
+                    Text(AppLocalizations.of(context)!.messageOptional, style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600)),
                     const SizedBox(height: 8),
                     TextField(
-                      decoration: const InputDecoration(
-                        hintText: 'Scrie un mesaj pentru bibliotecar... (opțional)',
-                        border: OutlineInputBorder(),
+                      decoration: InputDecoration(
+                        hintText: AppLocalizations.of(context)!.writeMessageForLibrarian,
+                        border: const OutlineInputBorder(),
                       ),
                       minLines: 4,
                       maxLines: 6,
@@ -78,14 +79,14 @@ class _BookDetailsScreenState extends State<BookDetailsScreen> with ResponsiveWi
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
-              child: const Text('Anulează'),
+              child: Text(AppLocalizations.of(context)!.cancel),
             ),
             ElevatedButton(
               onPressed: () => Navigator.of(context).pop({
                 'duration': selectedDuration,
                 'message': userMessage,
               }),
-              child: const Text('Confirmă'),
+              child: Text(AppLocalizations.of(context)!.confirm),
             ),
           ],
         );
@@ -107,13 +108,13 @@ class _BookDetailsScreenState extends State<BookDetailsScreen> with ResponsiveWi
       if (!mounted) return;
       NotificationService.showSuccess(
         context: context,
-        message: 'Cerere de împrumut înregistrată cu succes!',
+        message: AppLocalizations.of(context)!.loanRequestSuccess,
       );
     } catch (e) {
       if (!mounted) return;
       NotificationService.showError(
         context: context,
-        message: 'Eroare la solicitarea cărții/manualului: ${e.toString()}',
+        message: AppLocalizations.of(context)!.errorRequestingBook(e.toString()),
       );
     } finally {
       setState(() { _isRequesting = false; });
@@ -127,13 +128,13 @@ class _BookDetailsScreenState extends State<BookDetailsScreen> with ResponsiveWi
       } else {
         NotificationService.showError(
           context: context,
-          message: 'Nu s-a putut deschide PDF-ul.',
+          message: AppLocalizations.of(context)!.pdfOpenError,
         );
       }
     } catch (e) {
       NotificationService.showError(
         context: context,
-        message: 'Eroare la deschiderea PDF-ului: ${e.toString()}',
+        message: AppLocalizations.of(context)!.pdfOpenErrorDetails(e.toString()),
       );
     }
   }
@@ -170,7 +171,7 @@ class _BookDetailsScreenState extends State<BookDetailsScreen> with ResponsiveWi
             onPressed: () {
               Navigator.pop(context);
             },
-            tooltip: 'Înapoi',
+            tooltip: AppLocalizations.of(context)!.back,
           ),
         ),
         centerTitle: true,
@@ -206,7 +207,7 @@ class _BookDetailsScreenState extends State<BookDetailsScreen> with ResponsiveWi
             ),
             SizedBox(width: getResponsiveSpacing(12)),
             Text(
-              'Detalii Carte',
+              AppLocalizations.of(context)!.bookDetails,
               style: ResponsiveTextStyles.getResponsiveTitleStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w700,
@@ -283,7 +284,7 @@ class _BookDetailsScreenState extends State<BookDetailsScreen> with ResponsiveWi
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  book['name'] ?? 'Carte necunoscută',
+                                  book['name'] ?? AppLocalizations.of(context)!.unknownBook,
                                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
                                     fontWeight: FontWeight.w700,
                                     color: Theme.of(context).colorScheme.onSurface,
@@ -322,7 +323,7 @@ class _BookDetailsScreenState extends State<BookDetailsScreen> with ResponsiveWi
                                       Icon(Icons.school_rounded, size: 18, color: Theme.of(context).colorScheme.primary),
                                       const SizedBox(width: 6),
                                       Text(
-                                        'Clasa: ${book['book_class']}',
+                                        AppLocalizations.of(context)!.classLabel(book['book_class']),
                                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                                           color: Theme.of(context).colorScheme.primary,
                                           fontWeight: FontWeight.w600,
@@ -339,7 +340,7 @@ class _BookDetailsScreenState extends State<BookDetailsScreen> with ResponsiveWi
                                         Icon(Icons.inventory_2_rounded, size: 18, color: Colors.green),
                                         const SizedBox(width: 6),
                                         Text(
-                                           'Disponibile: ${book['available_copies']}',
+                                           AppLocalizations.of(context)!.available(book['available_copies']),
                                           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                                             color: Colors.green,
                                             fontWeight: FontWeight.w600,
@@ -355,7 +356,7 @@ class _BookDetailsScreenState extends State<BookDetailsScreen> with ResponsiveWi
                                         Icon(Icons.inventory_2_rounded, size: 18, color: Colors.red),
                                         const SizedBox(width: 6),
                                         Text(
-                                          'Indisponibil',
+                                          AppLocalizations.of(context)!.unavailable,
                                           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                                             color: Colors.red,
                                             fontWeight: FontWeight.w600,
@@ -448,7 +449,7 @@ class _BookDetailsScreenState extends State<BookDetailsScreen> with ResponsiveWi
                                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                                 elevation: 0,
                               ),
-                              child: const Text('Deschide PDF'),
+                              child: Text(AppLocalizations.of(context)!.openPdf),
                             ),
                           ),
                         ],
@@ -470,8 +471,8 @@ class _BookDetailsScreenState extends State<BookDetailsScreen> with ResponsiveWi
                           )
                         : const Icon(Icons.shopping_cart_rounded),
                     label: Text(_isRequesting 
-                        ? 'Se trimite...' 
-                        : 'Solicită împrumut'),
+                        ? AppLocalizations.of(context)!.sending 
+                        : AppLocalizations.of(context)!.requestLoan),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Theme.of(context).colorScheme.primary,
                       foregroundColor: Theme.of(context).colorScheme.onPrimary,

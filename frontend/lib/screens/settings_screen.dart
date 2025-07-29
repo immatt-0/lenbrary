@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import '../l10n/app_localizations.dart';
 import '../services/api_service.dart';
 import '../services/notification_service.dart';
 import '../services/responsive_service.dart';
+import '../services/language_service.dart';
 import '../widgets/responsive_button.dart';
 import '../widgets/responsive_text_field.dart';
 import '../providers/theme_provider.dart';
+import '../l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 
 class SettingsScreen extends StatefulWidget {
@@ -83,7 +86,7 @@ class _SettingsScreenState extends State<SettingsScreen>
       return Scaffold(
         appBar: AppBar(
           title: Text(
-            'Setări',
+            AppLocalizations.of(context)!.settings,
             style: ResponsiveTextStyles.getResponsiveTitleStyle(
               fontSize: 20,
               fontWeight: FontWeight.w600,
@@ -133,7 +136,7 @@ class _SettingsScreenState extends State<SettingsScreen>
               ),
               SizedBox(width: getResponsiveSpacing(12)),
               Text(
-                'Setări',
+                AppLocalizations.of(context)!.settings,
                 style: ResponsiveTextStyles.getResponsiveTitleStyle(
                   fontSize: 26,
                   fontWeight: FontWeight.w800,
@@ -182,15 +185,19 @@ class _SettingsScreenState extends State<SettingsScreen>
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // App Settings Section
-                  _buildSectionHeader('Setări aplicație', Icons.app_settings_alt_rounded),
+                  _buildSectionHeader(AppLocalizations.of(context)!.appSettings, Icons.app_settings_alt_rounded),
                   SizedBox(height: getResponsiveSpacing(16.0)),
                   
                   // Theme Toggle Card
                   _buildThemeToggleCard(),
+                  SizedBox(height: getResponsiveSpacing(16.0)),
+                  
+                  // Language Selector Card
+                  _buildLanguageSelectorCard(),
                   SizedBox(height: getResponsiveSpacing(32.0)),
                   
                   // About Section
-                  _buildSectionHeader('Despre aplicație', Icons.info_rounded),
+                  _buildSectionHeader(AppLocalizations.of(context)!.aboutApp, Icons.info_rounded),
                   SizedBox(height: getResponsiveSpacing(16.0)),
                   
                   // App Info Card
@@ -199,7 +206,7 @@ class _SettingsScreenState extends State<SettingsScreen>
                   Center(
                     child: ElevatedButton.icon(
                       icon: Icon(Icons.logout_rounded, color: Colors.white),
-                      label: Text('Deconectare', style: TextStyle(fontWeight: FontWeight.bold)),
+                      label: Text(AppLocalizations.of(context)!.logout, style: TextStyle(fontWeight: FontWeight.bold)),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Theme.of(context).colorScheme.error,
                         foregroundColor: Colors.white,
@@ -315,7 +322,7 @@ class _SettingsScreenState extends State<SettingsScreen>
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Temă aplicație',
+                        AppLocalizations.of(context)!.appTheme,
                         style: ResponsiveTextStyles.getResponsiveTitleStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.w700,
@@ -324,7 +331,7 @@ class _SettingsScreenState extends State<SettingsScreen>
                       ),
                       SizedBox(height: getResponsiveSpacing(4)),
                       Text(
-                        isDarkMode ? 'Temă întunecată activată' : 'Temă deschisă activată',
+                        AppLocalizations.of(context)!.themeDescription,
                         style: ResponsiveTextStyles.getResponsiveBodyStyle(
                           fontSize: 14,
                           color: Theme.of(context).colorScheme.onSurface.withOpacity(0.8),
@@ -340,13 +347,162 @@ class _SettingsScreenState extends State<SettingsScreen>
                     themeProvider.toggleTheme();
                     NotificationService.showSuccess(
                       context: context,
-                      message: isDarkMode ? 'Tema deschisă activată' : 'Tema întunecată activată',
+                      message: isDarkMode ? AppLocalizations.of(context)!.lightThemeActive : AppLocalizations.of(context)!.darkThemeActive,
                     );
                   },
                   activeColor: Colors.purple[600],
                   activeTrackColor: Colors.purple[200],
                   inactiveThumbColor: Colors.orange[600],
                   inactiveTrackColor: Colors.orange[200],
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildLanguageSelectorCard() {
+    return Consumer<LanguageService>(
+      builder: (context, languageService, child) {
+        final currentLanguage = languageService.locale.languageCode;
+        
+        return Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                Theme.of(context).colorScheme.surface,
+                Theme.of(context).colorScheme.surface.withOpacity(0.8),
+              ],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+            borderRadius: getResponsiveBorderRadius(20),
+            boxShadow: [
+              BoxShadow(
+                color: Theme.of(context).colorScheme.secondary.withOpacity(0.06),
+                blurRadius: getResponsiveSpacing(24),
+                offset: Offset(0, getResponsiveSpacing(10)),
+                spreadRadius: 3,
+              ),
+              BoxShadow(
+                color: Colors.black.withOpacity(0.08),
+                blurRadius: getResponsiveSpacing(12),
+                offset: Offset(0, getResponsiveSpacing(6)),
+              ),
+            ],
+            border: Border.all(
+              color: Theme.of(context).colorScheme.secondary.withOpacity(0.1),
+              width: 1.5,
+            ),
+          ),
+          child: Padding(
+            padding: getResponsivePadding(all: 24.0),
+            child: Row(
+              children: [
+                Container(
+                  padding: EdgeInsets.all(getResponsiveSpacing(12)),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
+                        Theme.of(context).colorScheme.secondary,
+                        Theme.of(context).colorScheme.secondary.withOpacity(0.8),
+                      ],
+                    ),
+                    borderRadius: getResponsiveBorderRadius(12),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Theme.of(context).colorScheme.secondary.withOpacity(0.3),
+                        blurRadius: getResponsiveSpacing(8),
+                        offset: Offset(0, getResponsiveSpacing(2)),
+                      ),
+                    ],
+                  ),
+                  child: Icon(
+                    Icons.language_rounded,
+                    size: getResponsiveIconSize(24),
+                    color: Theme.of(context).colorScheme.onSecondary,
+                  ),
+                ),
+                SizedBox(width: getResponsiveSpacing(16.0)),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        AppLocalizations.of(context)!.appLanguage,
+                        style: ResponsiveTextStyles.getResponsiveTitleStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w700,
+                          color: Theme.of(context).colorScheme.onSurface,
+                        ),
+                      ),
+                      SizedBox(height: getResponsiveSpacing(4)),
+                      Text(
+                        LanguageService.languageNames[currentLanguage] ?? currentLanguage,
+                        style: ResponsiveTextStyles.getResponsiveBodyStyle(
+                          fontSize: 14,
+                          color: Theme.of(context).colorScheme.onSurface.withOpacity(0.8),
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                PopupMenuButton<String>(
+                  icon: Container(
+                    padding: EdgeInsets.all(getResponsiveSpacing(8)),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.secondary.withOpacity(0.1),
+                      borderRadius: getResponsiveBorderRadius(8),
+                    ),
+                    child: Icon(
+                      Icons.arrow_drop_down_rounded,
+                      color: Theme.of(context).colorScheme.secondary,
+                      size: getResponsiveIconSize(20),
+                    ),
+                  ),
+                  onSelected: (String languageCode) async {
+                    await languageService.changeLanguage(languageCode);
+                    if (mounted) {
+                      NotificationService.showSuccess(
+                        context: context,
+                        message: AppLocalizations.of(context)!.languageChangedSuccess,
+                      );
+                    }
+                  },
+                  itemBuilder: (BuildContext context) {
+                    return LanguageService.supportedLocales.map((Locale locale) {
+                      final languageCode = locale.languageCode;
+                      final languageName = LanguageService.languageNames[languageCode] ?? languageCode;
+                      final isSelected = currentLanguage == languageCode;
+                      
+                      return PopupMenuItem<String>(
+                        value: languageCode,
+                        child: Row(
+                          children: [
+                            Icon(
+                              isSelected ? Icons.radio_button_checked : Icons.radio_button_unchecked,
+                              color: Theme.of(context).colorScheme.secondary,
+                              size: getResponsiveIconSize(18),
+                            ),
+                            SizedBox(width: getResponsiveSpacing(12)),
+                            Text(
+                              languageName,
+                              style: ResponsiveTextStyles.getResponsiveBodyStyle(
+                                fontSize: 16,
+                                fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
+                                color: isSelected 
+                                    ? Theme.of(context).colorScheme.secondary 
+                                    : Theme.of(context).colorScheme.onSurface,
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    }).toList();
+                  },
                 ),
               ],
             ),
@@ -431,7 +587,7 @@ class _SettingsScreenState extends State<SettingsScreen>
                         ),
                       ),
                       Text(
-                        'Sistem de gestionare bibliotecă',
+                        AppLocalizations.of(context)!.libraryManagementSystem,
                         style: ResponsiveTextStyles.getResponsiveBodyStyle(
                           fontSize: 14,
                           color: Theme.of(context).colorScheme.onSurface.withOpacity(0.8),

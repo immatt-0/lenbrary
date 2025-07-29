@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../l10n/app_localizations.dart';
 import '../services/api_service.dart';
 import '../services/responsive_service.dart';
 import 'extension_requests_screen.dart';
@@ -173,7 +174,7 @@ class _ActiveLoansScreenState extends State<ActiveLoansScreen>
               SizedBox(width: ResponsiveService.isSmallPhone ? 8 : 12),
               Flexible(
                 child: Text(
-                  ResponsiveService.isSmallPhone ? 'Împrumuturi' : 'Împrumuturi Active',
+                  ResponsiveService.isSmallPhone ? AppLocalizations.of(context)!.loans : AppLocalizations.of(context)!.activeLoans,
                   style: Theme.of(context).textTheme.titleLarge?.copyWith(
                     fontWeight: FontWeight.w700,
                     letterSpacing: -0.5,
@@ -203,7 +204,7 @@ class _ActiveLoansScreenState extends State<ActiveLoansScreen>
               padding: EdgeInsets.zero,
               constraints: BoxConstraints(),
               onPressed: () => Navigator.pushReplacementNamed(context, '/success'),
-              tooltip: 'Înapoi',
+              tooltip: AppLocalizations.of(context)!.back,
             ),
           ),
         ),
@@ -252,7 +253,7 @@ class _ActiveLoansScreenState extends State<ActiveLoansScreen>
                     FadeTransition(
                       opacity: _fadeAnimation,
                       child: Text(
-                        'Se încarcă împrumuturile...',
+                        AppLocalizations.of(context)!.loadingLoans,
                         style: Theme.of(context).textTheme.titleMedium?.copyWith(
                           color: Theme.of(context).colorScheme.primary,
                         ),
@@ -307,7 +308,7 @@ class _ActiveLoansScreenState extends State<ActiveLoansScreen>
                                       color: Theme.of(context).colorScheme.onSecondary,
                                     ),
                                     label: Text(
-                                      'Cereri Extindere',
+                                      AppLocalizations.of(context)!.extensionRequests,
                                       style: TextStyle(
                                         color: Theme.of(context).colorScheme.onSecondary,
                                         fontWeight: FontWeight.w600,
@@ -326,7 +327,7 @@ class _ActiveLoansScreenState extends State<ActiveLoansScreen>
                                 ),
                                 const SizedBox(height: 8),
                                 Text(
-                                  'Aici puteți vizualiza cererile de extindere',
+                                  AppLocalizations.of(context)!.extensionRequestDescription,
                                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                                     color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
                                     fontWeight: FontWeight.w500,
@@ -370,7 +371,7 @@ class _ActiveLoansScreenState extends State<ActiveLoansScreen>
                                       color: Theme.of(context).colorScheme.onSecondary,
                                     ),
                                     label: Text(
-                                      'Cereri Extindere',
+                                      AppLocalizations.of(context)!.extensionRequests,
                                       style: TextStyle(
                                         color: Theme.of(context).colorScheme.onSecondary,
                                         fontWeight: FontWeight.w600,
@@ -389,7 +390,7 @@ class _ActiveLoansScreenState extends State<ActiveLoansScreen>
                                 const SizedBox(width: 16),
                                 Expanded(
                                   child: Text(
-                                    'Aici puteți vizualiza cererile de extindere',
+                                    AppLocalizations.of(context)!.extensionRequestDescription,
                                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                                       color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
                                       fontWeight: FontWeight.w500,
@@ -436,8 +437,8 @@ class _ActiveLoansScreenState extends State<ActiveLoansScreen>
                             controller: _searchController,
                             decoration: InputDecoration(
                               hintText: ResponsiveService.isSmallPhone 
-                                  ? '🔍 Caută cărți...' 
-                                  : '🔍 Caută după numele cărții...',
+                                  ? AppLocalizations.of(context)!.searchBooksShort
+                                  : AppLocalizations.of(context)!.searchByBookName,
                               hintStyle: TextStyle(
                                 color: Theme.of(context).colorScheme.primary.withOpacity(0.6),
                                 fontSize: ResponsiveService.isSmallPhone ? 14 : 16,
@@ -556,7 +557,7 @@ class _ActiveLoansScreenState extends State<ActiveLoansScreen>
                                   child: ElevatedButton.icon(
                           onPressed: _loadActiveLoans,
                           icon: const Icon(Icons.refresh_rounded),
-                          label: const Text('Reîncearcă'),
+                          label: Text(AppLocalizations.of(context)!.retry),
                           style: ElevatedButton.styleFrom(
                             padding: const EdgeInsets.symmetric(
                               horizontal: 24,
@@ -608,8 +609,8 @@ class _ActiveLoansScreenState extends State<ActiveLoansScreen>
                                 opacity: _fadeAnimation,
                                 child: Text(
                                   _searchQuery.isNotEmpty 
-                                      ? 'Nu s-au găsit rezultate pentru "$_searchQuery"'
-                                      : 'Nu există împrumuturi active',
+                                      ? AppLocalizations.of(context)!.noResultsFor(_searchQuery)
+                                      : AppLocalizations.of(context)!.noActiveLoans,
                                   style: Theme.of(context).textTheme.titleLarge?.copyWith(
                                     color: Theme.of(context).colorScheme.primary.withOpacity(0.5),
                                     fontSize: ResponsiveService.isSmallPhone ? 16 : null,
@@ -787,7 +788,7 @@ class _ActiveLoansScreenState extends State<ActiveLoansScreen>
                                               ),
                                             ),
                                             child: Text(
-                                              'Profesor',
+                                              AppLocalizations.of(context)!.teacher,
                                               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                                                 color: Colors.blue[700],
                                                 fontWeight: FontWeight.w700,
@@ -904,7 +905,7 @@ class _ActiveLoansScreenState extends State<ActiveLoansScreen>
                                         // Book Title
                                         Center(
                                           child: Text(
-                                            book['name'] ?? 'Carte necunoscută',
+                                            book['name'] ?? AppLocalizations.of(context)!.unknownBook,
                                             style: Theme.of(context).textTheme.titleMedium?.copyWith(
                                               fontWeight: FontWeight.w600,
                                               fontSize: ResponsiveService.isSmallPhone ? 14 : 16,
@@ -982,7 +983,7 @@ class _ActiveLoansScreenState extends State<ActiveLoansScreen>
                                   Expanded(
                                     child: RichText(
                                       text: TextSpan(
-                                        text: 'Data ridicării: ',
+                                        text: AppLocalizations.of(context)!.pickupDate,
                                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                                           color: Colors.green[700],
                                           fontWeight: FontWeight.w700,
@@ -991,8 +992,8 @@ class _ActiveLoansScreenState extends State<ActiveLoansScreen>
                                         children: [
                                           TextSpan(
                                             text: pickupDate != null
-                                                ? '${pickupDate.day.toString().padLeft(2, '0')}.${pickupDate.month.toString().padLeft(2, '0')}.${pickupDate.year}'
-                                                : 'Nu este disponibilă',
+                                                ? ' ${pickupDate.day.toString().padLeft(2, '0')}.${pickupDate.month.toString().padLeft(2, '0')}.${pickupDate.year}'
+                                                : ' ${AppLocalizations.of(context)!.notAvailable}',
                                             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                                               color: Colors.green[600],
                                               fontWeight: FontWeight.w600,
@@ -1047,7 +1048,7 @@ class _ActiveLoansScreenState extends State<ActiveLoansScreen>
                                   Expanded(
                                     child: RichText(
                                       text: TextSpan(
-                                        text: 'Data scadenței: ',
+                                        text: AppLocalizations.of(context)!.dueDate,
                                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                                           color: Colors.orange[700],
                                           fontWeight: FontWeight.w700,
@@ -1056,8 +1057,8 @@ class _ActiveLoansScreenState extends State<ActiveLoansScreen>
                                         children: [
                                           TextSpan(
                                             text: dueDate != null
-                                                ? '${dueDate.day.toString().padLeft(2, '0')}.${dueDate.month.toString().padLeft(2, '0')}.${dueDate.year}'
-                                                : 'Nu este disponibilă',
+                                                ? ' ${dueDate.day.toString().padLeft(2, '0')}.${dueDate.month.toString().padLeft(2, '0')}.${dueDate.year}'
+                                                : ' ${AppLocalizations.of(context)!.notAvailable}',
                                             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                                               color: Colors.orange[600],
                                               fontWeight: FontWeight.w600,
@@ -1112,7 +1113,7 @@ class _ActiveLoansScreenState extends State<ActiveLoansScreen>
                                         size: ResponsiveService.isSmallPhone ? 18 : 20,
                                       ),
                                 label: Text(
-                                  _processingAction ? 'Se procesează...' : 'Carte Returnată',
+                                  _processingAction ? AppLocalizations.of(context)!.processing : AppLocalizations.of(context)!.bookReturned,
                                   style: TextStyle(
                                     fontSize: ResponsiveService.isSmallPhone ? 12 : 14,
                                     fontWeight: FontWeight.w600,

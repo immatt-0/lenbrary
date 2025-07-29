@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
+import '../l10n/app_localizations.dart';
 import '../services/api_service.dart';
 import '../services/notification_service.dart';
 import '../services/responsive_service.dart';
 import '../widgets/responsive_button.dart';
 import '../widgets/responsive_text_field.dart';
-import '../providers/theme_provider.dart';
-import 'package:provider/provider.dart';
+import '../widgets/settings_menu_button.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({Key? key}) : super(key: key);
@@ -45,6 +45,18 @@ class _RegisterScreenState extends State<RegisterScreen> with ResponsiveWidget {
   String? _selectedClassCharacter;
 
   bool _obscurePassword = true;
+
+  // Helper method to get localized school type
+  String _getLocalizedSchoolType(BuildContext context, String type) {
+    switch (type) {
+      case 'Generala':
+        return AppLocalizations.of(context)!.schoolTypeGenerala;
+      case 'Liceu':
+        return AppLocalizations.of(context)!.schoolTypeLiceu;
+      default:
+        return type;
+    }
+  }
 
   @override
   void dispose() {
@@ -106,7 +118,7 @@ class _RegisterScreenState extends State<RegisterScreen> with ResponsiveWidget {
         if (mounted) {
           NotificationService.showSuccess(
             context: context,
-            message: 'Înregistrare reușită! Verifică inboxul pentru a-ți activa contul.',
+            message: AppLocalizations.of(context)!.registrationSuccess,
           );
           Navigator.pushReplacementNamed(context, '/login');
         }
@@ -129,7 +141,7 @@ class _RegisterScreenState extends State<RegisterScreen> with ResponsiveWidget {
               }
             } catch (_) {
               // If anything goes wrong during extraction, fall back to default message
-              errorMsg = "Eroare la înregistrare. Vă rugăm să încercați din nou.";
+              errorMsg = AppLocalizations.of(context)!.registrationError;
             }
           }
           // Try to extract 'detail' field from error message if it exists
@@ -147,7 +159,7 @@ class _RegisterScreenState extends State<RegisterScreen> with ResponsiveWidget {
               }
             } catch (_) {
               // If anything goes wrong during extraction, fall back to default message
-              errorMsg = "Eroare la înregistrare. Vă rugăm să încercați din nou.";
+              errorMsg = AppLocalizations.of(context)!.registrationError;
             }
           }
           _errorMessage = errorMsg;
@@ -167,25 +179,12 @@ class _RegisterScreenState extends State<RegisterScreen> with ResponsiveWidget {
     ResponsiveService.init(context);
     
     return Scaffold(
-      floatingActionButton: Consumer<ThemeProvider>(
-        builder: (context, themeProvider, child) {
-          return Padding(
-            padding: EdgeInsets.only(
-              top: getResponsiveSpacing(16.0), 
-              right: getResponsiveSpacing(8.0)
-            ),
-            child: FloatingActionButton(
-              onPressed: () => themeProvider.toggleTheme(),
-              backgroundColor: Theme.of(context).colorScheme.primary,
-              foregroundColor: Theme.of(context).colorScheme.onPrimary,
-              elevation: 8,
-              child: Icon(
-                themeProvider.isDarkMode ? Icons.light_mode : Icons.dark_mode,
-                size: getResponsiveIconSize(24),
-              ),
-            ),
-          );
-        },
+      floatingActionButton: Padding(
+        padding: EdgeInsets.only(
+          top: getResponsiveSpacing(16.0), 
+          right: getResponsiveSpacing(8.0)
+        ),
+        child: const SettingsMenuButton(),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endTop,
       body: Container(
@@ -224,7 +223,7 @@ class _RegisterScreenState extends State<RegisterScreen> with ResponsiveWidget {
                             SizedBox(height: getResponsiveSpacing(16.0)),
                             // App title
                             Text(
-                              'Lenbrary',
+                              AppLocalizations.of(context)!.appTitle,
                               style: ResponsiveTextStyles.getResponsiveTitleStyle(
                                 fontSize: 32.0,
                                 fontWeight: FontWeight.w700,
@@ -235,16 +234,16 @@ class _RegisterScreenState extends State<RegisterScreen> with ResponsiveWidget {
                             // Email field
                             ResponsiveTextField(
                               controller: _emailController,
-                              labelText: 'Email',
+                              labelText: AppLocalizations.of(context)!.email,
                               hintText: 'example@nlenau.ro',
                               prefixIcon: Icon(Icons.email_outlined),
                               keyboardType: TextInputType.emailAddress,
                               validator: (value) {
                                 if (value == null || value.isEmpty) {
-                                  return 'Vă rugăm să introduceți o adresă de email';
+                                  return AppLocalizations.of(context)!.enterEmail;
                                 }
                                 if (!value.endsWith('@nlenau.ro')) {
-                                  return 'Email-ul trebuie să fie din domeniul nlenau.ro';
+                                  return AppLocalizations.of(context)!.emailMustBeNlenau;
                                 }
                                 return null;
                               },
@@ -253,11 +252,11 @@ class _RegisterScreenState extends State<RegisterScreen> with ResponsiveWidget {
                             // First name field
                             ResponsiveTextField(
                               controller: _firstNameController,
-                              labelText: 'Prenume',
+                              labelText: AppLocalizations.of(context)!.firstName,
                               prefixIcon: Icon(Icons.person_outline),
                               validator: (value) {
                                 if (value == null || value.isEmpty) {
-                                  return 'Vă rugăm să introduceți prenumele';
+                                  return AppLocalizations.of(context)!.enterFirstName;
                                 }
                                 return null;
                               },
@@ -266,11 +265,11 @@ class _RegisterScreenState extends State<RegisterScreen> with ResponsiveWidget {
                             // Last name field
                             ResponsiveTextField(
                               controller: _lastNameController,
-                              labelText: 'Nume',
+                              labelText: AppLocalizations.of(context)!.lastName,
                               prefixIcon: Icon(Icons.person_outline),
                               validator: (value) {
                                 if (value == null || value.isEmpty) {
-                                  return 'Vă rugăm să introduceți numele';
+                                  return AppLocalizations.of(context)!.enterLastName;
                                 }
                                 return null;
                               },
@@ -279,7 +278,7 @@ class _RegisterScreenState extends State<RegisterScreen> with ResponsiveWidget {
                             // Password field
                             ResponsiveTextField(
                               controller: _passwordController,
-                              labelText: 'Parolă',
+                              labelText: AppLocalizations.of(context)!.password,
                               prefixIcon: Icon(Icons.lock_outline),
                               suffixIcon: IconButton(
                                 icon: Icon(
@@ -296,22 +295,22 @@ class _RegisterScreenState extends State<RegisterScreen> with ResponsiveWidget {
                               obscureText: _obscurePassword,
                               validator: (value) {
                                 if (value == null || value.isEmpty) {
-                                  return 'Vă rugăm să introduceți o parolă';
+                                  return AppLocalizations.of(context)!.pleaseEnterPassword;
                                 }
                                 if (value.length < 8) {
-                                  return 'Parola trebuie să aibă cel puțin 8 caractere';
+                                  return AppLocalizations.of(context)!.passwordMinLength;
                                 }
                                 if (value.contains(' ')) {
-                                  return 'Parola nu poate conține spații';
+                                  return AppLocalizations.of(context)!.passwordNoSpaces;
                                 }
                                 if (!value.contains(RegExp(r'[A-Z]'))) {
-                                  return 'Parola trebuie să conțină cel puțin o literă mare';
+                                  return AppLocalizations.of(context)!.passwordNeedsUppercase;
                                 }
                                 if (!value.contains(RegExp(r'[0-9]'))) {
-                                  return 'Parola trebuie să conțină cel puțin o cifră';
+                                  return AppLocalizations.of(context)!.passwordNeedsNumber;
                                 }
                                 if (!value.contains(RegExp(r'[!@#$%^&*(),.?":{}|<>]'))) {
-                                  return 'Parola trebuie să conțină cel puțin un caracter special';
+                                  return AppLocalizations.of(context)!.passwordNeedsSpecialChar;
                                 }
                                 return null;
                               },
@@ -320,15 +319,15 @@ class _RegisterScreenState extends State<RegisterScreen> with ResponsiveWidget {
                             // Confirm password field
                             ResponsiveTextField(
                               controller: _confirmPasswordController,
-                              labelText: 'Confirmă parola',
+                              labelText: AppLocalizations.of(context)!.confirmPassword,
                               prefixIcon: Icon(Icons.lock_outline),
                               obscureText: _obscurePassword,
                               validator: (value) {
                                 if (value == null || value.isEmpty) {
-                                  return 'Vă rugăm să confirmați parola';
+                                  return AppLocalizations.of(context)!.pleaseConfirmPassword;
                                 }
                                 if (value != _passwordController.text) {
-                                  return 'Parolele nu se potrivesc';
+                                  return AppLocalizations.of(context)!.passwordsDoNotMatch;
                                 }
                                 return null;
                               },
@@ -337,7 +336,7 @@ class _RegisterScreenState extends State<RegisterScreen> with ResponsiveWidget {
                             // Teacher switch
                             SwitchListTile(
                               title: Text(
-                                'Înregistrare ca profesor',
+                                AppLocalizations.of(context)!.registerAsTeacher,
                                 style: ResponsiveTextStyles.getResponsiveTextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.w500,
@@ -359,11 +358,11 @@ class _RegisterScreenState extends State<RegisterScreen> with ResponsiveWidget {
                             if (!_isTeacher) ...[
                               SizedBox(height: getResponsiveSpacing(16.0)),
                               ResponsiveDropdownField<String>(
-                                labelText: 'Tip Școală',
+                                labelText: AppLocalizations.of(context)!.schoolType,
                                 prefixIcon: Icon(Icons.school_outlined),
                                 value: _selectedSchoolType,
                                 items: _schoolTypeOptions,
-                                itemToString: (type) => type,
+                                itemToString: (type) => _getLocalizedSchoolType(context, type),
                                 onChanged: (value) {
                                   setState(() {
                                     _selectedSchoolType = value;
@@ -374,7 +373,7 @@ class _RegisterScreenState extends State<RegisterScreen> with ResponsiveWidget {
                                 },
                                 validator: (value) {
                                   if (!_isTeacher && value == null) {
-                                    return 'Vă rugăm să selectați tipul de școală';
+                                    return AppLocalizations.of(context)!.pleaseSelectSchoolType;
                                   }
                                   return null;
                                 },
@@ -382,7 +381,7 @@ class _RegisterScreenState extends State<RegisterScreen> with ResponsiveWidget {
                               if (_selectedSchoolType == 'Liceu') ...[
                                 SizedBox(height: getResponsiveSpacing(16.0)),
                                 ResponsiveDropdownField<String>(
-                                  labelText: 'Clasă',
+                                  labelText: AppLocalizations.of(context)!.classLabel2,
                                   prefixIcon: Icon(Icons.class_outlined),
                                   value: _selectedClass,
                                   items: _liceuClassOptions,
@@ -394,14 +393,14 @@ class _RegisterScreenState extends State<RegisterScreen> with ResponsiveWidget {
                                   },
                                   validator: (value) {
                                     if (_selectedSchoolType == 'Liceu' && value == null) {
-                                      return 'Vă rugăm să selectați clasa';
+                                      return AppLocalizations.of(context)!.pleaseSelectClass;
                                     }
                                     return null;
                                   },
                                 ),
                                 SizedBox(height: getResponsiveSpacing(16.0)),
                                 ResponsiveDropdownField<String>(
-                                  labelText: 'Profil',
+                                  labelText: AppLocalizations.of(context)!.profile,
                                   prefixIcon: Icon(Icons.account_tree_outlined),
                                   value: _selectedDepartment,
                                   items: _departmentOptions,
@@ -413,7 +412,7 @@ class _RegisterScreenState extends State<RegisterScreen> with ResponsiveWidget {
                                   },
                                   validator: (value) {
                                     if (_selectedSchoolType == 'Liceu' && value == null) {
-                                      return 'Vă rugăm să selectați profilul';
+                                      return AppLocalizations.of(context)!.pleaseSelectProfile;
                                     }
                                     return null;
                                   },
@@ -421,7 +420,7 @@ class _RegisterScreenState extends State<RegisterScreen> with ResponsiveWidget {
                               ] else if (_selectedSchoolType == 'Generala') ...[
                                 SizedBox(height: getResponsiveSpacing(16.0)),
                                 ResponsiveDropdownField<String>(
-                                  labelText: 'Clasă',
+                                  labelText: AppLocalizations.of(context)!.classLabel2,
                                   prefixIcon: Icon(Icons.class_outlined),
                                   value: _selectedClass,
                                   items: _generalaClassOptions,
@@ -433,14 +432,14 @@ class _RegisterScreenState extends State<RegisterScreen> with ResponsiveWidget {
                                   },
                                   validator: (value) {
                                     if (_selectedSchoolType == 'Generala' && value == null) {
-                                      return 'Vă rugăm să selectați clasa';
+                                      return AppLocalizations.of(context)!.pleaseSelectClass;
                                     }
                                     return null;
                                   },
                                 ),
                                 SizedBox(height: getResponsiveSpacing(16.0)),
                                 ResponsiveDropdownField<String>(
-                                  labelText: 'Litera clasei',
+                                  labelText: AppLocalizations.of(context)!.classLetter,
                                   prefixIcon: Icon(Icons.font_download_outlined),
                                   value: _selectedClassCharacter,
                                   items: _classCharacterOptions,
@@ -452,7 +451,7 @@ class _RegisterScreenState extends State<RegisterScreen> with ResponsiveWidget {
                                   },
                                   validator: (value) {
                                     if (_selectedSchoolType == 'Generala' && value == null) {
-                                      return 'Vă rugăm să selectați litera clasei';
+                                      return AppLocalizations.of(context)!.pleaseSelectClassLetter;
                                     }
                                     return null;
                                   },
@@ -463,11 +462,11 @@ class _RegisterScreenState extends State<RegisterScreen> with ResponsiveWidget {
                               SizedBox(height: getResponsiveSpacing(16.0)),
                               ResponsiveTextField(
                                 controller: _invitationCodeController,
-                                labelText: 'Cod de invitație',
+                                labelText: AppLocalizations.of(context)!.invitationCode,
                                 prefixIcon: Icon(Icons.verified_user_outlined),
                                 validator: (value) {
                                   if (_isTeacher && (value == null || value.isEmpty)) {
-                                    return 'Vă rugăm să introduceți codul de invitație';
+                                    return AppLocalizations.of(context)!.pleaseEnterInvitationCode;
                                   }
                                   return null;
                                 },
@@ -496,7 +495,7 @@ class _RegisterScreenState extends State<RegisterScreen> with ResponsiveWidget {
                             if (_errorMessage != null)
                               SizedBox(height: getResponsiveSpacing(16.0)),
                             ResponsiveButton(
-                              text: 'Înregistrare',
+                              text: AppLocalizations.of(context)!.register,
                               onPressed: _isLoading ? null : _register,
                               isLoading: _isLoading,
                             ),
@@ -506,7 +505,7 @@ class _RegisterScreenState extends State<RegisterScreen> with ResponsiveWidget {
                                 Navigator.pushReplacementNamed(context, '/login');
                               },
                               child: Text(
-                                'Ai deja un cont? Autentifică-te',
+                                AppLocalizations.of(context)!.alreadyHaveAccount,
                                 style: ResponsiveTextStyles.getResponsiveTextStyle(
                                   fontSize: 14,
                                   color: Theme.of(context).colorScheme.primary,

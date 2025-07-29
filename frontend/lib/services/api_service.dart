@@ -24,7 +24,10 @@ class ApiService {
   // static const String baseUrl =  'http://localhost:8000'; // Windows/Web/iOS simulator
 
   // For physical devices, use your computer's actual IP address:
-  static const String baseUrl = 'http://192.168.68.111:8000'; // Replace with your actual IP
+  // static const String baseUrl = 'http://192.168.56.1:8000'; // Replace with your actual IP
+  
+  // Production server with your domain:
+  static const String baseUrl = 'https://backend-lenbrary.onrender.com'; // Your self-hosted domain
 
   // Endpoints
   static const String registerEndpoint = '/book-library/register';

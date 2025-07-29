@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../l10n/app_localizations.dart';
 import '../services/api_service.dart';
 import '../services/notification_service.dart';
 
@@ -172,7 +173,7 @@ class _ExtensionRequestsScreenState extends State<ExtensionRequestsScreen>
               ),
               const SizedBox(width: 12),
               Text(
-                'Cereri de Extindere',
+                AppLocalizations.of(context)!.extensionRequestsTitle,
                 style: Theme.of(context).textTheme.titleLarge?.copyWith(
                   fontWeight: FontWeight.w700,
                   letterSpacing: -0.5,
@@ -196,7 +197,7 @@ class _ExtensionRequestsScreenState extends State<ExtensionRequestsScreen>
                 color: Theme.of(context).colorScheme.primary,
               ),
               onPressed: () => Navigator.pop(context),
-              tooltip: 'Înapoi',
+              tooltip: AppLocalizations.of(context)!.back,
             ),
           ),
         ),
@@ -215,7 +216,7 @@ class _ExtensionRequestsScreenState extends State<ExtensionRequestsScreen>
                   color: Theme.of(context).colorScheme.primary,
                 ),
                 onPressed: _loadRequests,
-                tooltip: 'Reîmprospătează',
+                tooltip: AppLocalizations.of(context)!.refreshTooltip,
               ),
             ),
           ),
@@ -265,7 +266,7 @@ class _ExtensionRequestsScreenState extends State<ExtensionRequestsScreen>
                     FadeTransition(
                       opacity: _fadeAnimation,
                       child: Text(
-                        'Se încarcă cererile...',
+                        AppLocalizations.of(context)!.loadingRequests,
                         style: Theme.of(context).textTheme.titleMedium?.copyWith(
                           color: Theme.of(context).colorScheme.primary,
                         ),
@@ -320,7 +321,7 @@ class _ExtensionRequestsScreenState extends State<ExtensionRequestsScreen>
                             onPressed: _loadRequests,
                             icon: Icon(Icons.refresh_rounded, color: Theme.of(context).colorScheme.onPrimary),
                             label: Text(
-                              'Reîncearcă',
+                              AppLocalizations.of(context)!.retry,
                               style: TextStyle(color: Theme.of(context).colorScheme.onPrimary, fontWeight: FontWeight.w600),
                             ),
                             style: ElevatedButton.styleFrom(
@@ -368,7 +369,7 @@ class _ExtensionRequestsScreenState extends State<ExtensionRequestsScreen>
                             FadeTransition(
                               opacity: _fadeAnimation,
                               child: Text(
-                                'Nu există cereri de extindere',
+                                AppLocalizations.of(context)!.noExtensionRequests,
                                 style: Theme.of(context).textTheme.titleLarge?.copyWith(
                                   color: Theme.of(context).colorScheme.primary.withOpacity(0.7),
                                   fontWeight: FontWeight.w600,
@@ -380,7 +381,7 @@ class _ExtensionRequestsScreenState extends State<ExtensionRequestsScreen>
                             FadeTransition(
                               opacity: _fadeAnimation,
                               child: Text(
-                                'Cererile de extindere vor apărea aici',
+                                AppLocalizations.of(context)!.extensionRequestsWillAppear,
                                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                                   color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
                                 ),
@@ -484,7 +485,7 @@ class _ExtensionRequestsScreenState extends State<ExtensionRequestsScreen>
                           const SizedBox(width: 8),
                           Expanded(
                             child: Text(
-                              'Această carte a fost deja prelungită o dată. Nu se poate prelungi din nou.',
+                              AppLocalizations.of(context)!.alreadyExtendedMessage,
                               style: TextStyle(
                                 color: Colors.orange[700],
                                 fontWeight: FontWeight.w600,
@@ -544,7 +545,7 @@ class _ExtensionRequestsScreenState extends State<ExtensionRequestsScreen>
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                'Student',
+                                AppLocalizations.of(context)!.student,
                                 style: Theme.of(context).textTheme.titleSmall?.copyWith(
                                   fontWeight: FontWeight.w600,
                                   color: Theme.of(context).colorScheme.primary,
@@ -585,7 +586,7 @@ class _ExtensionRequestsScreenState extends State<ExtensionRequestsScreen>
                                         ),
                                       ),
                                       child: Text(
-                                        'Profesor',
+                                        AppLocalizations.of(context)!.teacher,
                                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
                                           color: Colors.blue[700],
                                           fontWeight: FontWeight.w600,
@@ -683,7 +684,7 @@ class _ExtensionRequestsScreenState extends State<ExtensionRequestsScreen>
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                'Carte',
+                                AppLocalizations.of(context)!.book,
                                 style: Theme.of(context).textTheme.titleSmall?.copyWith(
                                   fontWeight: FontWeight.w600,
                                   color: Theme.of(context).colorScheme.secondary,
@@ -691,7 +692,7 @@ class _ExtensionRequestsScreenState extends State<ExtensionRequestsScreen>
                               ),
                               const SizedBox(height: 4),
                               Text(
-                                book['name'] ?? 'Carte necunoscută',
+                                book['name'] ?? AppLocalizations.of(context)!.unknownBook,
                                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
                                   fontWeight: FontWeight.w700,
                                   color: Theme.of(context).colorScheme.onSurface,
@@ -759,7 +760,7 @@ class _ExtensionRequestsScreenState extends State<ExtensionRequestsScreen>
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                'Extindere solicitată',
+                                AppLocalizations.of(context)!.extensionRequested,
                                 style: Theme.of(context).textTheme.titleSmall?.copyWith(
                                   fontWeight: FontWeight.w600,
                                   color: Theme.of(context).colorScheme.primary,
@@ -767,7 +768,7 @@ class _ExtensionRequestsScreenState extends State<ExtensionRequestsScreen>
                               ),
                               const SizedBox(height: 4),
                               Text(
-                                '${requestedDays ?? 'necunoscut'} zile',
+                                '${requestedDays ?? AppLocalizations.of(context)!.unknown} ${AppLocalizations.of(context)!.days}',
                                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
                                   fontWeight: FontWeight.w700,
                                   color: Theme.of(context).colorScheme.onSurface,
@@ -784,7 +785,7 @@ class _ExtensionRequestsScreenState extends State<ExtensionRequestsScreen>
                                     ),
                                     const SizedBox(width: 6),
                                     Text(
-                                      'De la: ${currentDueDate.toString().split(' ')[0]}',
+                                      '${AppLocalizations.of(context)!.fromLabel} ${currentDueDate.toString().split(' ')[0]}',
                                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
                                         color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
                                         fontWeight: FontWeight.w500,
@@ -802,7 +803,7 @@ class _ExtensionRequestsScreenState extends State<ExtensionRequestsScreen>
                                     ),
                                     const SizedBox(width: 6),
                                     Text(
-                                      'Până la: ${extendedDueDate.toString().split(' ')[0]}',
+                                      '${AppLocalizations.of(context)!.toLabel} ${extendedDueDate.toString().split(' ')[0]}',
                                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
                                         color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
                                         fontWeight: FontWeight.w500,
@@ -910,7 +911,7 @@ class ExtensionRequestDetailScreen extends StatelessWidget {
             ),
             const SizedBox(width: 12),
             Text(
-              'Detalii cerere extindere',
+              AppLocalizations.of(context)!.extensionRequestDetailsTitle,
               style: Theme.of(context).textTheme.titleLarge?.copyWith(
                 fontWeight: FontWeight.w700,
                 letterSpacing: -0.5,
@@ -931,7 +932,7 @@ class ExtensionRequestDetailScreen extends StatelessWidget {
               color: Theme.of(context).colorScheme.primary,
             ),
             onPressed: () => Navigator.pop(context),
-            tooltip: 'Înapoi',
+            tooltip: AppLocalizations.of(context)!.back,
           ),
         ),
       ),
@@ -1149,7 +1150,7 @@ class ExtensionRequestDetailScreen extends StatelessWidget {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      'Carte',
+                                      AppLocalizations.of(context)!.book,
                                       style: Theme.of(context).textTheme.titleSmall?.copyWith(
                                         fontWeight: FontWeight.w600,
                                         color: Theme.of(context).colorScheme.secondary,
@@ -1157,7 +1158,7 @@ class ExtensionRequestDetailScreen extends StatelessWidget {
                                     ),
                                     const SizedBox(height: 4),
                                     Text(
-                                      book['name'] ?? 'Carte necunoscută',
+                                      book['name'] ?? AppLocalizations.of(context)!.unknownBook,
                                       style: Theme.of(context).textTheme.titleLarge?.copyWith(
                                         fontWeight: FontWeight.w700,
                                         color: Theme.of(context).colorScheme.onSurface,
@@ -1281,7 +1282,7 @@ class ExtensionRequestDetailScreen extends StatelessWidget {
                                                 ),
                                                 const SizedBox(width: 8),
                                                 Text(
-                                                  'Data curentă de returnare',
+                                                  AppLocalizations.of(context)!.currentReturnDate,
                                                   style: Theme.of(context).textTheme.titleSmall?.copyWith(
                                                     fontWeight: FontWeight.w600,
                                                     color: Theme.of(context).colorScheme.primary,
@@ -1307,7 +1308,7 @@ class ExtensionRequestDetailScreen extends StatelessWidget {
                                                 ),
                                                 const SizedBox(width: 8),
                                                 Text(
-                                                  'Data extinsă de returnare',
+                                                  AppLocalizations.of(context)!.extendedReturnDate,
                                                   style: Theme.of(context).textTheme.titleSmall?.copyWith(
                                                     fontWeight: FontWeight.w600,
                                                     color: Theme.of(context).colorScheme.secondary,
@@ -1452,7 +1453,7 @@ class ExtensionRequestDetailScreen extends StatelessWidget {
                                 if (context.mounted) {
                                   NotificationService.showSuccess(
                                     context: context,
-                                    message: 'Extindere aprobată cu succes!',
+                                    message: AppLocalizations.of(context)!.extensionApprovedMessage,
                                   );
                                   Navigator.pop(context);
                                   Navigator.pushReplacement(
@@ -1479,8 +1480,8 @@ class ExtensionRequestDetailScreen extends StatelessWidget {
                         ),
                         label: Text(
                           loan['has_been_extended'] == true 
-                            ? 'Deja prelungit'
-                            : 'Aprobă',
+                            ? AppLocalizations.of(context)!.alreadyExtended
+                            : AppLocalizations.of(context)!.approve,
                           style: TextStyle(
                             color: loan['has_been_extended'] == true 
                               ? Theme.of(context).colorScheme.onSurface.withOpacity(0.6)
@@ -1514,7 +1515,7 @@ class ExtensionRequestDetailScreen extends StatelessWidget {
                                 if (context.mounted) {
                                   NotificationService.showSuccess(
                                     context: context,
-                                    message: 'Extindere respinsă cu succes!',
+                                    message: AppLocalizations.of(context)!.extensionRejectedMessage,
                                   );
                                   Navigator.pop(context);
                                   Navigator.pushReplacement(
@@ -1526,7 +1527,7 @@ class ExtensionRequestDetailScreen extends StatelessWidget {
                                 if (context.mounted) {
                                   NotificationService.showError(
                                     context: context,
-                                    message: 'Eroare la respingere: ${e.toString()}',
+                                    message: AppLocalizations.of(context)!.errorRejecting(e.toString()),
                                   );
                                 }
                               }
@@ -1542,7 +1543,7 @@ class ExtensionRequestDetailScreen extends StatelessWidget {
                         label: Text(
                           loan['has_been_extended'] == true 
                             ? 'Deja prelungit'
-                            : 'Respinge',
+                            : AppLocalizations.of(context)!.reject,
                           style: TextStyle(
                             color: loan['has_been_extended'] == true 
                               ? Theme.of(context).colorScheme.onSurface.withOpacity(0.6)

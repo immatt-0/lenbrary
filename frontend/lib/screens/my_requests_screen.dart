@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../l10n/app_localizations.dart';
 import '../services/api_service.dart';
 import '../services/notification_service.dart';
 import '../services/responsive_service.dart';
@@ -84,7 +85,7 @@ class _MyRequestsScreenState extends State<MyRequestsScreen>
             ),
             SizedBox(width: getResponsiveSpacing(12)),
             Text(
-              'Cererile mele',
+              AppLocalizations.of(context)!.myRequests,
               style: ResponsiveTextStyles.getResponsiveTitleStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.w700,
@@ -111,7 +112,7 @@ class _MyRequestsScreenState extends State<MyRequestsScreen>
             onPressed: () {
               Navigator.pop(context);
             },
-            tooltip: 'Înapoi',
+            tooltip: AppLocalizations.of(context)!.back,
           ),
         ),
       ),
@@ -157,7 +158,7 @@ class _MyRequestsScreenState extends State<MyRequestsScreen>
                     ),
                     SizedBox(height: getResponsiveSpacing(24)),
                     Text(
-                      'Se încarcă cererile...',
+                      AppLocalizations.of(context)!.loadingRequests,
                       style: ResponsiveTextStyles.getResponsiveTitleStyle(
                         fontSize: 16,
                         color: Theme.of(context).colorScheme.primary,
@@ -204,7 +205,7 @@ class _MyRequestsScreenState extends State<MyRequestsScreen>
                         ),
                         SizedBox(height: getResponsiveSpacing(16)),
                         ResponsiveButton(
-                          text: 'Reîncearcă',
+                          text: AppLocalizations.of(context)!.retry,
                           onPressed: _loadRequests,
                           icon: Icons.refresh_rounded,
                         ),
@@ -239,7 +240,7 @@ class _MyRequestsScreenState extends State<MyRequestsScreen>
                             ),
                             SizedBox(height: getResponsiveSpacing(24)),
                             Text(
-                              'Nu aveți cereri de împrumut',
+                              AppLocalizations.of(context)!.noLoanRequests,
                               style: ResponsiveTextStyles.getResponsiveTitleStyle(
                                 fontSize: 20,
                                 color: Theme.of(context).colorScheme.primary.withOpacity(0.7),
@@ -249,7 +250,7 @@ class _MyRequestsScreenState extends State<MyRequestsScreen>
                             ),
                             SizedBox(height: getResponsiveSpacing(16)),
                             Text(
-                              'Cererile tale vor apărea aici după ce vei solicita cărți',
+                              AppLocalizations.of(context)!.requestsWillAppear,
                               style: ResponsiveTextStyles.getResponsiveBodyStyle(
                                 fontSize: 14,
                                 color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
@@ -307,23 +308,23 @@ class _MyRequestsScreenState extends State<MyRequestsScreen>
   String _getStatusText(String status) {
     switch (status) {
       case 'IN_ASTEPTARE':
-        return 'În așteptare';
+        return AppLocalizations.of(context)!.pending;
       case 'APROBAT':
-        return 'Aprobată';
+        return AppLocalizations.of(context)!.approved;
       case 'GATA_RIDICARE':
-        return 'Gata de ridicare';
+        return AppLocalizations.of(context)!.readyForPickup;
       case 'IMPRUMUTAT':
-        return 'Împrumutată';
+        return AppLocalizations.of(context)!.borrowed;
       case 'RETURNAT':
-        return 'Returnată';
+        return AppLocalizations.of(context)!.returned;
       case 'INTARZIAT':
-        return 'Întârziată';
+        return AppLocalizations.of(context)!.overdue;
       case 'RESPINS':
-        return 'Respinsă';
+        return AppLocalizations.of(context)!.rejected;
       case 'ANULATA':
-        return 'Anulată';
+        return AppLocalizations.of(context)!.cancelled;
       default:
-        return 'Necunoscut';
+        return AppLocalizations.of(context)!.unknown;
     }
   }
 
@@ -367,10 +368,10 @@ class _MyRequestsScreenState extends State<MyRequestsScreen>
 
   Widget _buildRequestCard(Map<String, dynamic> request) {
     final book = request['book'] ?? {};
-    final status = request['status']?.toString() ?? 'Necunoscut';
+    final status = request['status']?.toString() ?? AppLocalizations.of(context)!.unknown;
     final bookType = book['type']?.toString() ?? '';
-    final bookName = book['name']?.toString() ?? 'Carte necunoscută';
-    final bookAuthor = book['author']?.toString() ?? 'Autor necunoscut';
+    final bookName = book['name']?.toString() ?? AppLocalizations.of(context)!.unknownBook;
+    final bookAuthor = book['author']?.toString() ?? AppLocalizations.of(context)!.unknownAuthor;
     final thumbnailRaw = book['thumbnail_url']?.toString();
     final requestDateStr = request['request_date']?.toString();
 
@@ -411,7 +412,7 @@ class _MyRequestsScreenState extends State<MyRequestsScreen>
               if (_isAlreadyExtended(request)) {
                 NotificationService.showWarning(
                   context: context,
-                  message: 'Această carte a fost deja prelungită o dată și nu mai poate fi prelungită.',
+                  message: AppLocalizations.of(context)!.bookAlreadyExtended,
                 );
                 return;
               }
@@ -695,7 +696,7 @@ class _MyRequestsScreenState extends State<MyRequestsScreen>
                                         Icon(Icons.calendar_today_rounded, size: 16, color: Colors.blue),
                                         SizedBox(width: ResponsiveService.getSpacing(6)),
                                         Text(
-                                          'Cerere',
+                                          AppLocalizations.of(context)!.request,
                                           style: ResponsiveTextStyles.getResponsiveTextStyle(
                                             fontSize: 12,
                                             color: Colors.blue,
@@ -759,7 +760,7 @@ class _MyRequestsScreenState extends State<MyRequestsScreen>
                                         ),
                                         SizedBox(width: ResponsiveService.getSpacing(6)),
                                         Text(
-                                          _isEstimatedDueDate(status) ? 'Estimat' : 'Scadență',
+                                          _isEstimatedDueDate(status) ? AppLocalizations.of(context)!.estimated : AppLocalizations.of(context)!.dueDate,
                                           style: ResponsiveTextStyles.getResponsiveTextStyle(
                                             fontSize: 12,
                                             color: _isEstimatedDueDate(status) ? Colors.orange : Colors.green,
@@ -819,7 +820,7 @@ class _MyRequestsScreenState extends State<MyRequestsScreen>
                               ),
                               SizedBox(width: ResponsiveService.getSpacing(6)),
                               Text(
-                                'Apasă pentru prelungire',
+                                AppLocalizations.of(context)!.tapToExtend,
                                 style: ResponsiveTextStyles.getResponsiveTextStyle(
                                   fontSize: 13,
                                   color: Theme.of(context).colorScheme.primary,
@@ -881,7 +882,7 @@ class _MyRequestsScreenState extends State<MyRequestsScreen>
                           if (_isAlreadyExtended(request)) {
                             NotificationService.showWarning(
                               context: context,
-                              message: 'Această carte a fost deja prelungită o dată și nu mai poate fi prelungită.',
+                              message: AppLocalizations.of(context)!.bookAlreadyExtended,
                             );
                             return;
                           }
@@ -957,22 +958,22 @@ class _MyRequestsScreenState extends State<MyRequestsScreen>
             children: [
               Icon(Icons.delete_outline_rounded, color: Colors.red[700]),
               SizedBox(width: 8),
-              Text('Anulează cererea', style: TextStyle(color: Colors.red[700], fontWeight: FontWeight.bold)),
+              Text(AppLocalizations.of(context)!.cancelRequest, style: TextStyle(color: Colors.red[700], fontWeight: FontWeight.bold)),
             ],
           ),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('Sigur vrei să anulezi această cerere?'),
+              Text(AppLocalizations.of(context)!.confirmCancelRequest),
               SizedBox(height: 16),
-              Text('Mesaj pentru bibliotecar (opțional):'),
+              Text(AppLocalizations.of(context)!.messageForLibrarian),
               SizedBox(height: 8),
               TextField(
                 controller: _cancelMessageController,
                 decoration: InputDecoration(
                   border: OutlineInputBorder(),
-                  hintText: 'Adaugă un mesaj...'
+                  hintText: AppLocalizations.of(context)!.addMessage
                 ),
                 maxLines: 2,
               ),
@@ -981,7 +982,7 @@ class _MyRequestsScreenState extends State<MyRequestsScreen>
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: const Text('Renunță'),
+              child: Text(AppLocalizations.of(context)!.giveUp),
             ),
             ElevatedButton.icon(
               style: ElevatedButton.styleFrom(
@@ -990,7 +991,7 @@ class _MyRequestsScreenState extends State<MyRequestsScreen>
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
               ),
               icon: Icon(Icons.delete_outline_rounded),
-              label: Text('Anulează'),
+              label: Text(AppLocalizations.of(context)!.cancel),
               onPressed: () async {
                 Navigator.pop(context);
                 try {
@@ -1001,7 +1002,7 @@ class _MyRequestsScreenState extends State<MyRequestsScreen>
                   if (mounted) {
                     NotificationService.showSuccess(
                       context: context,
-                      message: 'Cererea a fost anulată cu succes.',
+                      message: AppLocalizations.of(context)!.requestCancelledSuccess,
                     );
                     await _loadRequests();
                   }
@@ -1009,7 +1010,7 @@ class _MyRequestsScreenState extends State<MyRequestsScreen>
                   if (mounted) {
                     NotificationService.showError(
                       context: context,
-                      message: 'Eroare la anulare: ${e.toString()}',
+                      message: AppLocalizations.of(context)!.cancelError(e.toString()),
                     );
                   }
                 }
@@ -1052,7 +1053,7 @@ class _ExtendLoanScreenState extends State<ExtendLoanScreen> with ResponsiveWidg
       if (mounted) {
         NotificationService.showSuccess(
           context: context,
-          message: 'Cererea de prelungire a fost trimisă cu succes!',
+          message: AppLocalizations.of(context)!.extensionRequestSuccess,
         );
         Navigator.pop(context, true);
       }
@@ -1066,7 +1067,7 @@ class _ExtendLoanScreenState extends State<ExtendLoanScreen> with ResponsiveWidg
         if (msg.toLowerCase().contains('already extended')) {
           NotificationService.showWarning(
             context: context,
-            message: 'Această carte a fost deja prelungită o dată și nu mai poate fi prelungită.',
+            message: AppLocalizations.of(context)!.bookAlreadyExtended,
           );
           // If the error is about already extended, pop back
           Navigator.pop(context, false);
@@ -1121,7 +1122,7 @@ class _ExtendLoanScreenState extends State<ExtendLoanScreen> with ResponsiveWidg
             ),
             SizedBox(width: getResponsiveSpacing(12)),
             Text(
-              'Prelungire împrumut',
+              AppLocalizations.of(context)!.extendLoan,
               style: ResponsiveTextStyles.getResponsiveTitleStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.w700,
@@ -1213,7 +1214,7 @@ class _ExtendLoanScreenState extends State<ExtendLoanScreen> with ResponsiveWidg
                           SizedBox(height: getResponsiveSpacing(12)),
                           // Book title
                           Text(
-                            book['name'] ?? 'Carte necunoscută',
+                            book['name'] ?? AppLocalizations.of(context)!.unknownBook,
                             style: ResponsiveTextStyles.getResponsiveTitleStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.w700,
@@ -1327,7 +1328,7 @@ class _ExtendLoanScreenState extends State<ExtendLoanScreen> with ResponsiveWidg
                     
                     SizedBox(height: getResponsiveSpacing(20)),
                     Text(
-                      'Perioada de prelungire:',
+                      AppLocalizations.of(context)!.extensionPeriod,
                       style: ResponsiveTextStyles.getResponsiveTitleStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.w600,
@@ -1349,7 +1350,7 @@ class _ExtendLoanScreenState extends State<ExtendLoanScreen> with ResponsiveWidg
                       items: [7, 14, 21, 30].map((days) {
                         return DropdownMenuItem<int>(
                           value: days,
-                          child: Text('$days zile', style: ResponsiveTextStyles.getResponsiveTextStyle(fontSize: 15)),
+                          child: Text(AppLocalizations.of(context)!.daysLabel(days), style: ResponsiveTextStyles.getResponsiveTextStyle(fontSize: 15)),
                         );
                       }).toList(),
                       onChanged: (value) {
@@ -1360,7 +1361,7 @@ class _ExtendLoanScreenState extends State<ExtendLoanScreen> with ResponsiveWidg
                     ),
                     SizedBox(height: getResponsiveSpacing(20)),
                     Text(
-                      'Mesaj (opțional):',
+                      AppLocalizations.of(context)!.messageOptional,
                       style: ResponsiveTextStyles.getResponsiveTitleStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.w600,
@@ -1396,7 +1397,7 @@ class _ExtendLoanScreenState extends State<ExtendLoanScreen> with ResponsiveWidg
                               )
                             : Icon(Icons.send_rounded, size: getResponsiveIconSize(20)),
                         label: Text(
-                          'Trimite cererea',
+                          AppLocalizations.of(context)!.submitRequest,
                           style: ResponsiveTextStyles.getResponsiveTitleStyle(
                             fontSize: 16,
                             color: Colors.white,

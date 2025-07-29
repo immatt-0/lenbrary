@@ -1,0 +1,901 @@
+{
+  "@@locale": "de",
+  "appTitle": "Lenbrary",
+  "dashboard": "Dashboard",
+  "books": "Bücher",
+  "teacher": "Lehrer",
+  "myRequests": "Meine Anfragen",
+  "notifications": "Benachrichtigungen",
+  "settings": "Einstellungen",
+  "profile":"Profil",
+  "extensionRequests": "Verlängerungsanträge",
+  "extensionRequestDescription": "Hier können Sie Verlängerungsanträge einsehen",
+  "approve": "Genehmigen", 
+  "logout": "Abmelden",
+  "login": "Anmelden",
+  "email": "E-Mail",
+  "password": "Passwort",
+  "confirmPassword": "Passwort bestätigen",
+  "register": "Registrieren",
+  "forgotPassword": "Passwort vergessen?",
+  "usernameOrEmail": "Benutzername oder E-Mail",
+  "enterUsernameOrEmail": "Bitte geben Sie Ihren Benutzernamen oder Ihre E-Mail-Adresse ein",
+  "enterPassword": "Bitte geben Sie Ihr Passwort ein",
+  "authentication": "Authentifizierung",
+  "noAccountRegister": "Kein Konto? Registrieren",
+  "firstName": "Vorname",
+  "lastName": "Nachname",
+  "enterFirstName": "Bitte geben Sie Ihren Vornamen ein",
+  "enterLastName": "Bitte geben Sie Ihren Nachnamen ein",
+  "enterEmail": "Bitte geben Sie Ihre E-Mail-Adresse ein",
+  "schoolType": "Schultyp",
+  "selectSchoolType": "Bitte wählen Sie einen Schultyp",
+  "classLevel": "Klasse",
+  "selectClass": "Bitte wählen Sie eine Klasse",
+  "profile": "Profil",
+  "selectProfile": "Bitte wählen Sie ein Profil",
+  "classLetter": "Klassenbuchstabe",
+  "selectClassLetter": "Bitte wählen Sie einen Klassenbuchstaben",
+  "invitationCode": "Einladungscode",
+  "enterInvitationCode": "Bitte geben Sie den Einladungscode ein",
+  "searchBooksLong": "Suche nach Titel, Autor, Kategorie oder Klasse (z.B. VIII oder 8)...",
+  "selectLoanDuration": "Ausleihdauer auswählen",
+  "oneWeek": "1 Woche",
+  "twoWeeks": "2 Wochen",
+  "oneMonth": "1 Monat",
+  "twoMonths": "2 Monate",
+  "loanRequestSuccess": "Ausleihantrag erfolgreich registriert!",
+  "bookRequestError": "Fehler beim Anfordern des Buches/Handbuchs: {error}",
+  "loadBooksError": "Fehler beim Laden der Bücher: {error}",
+  "noBooksAvailable": "Keine Bücher/Handbücher verfügbar.",
+  "displayError": "Anzeigefehler: {error}",
+  "invalidBook": "Ungültiges Buch",
+  "unknownBook": "Unbekanntes Buch",
+  "unknownAuthor": "Unbekannter Autor",
+  "noCategory": "Keine Kategorie",
+  "bookDisplayError": "Fehler bei der Buchanzeige",
+  "enterPassword": "Bitte geben Sie Ihr Passwort ein",
+  "authentication": "Anmeldung",
+  "noAccountRegister": "Kein Konto? Registrieren",
+  "firstName": "Vorname",
+  "lastName": "Nachname",
+  "enterFirstName": "Bitte geben Sie Ihren Vornamen ein",
+  "enterLastName": "Bitte geben Sie Ihren Nachnamen ein",
+  "enterEmail": "Bitte geben Sie Ihre E-Mail-Adresse ein",
+  "schoolType": "Schultyp",
+  "selectSchoolType": "Bitte wählen Sie einen Schultyp aus",
+  "classLevel": "Klasse",
+  "selectClass": "Bitte wählen Sie eine Klasse aus",
+  "profile": "Profil",
+  "selectProfile": "Bitte wählen Sie ein Profil aus",
+  "classLetter": "Klassenbezeichnung",
+  "selectClassLetter": "Bitte wählen Sie eine Klassenbezeichnung aus",
+  "invitationCode": "Einladungscode",
+  "enterInvitationCode": "Bitte geben Sie den Einladungscode ein",
+  "alreadyHaveAccount": "Haben Sie bereits ein Konto? Anmelden",
+  "createAccount": "Konto erstellen",
+  "creatingAccount": "Konto wird erstellt...",
+  "registrationTitle": "Erstellen Sie Ihr Konto",
+  "registrationSubtitle": "Füllen Sie die Details zur Registrierung aus",
+  "loading": "Wird geladen...",
+  "welcome": "Willkommen",
+  "welcomeBack": "Willkommen zurück",
+  "searchBooks": "Bücher Suchen",
+  "requestBook": "Buch Anfordern",
+  "myRequests": "Meine Anfragen",
+  "notifications": "Benachrichtigungen",
+  "settings": "Einstellungen",
+  "logout": "Abmelden",
+  "darkMode": "Dunkler Modus",
+  "lightMode": "Heller Modus",
+  "theme": "Design",
+  "language": "Sprache",
+  "bookAdded": "Buch erfolgreich hinzugefügt!",
+  "requestSent": "Anfrage erfolgreich gesendet!",
+  "requestFailed": "Anfrage senden fehlgeschlagen",
+  "retry": "Wiederholen",
+  "noResults": "Keine Ergebnisse gefunden",
+  "noResultsFor": "Keine Ergebnisse gefunden für \"{query}\"",
+  "@noResultsFor": {
+    "placeholders": {
+      "query": {
+        "type": "String"
+      }
+    }
+  },
+  "noActiveLoans": "Keine aktiven Ausleihen",
+  "selectDuration": "Ausleihdauer wählen",
+  "oneWeek": "1 Woche",
+  "twoWeeks": "2 Wochen", 
+  "oneMonth": "1 Monat",
+  "twoMonths": "2 Monate",
+  "loans": "Ausleihen",
+  "activeLoans": "Aktive Ausleihen",
+  "loadingLoans": "Ausleihen werden geladen...",
+  "loanHistory": "Ausleihverlauf",
+  "pickupAndLoans": "Abholung & Ausleihen",
+  "manageBooks": "Bücher Verwalten",
+  "addBook": "Buch Hinzufügen",
+  "editBook": "Buch Bearbeiten",
+  "deleteBook": "Buch Löschen",
+  "bookDetails": "Buchdetails",
+  "addCover": "Cover Hinzufügen",
+  "takePicture": "Foto Aufnehmen",
+  "addFromGallery": "Aus Galerie Hinzufügen",
+  "addPDF": "PDF Hinzufügen",
+  "choosePDFFile": "PDF-Datei Wählen",
+  "resourceType": "Ressourcentyp",
+  "required": "Erforderlich",
+  "basicInfo": "Grundinformationen",
+  "additionalDetails": "Zusätzliche Details",
+  "stockInfo": "Bestandsinformationen",
+  "totalInventory": "Gesamtbestand",
+  "availableStock": "Verfügbarer Bestand",
+  "fillBookDetails": "Füllen Sie die Buch-/Handbuch-Details aus",
+  "requiredFields": "Mit * markierte Felder sind erforderlich",
+  "emailDomainError": "E-Mail muss aus der nlenau.ro-Domäne stammen",
+  "passwordMismatch": "Passwörter stimmen nicht überein",
+  "passwordMinLength": "Passwort muss mindestens 6 Zeichen haben",
+  "teacherAccount": "Lehrerkonto",
+  "studentInformation": "Schülerinformationen",
+  "accountCreated": "Konto erfolgreich erstellt!",
+  "generalSchool": "Grundschule",
+  "highSchool": "Gymnasium",
+  "welcomeUser": "Willkommen, {userName}!",
+  "whatDoYouWantToday": "Was möchten Sie heute tun?",
+  "searchBooksShort": "Bücher Suchen",
+  "addNewBook": "Neues Buch Hinzufügen",
+  "manageBooks": "Bücher Verwalten",
+  "viewRequests": "Anfragen Anzeigen",
+  "loanHistory": "Ausleihverlauf",
+  "examModels": "Prüfungsmodelle",
+  "generateCodes": "Codes Generieren",
+  "dashboard": "Dashboard",
+    "quickActions": "Schnellaktionen",
+  "pleaseEnter": "Bitte eingeben",
+  "book": "Buch",
+  "manual": "Handbuch",
+  "confirmPassword": "Passwort bestätigen",
+  "lastName": "Nachname",
+  "registerAsTeacher": "Als Lehrer registrieren",
+  "enterTeacherCode": "Lehrercode eingeben",
+  "back": "Zurück",
+  "appTitle": "Lenbrary",
+  "alreadyHaveAccount": "Haben Sie bereits ein Konto? Anmelden",
+  "addCover": "Cover hinzufügen",
+  "chooseCoverMethod": "Wählen Sie, wie Sie das Buchcover hinzufügen möchten:",
+  "addPdf": "PDF hinzufügen",
+  "choosePdfMethod": "Wählen Sie, wie Sie die PDF hinzufügen möchten:",
+  "takePhoto": "Foto machen",
+  "selectFromGallery": "Aus Galerie wählen",
+  "selectFile": "Datei auswählen",
+  "isbn": "ISBN",
+  "title": "Titel",
+  "author": "Autor",
+  "description": "Beschreibung",
+  "pages": "Seiten",
+  "language": "Sprache",
+  "category": "Kategorie",
+  "price": "Preis",
+  "stock": "Bestand",
+  "name": "Name",
+  "loading": "Wird geladen...",
+  "error": "Fehler",
+  "success": "Erfolg",
+  "cancel": "Abbrechen",
+  "save": "Speichern",
+  "delete": "Löschen",
+  "edit": "Bearbeiten",
+  "add": "Hinzufügen",
+  "search": "Suchen",
+  "searchBooks": "Bücher Suchen",
+  "searchBooksShort": "🔍 Bücher suchen...",
+  "searchByBookName": "🔍 Nach Buchname suchen...",
+  "filter": "Filtern",
+  "all": "Alle",
+  "pending": "Ausstehend",
+  "approved": "Genehmigt",
+  "rejected": "Abgelehnt",
+  "borrowed": "Ausgeliehen",
+  "returned": "Zurückgegeben",
+  "bookTitle": "Buchtitel",
+  "author": "Autor",
+  "category": "Kategorie",
+  "description": "Beschreibung",
+  "publicationYear": "Erscheinungsjahr",
+  "inventory": "Inventar",
+  "stock": "Bestand",
+  "requestBook": "Buch anfragen",
+  "requestDuration": "Anfragedauer",
+  "days": "Tage",
+  "message": "Nachricht",
+  "requestSent": "Anfrage erfolgreich gesendet!",
+  "requestFailed": "Anfrage senden fehlgeschlagen",
+  "welcome": "Willkommen",
+  "welcomeBack": "Willkommen zurück",
+  "addNewBook": "Neues Buch hinzufügen",
+  "bookDetails": "Buchdetails",
+  "noBooks": "Keine Bücher verfügbar",
+  "noBooksFound": "Keine Bücher gefunden",
+  "noRequests": "Keine Anfragen",
+  "noNotifications": "Keine Benachrichtigungen",
+  "markAllAsRead": "Alle als gelesen markieren",
+  "readNotifications": "Gelesene Benachrichtigungen",
+  "unreadNotifications": "Ungelesene Benachrichtigungen",
+  "language": "Sprache",
+  "selectLanguage": "Sprache auswählen",
+  "romanian": "Rumänisch",
+  "english": "Englisch",
+  "german": "Deutsch",
+  "languageChanged": "Sprache erfolgreich geändert",
+  "theme": "Theme",
+  "darkMode": "Dunkler Modus",
+  "lightMode": "Heller Modus",
+  "systemMode": "System-Modus",
+  "aboutApp": "Über die App",
+  "version": "Version",
+  "appDescription": "Ein umfassendes digitales Bibliotheksverwaltungssystem",
+  "backToHome": "Zurück zur Startseite",
+  "retry": "Wiederholen",
+  "optional": "optional",
+  "required": "erforderlich",
+  "pleaseEnter": "Bitte eingeben",
+  "invalidInput": "Ungültige Eingabe",
+  "mustBeNumber": "Muss eine Zahl sein",
+  "cannotExceed": "Kann nicht überschreiten",
+  "unknownBook": "Unbekanntes Buch",
+  "pickupDate": "Abholdatum:",
+  "bookAddedSuccessfully": "Buch/Lehrbuch wurde erfolgreich hinzugefügt!",
+  "takeAPhoto": "Foto aufnehmen",
+  "dueDate": "Fälligkeitsdatum:",
+  "notAvailable": "Nicht verfügbar",
+  "processing": "Wird bearbeitet...",
+  "bookReturned": "Buch Zurückgegeben",
+  "gimnaziuV": "Gymnasium V",
+  "gimnaziuVI": "Gymnasium VI",
+  "gimnaziuVII": "Gymnasium VII",
+  "gimnaziuVIII": "Gymnasium VIII",
+  "liceulIX": "Lyzeum IX",
+  "liceulX": "Lyzeum X",
+  "liceulXI": "Lyzeum XI",
+  "liceulXII": "Lyzeum XII",
+  "bookAdded": "Buch erfolgreich hinzugefügt!",
+  "bookUpdated": "Buch erfolgreich aktualisiert!",
+  "bookDeleted": "Buch erfolgreich gelöscht!",
+  "requestApproved": "Anfrage erfolgreich genehmigt!",
+  "requestRejected": "Anfrage erfolgreich abgelehnt!",
+  "extensionRequested": "Verlängerung erfolgreich angefragt!",
+  "extensionApproved": "Verlängerung erfolgreich genehmigt!",
+  "extensionRejected": "Verlängerung erfolgreich abgelehnt!",
+  "bookType": "Buchtyp",
+  "book": "Buch",
+  "manual": "Handbuch",
+  "classLevel": "Klasse",
+  "selectClass": "Klasse auswählen",
+  "cover": "Cover",
+  "addCover": "Cover hinzufügen",
+  "takePicture": "Foto machen",
+  "addFromGallery": "Aus Galerie hinzufügen",
+  "addPdf": "PDF hinzufügen",
+  "choosePdfFile": "PDF-Datei auswählen",
+  "basicInfo": "Grundinformationen",
+  "additionalDetails": "Zusätzliche Details",
+  "stockInfo": "Bestandsinformationen",
+  "totalCopies": "Gesamtzahl der Exemplare",
+  "availableCopies": "Anzahl der zum Ausleihen verfügbaren Exemplare",
+  "stockCannotExceedInventory": "Bestand kann das Inventar nicht überschreiten",
+  "pendingRequests": "Ausstehende Anfragen",
+  "approve": "Genehmigen",
+  "reject": "Ablehnen",
+  "reason": "Grund",
+  "approveRequest": "Anfrage genehmigen",
+  "rejectRequest": "Anfrage ablehnen",
+  "requestedOn": "Angefragt am",
+  "requestedBy": "Angefragt von",
+  "duration": "Dauer",
+  "extend": "Verlängern",
+  "extensionReason": "Verlängerungsgrund",
+  "newDuration": "Neue Dauer",
+  "requestExtension": "Verlängerung anfragen",
+  "viewDetails": "Details anzeigen",
+  "close": "Schließen",
+  "confirm": "Bestätigen",
+  "adminPanel": "Admin-Panel",
+  "manageBooks": "Bücher verwalten",
+  "manageUsers": "Benutzer verwalten",
+  "manageRequests": "Anfragen verwalten",
+  "reports": "Berichte",
+  "statistics": "Statistiken",
+  "returned": "Zurückgegeben",
+  "borrowed": "Ausgeliehen",
+  "adding": "Wird hinzugefügt...",
+  "errorCameraAccess": "Fehler beim Zugriff auf die Kamera",
+  "errorGalleryAccess": "Fehler beim Zugriff auf die Galerie",
+  "errorReadingPdf": "Fehler beim Lesen der PDF-Datei",
+  "errorAccessingPdf": "Fehler beim Zugriff auf die PDF-Datei",
+  "errorSelectingPdf": "Fehler beim Auswählen der PDF-Datei", 
+  "choosePdfForManual": "PDF-Datei für Lehrbuch auswählen:",
+  "fillBookDetails": "Füllen Sie die Details für das neue Buch/Lehrbuch aus",
+  "requiredFields": "Mit * markierte Felder sind erforderlich",
+  "pleaseSelectClass": "Bitte wählen Sie eine Klasse aus",
+  "pleaseEnterTitle": "Bitte geben Sie einen Titel ein",
+  "pleaseEnterAuthor": "Bitte geben Sie einen Autor ein",
+  "pleaseEnterCategory": "Bitte geben Sie eine Kategorie ein", 
+  "pleaseEnterDescription": "Bitte geben Sie eine Beschreibung ein",
+  "pleaseEnterValidYear": "Bitte geben Sie ein gültiges Jahr ein",
+  "pleaseEnterTotalInventory": "Bitte geben Sie das Gesamtinventar ein",
+  "pleaseEnterAvailableStock": "Bitte geben Sie den verfügbaren Bestand ein",
+  "inventoryMustBeNumber": "Inventar muss eine Zahl sein",
+  "stockMustBeNumber": "Bestand muss eine Zahl sein",
+  "stockCannotExceedInventory": "Bestand kann nicht größer als Inventar sein",
+  "manualPDF": "Lehrbuch PDF",
+  "uploadManualPdfFile": "Laden Sie die Lehrbuch-PDF-Datei hoch",
+  "pdfFileSize": "PDF-Datei ({size} KB)",
+  "@pdfFileSize": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "pdfFileSelected": "PDF-Datei ausgewählt",
+  "tapToChange": "Tippen zum Ändern",
+  "uploadPdfFile": "PDF-Datei hochladen",
+  "selectManualPdfFile": "Wählen Sie die Lehrbuch-PDF-Datei aus",
+  "tapToUpload": "Tippen zum Hochladen",
+  "pdfSuccessfullyAdded": "PDF erfolgreich hinzugefügt",
+  "pleaseSelectPdfFile": "Bitte wählen Sie eine PDF-Datei aus.",
+  "pleaseSelectExamType": "Bitte wählen Sie den Prüfungstyp aus.",
+  "pleaseSelectSubject": "Bitte wählen Sie das Fach aus.",
+  "errorAddingItem": "Fehler beim Hinzufügen: {error}",
+  "@errorAddingItem": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "addExamModel": "Prüfungsmodell hinzufügen",
+  "newExamModel": "Neues Prüfungsmodell",
+  "fillExamModelDetails": "Füllen Sie die Details des Prüfungsmodells aus",
+  "examModelName": "Name des Prüfungsmodells",
+  "enterExamModelName": "Geben Sie einen Namen ein",
+  "examType": "Prüfungstyp",
+  "nationalEvaluation": "Nationale Bewertung (EN)",
+  "baccalaureate": "Abitur (BAC)",
+  "selectExamTypeValidator": "Wählen Sie den Prüfungstyp aus",
+  "subject": "Fach",
+  "mathematics": "Mathematik",
+  "romanian": "Rumänisch",
+  "selectSubjectValidator": "Wählen Sie das Fach aus",
+  "addModel": "Modell hinzufügen",
+  "choosePdfFile": "PDF-Datei auswählen",
+  "tapToSelectPdfFile": "Tippen Sie, um eine PDF-Datei auszuwählen",
+  "back": "Zurück",
+  "bookDetails": "Buchdetails",
+  "requestLoan": "Ausleihe beantragen",
+  "loanDuration": "Ausleihzeit",
+  "oneWeek": "1 Woche",
+  "twoWeeks": "2 Wochen",
+  "oneMonth": "1 Monat",
+  "twoMonths": "2 Monate",
+  "messageOptional": "Nachricht (optional)",
+  "writeMessageForLibrarian": "Schreiben Sie eine Nachricht für den Bibliothekar... (optional)",
+  "loanRequestSuccess": "Ausleihantrag erfolgreich registriert!",
+  "errorRequestingBook": "Fehler beim Anfordern des Buches/Lehrbuchs: {error}",
+  "@errorRequestingBook": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "unknownBook": "Unbekanntes Buch",
+  "classLabel": "Klasse: {className}",
+  "@classLabel": {
+    "placeholders": {
+      "className": {
+        "type": "String"
+      }
+    }
+  },
+  "available": "Verfügbar: {count}",
+  "@available": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "unavailable": "Nicht verfügbar",
+  "openPdf": "PDF öffnen",
+  "pdfOpenError": "PDF konnte nicht geöffnet werden.",
+  "pdfOpenErrorDetails": "Fehler beim Öffnen der PDF: {error}",
+  "@pdfOpenErrorDetails": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "sending": "Wird gesendet...",
+  "examModels": "Prüfungsmodelle",
+  "refresh": "Aktualisieren",
+  "searchExamModels": "🔍 Prüfungsmodelle suchen...",
+  "examType": "Prüfungstyp",
+  "allTypes": "Alle Typen",
+  "allSubjects": "Alle Fächer",
+  "math": "Mathe",
+  "mate": "Mathe",
+  "romanian": "Rumänisch",
+  "openPdf": "PDF öffnen",
+  "deleteModel": "Modell löschen",
+  "examModelsTitle": "Prüfungsmodelle",
+  "searchExamModelsHint": "Prüfungsmodelle suchen...",
+  "testType": "Prüfungstyp",
+  "subject": "Fach",
+  "allTestTypes": "Alle Typen",
+  "allSubjects": "Alle Fächer",
+  "modelWithoutName": "Modell ohne Namen",
+  "noTestsAvailable": "Keine Tests verfügbar",
+  "noTestsForSearch": "Keine Tests für Ihre Suche gefunden",
+  "modelsWillAppear": "Modelle werden hier erscheinen, nachdem sie hinzugefügt wurden",
+  "modifySearchTerms": "Versuchen Sie, die Suchbegriffe zu ändern",
+  "couldNotOpenPdf": "PDF konnte nicht geöffnet werden.",
+  "extensionRequestsTitle": "Verlängerungsanträge",
+  "refreshTooltip": "Aktualisieren",
+  "loadingRequests": "Anträge werden geladen...",
+  "noExtensionRequests": "Keine Verlängerungsanträge",
+  "extensionRequestsWillAppear": "Verlängerungsanträge werden hier angezeigt",
+  "alreadyExtendedMessage": "Dieses Buch wurde bereits einmal verlängert. Es kann nicht erneut verlängert werden.",
+  "student": "Student",
+  "unknownBook": "Unbekanntes Buch",
+  "extensionRequested": "Verlängerung beantragt",
+  "days": "Tage",
+  "fromLabel": "Von:",
+  "toLabel": "Bis:",
+  "teacher": "Lehrer",
+  "extensionRequestDetailsTitle": "Details des Verlängerungsantrags",
+  "currentReturnDate": "Aktuelles Rückgabedatum",
+  "extendedReturnDate": "Verlängertes Rückgabedatum",
+  "studentMessage": "Studentennachricht",
+  "extensionApprovedMessage": "Verlängerung erfolgreich genehmigt!",
+  "approve": "Genehmigen",
+  "approving": "Wird genehmigt...",
+  "extensionRejectedMessage": "Verlängerung erfolgreich abgelehnt!",
+  "reject": "Ablehnen",
+  "rejecting": "Wird abgelehnt...",
+  "unknown": "unbekannt",
+  "alreadyExtended": "Bereits verlängert",
+  "errorRejecting": "Fehler beim Ablehnen: {error}",
+  "@errorRejecting": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "addExamModelButton": "Prüfungsmodell hinzufügen",
+  "loadingModels": "Modelle werden geladen...",
+  "futureSubject": "Wir werden {subject}-Tests in Zukunft hinzufügen",
+  "@futureSubject": {
+    "placeholders": {
+      "subject": {
+        "type": "String"
+      }
+    }
+  },
+  "noModelsFound": "Keine Modelle für Ihre Suche gefunden",
+  "noModelsExist": "Keine Prüfungsmodelle vorhanden",
+  "focusOnMainSubjects": "Derzeit konzentrieren wir uns auf Mathematik und Rumänisch",
+  "tryModifyingSearch": "Versuchen Sie, die Suchbegriffe zu ändern",
+  "addFirstModel": "Erstes Prüfungsmodell hinzufügen",
+  "modelWithoutName": "Modell ohne Namen",
+  "openPdfTooltip": "PDF öffnen",
+  "deleteModelTooltip": "Modell löschen",
+  "errorLoadingModels": "Fehler beim Laden der Modelle: {error}",
+  "@errorLoadingModels": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "errorDeleting": "Fehler beim Löschen: {error}",
+  "@errorDeleting": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "addItem": "{item} hinzufügen",
+  "@addItem": {
+    "placeholders": {
+      "item": {
+        "type": "String"
+      }
+    }
+  },
+  "loanHistoryTitle": "Ausleihhistorie",
+  "recordsCount": "{count} Einträge",
+  "@recordsCount": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "backTooltip": "Zurück",
+  "searchBooksPlaceholder": "🔍 Nach Name, Autor oder Titel suchen...",
+  "loadingHistory": "Historie wird geladen...",
+  "noSearchResults": "Keine Ergebnisse für \"{query}\" gefunden",
+  "@noSearchResults": {
+    "placeholders": {
+      "query": {
+        "type": "String"
+      }
+    }
+  },
+  "noLoanHistory": "Keine Ausleihhistorie vorhanden",
+  "tryModifyingSearchTerms": "Versuchen Sie, die Suchbegriffe zu ändern",
+  "historyWillAppear": "Die Historie wird hier nach Ausleihen angezeigt",
+  "notReturnedYet": "Noch nicht zurückgegeben",
+  "cancelled": "Storniert",
+  "unknownBook": "Unbekanntes Buch",
+  "unknownAuthor": "Unbekannter Autor",
+  "classLabel": "Klasse {className}",
+  "@classLabel": {
+    "placeholders": {
+      "className": {
+        "type": "String"
+      }
+    }
+  },
+  "teacher": "Lehrer",
+  "requestDate": "Anfragedatum",
+  "loginHintShort": "vorname.nachname",
+  "loginHintLong": "vorname.nachname oder vorname.nachname@nlenau.ro",
+  "manageBooksShort": "Verwalten",
+  "manageBooksLong": "Bücher verwalten",
+  "manuals": "Handbücher",
+  "searchBooksShort": "Bücher suchen...",
+  "searchBooksLong": "Nach Titel, Autor oder Kategorie suchen...",
+  "noBookFoundFor": "Kein Buch gefunden für \"{query}\"",
+  "@noBookFoundFor": {
+    "placeholders": {
+      "query": {
+        "type": "String"
+      }
+    }
+  },
+  "noBooksInLibrary": "Keine Bücher in der Bibliothek",
+  "noManualsInLibrary": "Keine Handbücher in der Bibliothek",
+  "reload": "Neu laden",
+  "stockLabel": "Bestand: {current}/{total}",
+  "@stockLabel": {
+    "placeholders": {
+      "current": {
+        "type": "String"
+      },
+      "total": {
+        "type": "String"
+      }
+    }
+  },
+  "myRequests": "Meine Anfragen",
+  "loadingRequests": "Anfragen werden geladen...",
+  "noLoanRequests": "Sie haben keine Leihwünsche",
+  "requestsWillAppear": "Ihre Anfragen erscheinen hier nach der Buchbestellung",
+  "readyForPickup": "Bereit zur Abholung",
+  "overdue": "Überfällig",
+  "cancelled": "Storniert",
+  "unknown": "Unbekannt",
+  "unknownAuthor": "Unbekannter Autor",
+  "request": "Anfrage",
+  "estimated": "Geschätzt",
+  "dueDate": "Fälligkeitsdatum",
+  "tapToExtend": "Zum Verlängern tippen",
+  "cancelRequest": "Anfrage stornieren",
+  "confirmCancelRequest": "Sind Sie sicher, dass Sie diese Anfrage stornieren möchten?",
+  "messageForLibrarian": "Nachricht für den Bibliothekar (optional):",
+  "addMessage": "Nachricht hinzufügen...",
+  "giveUp": "Aufgeben",
+  "requestCancelledSuccess": "Anfrage wurde erfolgreich storniert.",
+  "cancelError": "Fehler beim Stornieren: {error}",
+  "@cancelError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "extendLoan": "Ausleihe verlängern",
+  "extensionPeriod": "Verlängerungszeitraum:",
+  "daysLabel": "{days} Tage",
+  "@daysLabel": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "messageOptional": "Nachricht (optional):",
+  "submitRequest": "Anfrage senden",
+  "extensionRequestSuccess": "Verlängerungsantrag wurde erfolgreich gesendet!",
+  "bookAlreadyExtended": "Dieses Buch wurde bereits einmal verlängert und kann nicht erneut verlängert werden.",
+  "loadingNotifications": "Benachrichtigungen werden geladen...",
+  "notificationLoadError": "Fehler beim Laden der Benachrichtigungen: {error}",
+  "@notificationLoadError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "markAsReadError": "Fehler beim Markieren der Benachrichtigung als gelesen: {error}",
+  "@markAsReadError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "markAllAsReadError": "Fehler beim Markieren der Benachrichtigungen als gelesen: {error}",
+  "@markAllAsReadError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "allNotificationsMarkedAsRead": "Alle Benachrichtigungen wurden als gelesen markiert",
+  "date": "Datum:",
+  "close": "Schließen",
+  "bookRequested": "Buchantrag",
+  "bookAccepted": "Buch akzeptiert",
+  "bookRejected": "Buch abgelehnt",
+  "bookReturned": "Buch zurückgegeben",
+  "extensionRequested": "Verlängerungsantrag",
+  "extensionApproved": "Verlängerung genehmigt",
+  "extensionRejected": "Verlängerung abgelehnt",
+  "requestCancelled": "Anfrage storniert",
+  "requestApproved": "Anfrage genehmigt",
+  "teacherRegistered": "Lehrer registriert",
+  "bookAdded": "Buch hinzugefügt",
+  "bookDeleted": "Buch gelöscht",
+  "bookUpdated": "Buch aktualisiert",
+  "newMessage": "Neue Nachricht",
+  "unknownNotification": "Unbekannte Benachrichtigung",
+  "notificationWithType": "Benachrichtigung ({type})",
+  "@notificationWithType": {
+    "placeholders": {
+      "type": {
+        "type": "String"
+      }
+    }
+  },
+  "filterNotifications": "Benachrichtigungen filtern",
+  "markAllAsRead": "Alle als gelesen markieren",
+  "showingAllNotifications": "Alle Benachrichtigungen anzeigen ({count})",
+  "@showingAllNotifications": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "activeFilter": "Aktiver Filter: {filterName} ({count})",
+  "@activeFilter": {
+    "placeholders": {
+      "filterName": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "noNotificationsOfType": "Sie haben keine Benachrichtigungen dieses Typs",
+  "allNotificationsWillAppear": "Alle Ihre Benachrichtigungen werden hier angezeigt",
+  "tryChangingFilter": "Versuchen Sie, den Filter zu ändern, um andere Benachrichtigungen zu sehen",
+  "read": "Gelesen",
+  "newNotification": "Neu",
+  "now": "Jetzt",
+  "minutesAgo": "vor {minutes}m",
+  "@minutesAgo": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "hoursAgo": "vor {hours}h",
+  "@hoursAgo": {
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      }
+    }
+  },
+  "daysAgo": "vor {days}T",
+  "@daysAgo": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "allNotifications": "Alle Benachrichtigungen",
+  "registeredTeachers": "Registrierte Lehrer",
+  "bookRequests": "Buchanfragen",
+  "acceptedBooks": "Akzeptierte Bücher",
+  "rejectedBooks": "Abgelehnte Bücher",
+  "returnedBooks": "Zurückgegebene Bücher",
+  "extensionRequests": "Verlängerungsanträge",
+  "approvedExtensions": "Genehmigte Verlängerungen",
+  "rejectedExtensions": "Abgelehnte Verlängerungen",
+  "cancelledRequests": "Stornierte Anfragen",
+  "approvedRequests": "Genehmigte Anfragen",
+  "addedBooks": "Hinzugefügte Bücher",
+  "updatedBooks": "Aktualisierte Bücher",
+  "deletedBooks": "Gelöschte Bücher",
+  "messages": "Nachrichten",
+  "otherNotifications": "Andere Benachrichtigungen",
+  "requestApprovedSuccess": "Anfrage erfolgreich genehmigt!",
+  "requestRejectedSuccess": "Anfrage erfolgreich abgelehnt!",
+  "bookRequestsTitle": "Buchanfragen",
+  "bookManualsRequestsTitle": "Buch- und Handbuchanfragen",
+  "loadingRequests": "Anfragen werden geladen...",
+  "searchPlaceholder": "🔍 Suchen...",
+  "searchDetailedPlaceholder": "🔍 Nach Buchname oder Studentenname suchen...",
+  "noPendingRequests": "Keine ausstehenden Anfragen",
+  "noApprovedRequests": "Keine genehmigten Anfragen",
+  "noSearchResults": "Keine Ergebnisse für \"{query}\" gefunden",
+  "@noSearchResults": {
+    "placeholders": {
+      "query": {
+        "type": "String"
+      }
+    }
+  },
+  "modifySearchTerms": "Versuchen Sie, die Suchbegriffe zu ändern",
+  "noRequestsNeedApproval": "Keine Anfragen benötigen Genehmigung",
+  "noApprovedRequestsCurrently": "Momentan keine genehmigten Anfragen",
+  "unknownBook": "Unbekanntes Buch",
+  "notAvailable": "Nicht verfügbar",
+  "dueDateLabel": "Fälligkeitsdatum: ",
+  "loanDurationLabel": "Auslehdauer: ",
+  "approve": "Genehmigen",
+  "reject": "Ablehnen",
+  "markAsPickedUp": "Als abgeholt markieren",
+  "requestDate": "Anfragedatum: ",
+  "dueDate": "Fälligkeitsdatum: ",
+  "loanDuration": "Auslehdauer: ",
+  "days": "Tage",
+  "bookMarkedAsPickedUp": "Das Buch/Handbuch wurde als abgeholt markiert!",
+  "markingPickedUp": "Als abgeholt markieren",
+  "pickupAndLoans": "Abholung & Ausleihen",
+  "searchBookStudentPlaceholder": "Nach Buchname oder Studentenname suchen...",
+  "toPickup": "Abzuholen",
+  "activeLoans": "Aktive Ausleihen",
+  "noPickupRequests": "Keine Abholanfragen",
+  "noActiveLoans": "Keine aktiven Ausleihen",
+  "approvedAt": "Genehmigt am",
+  "dueAt": "Fällig am",
+  "borrowedAt": "Ausgeliehen am",
+  "loan": "Ausleihe",
+  "duration": "Dauer",
+  "unknownUser": "Unbekannter Benutzer",
+  "classLabel": "Klasse {className}",
+  "@classLabel": {
+    "placeholders": {
+      "className": {
+        "type": "String"
+      }
+    }
+  },
+  "days": "Tage",
+  "backTooltip": "Zurück",
+  "teacher": "Lehrer",
+  "unknownBook": "Unbekanntes Buch",
+  "schoolType": "Schultyp",
+  "classLabel2": "Klasse",
+  "profile": "Profil",
+  "classLetter": "Klassenbuchstabe",
+  "invitationCode": "Einladungscode",
+  "schoolTypeGenerala": "Grundschule",
+  "schoolTypeLiceu": "Gymnasium",
+  "pleaseEnterPassword": "Bitte geben Sie ein Passwort ein",
+  "passwordMinLength": "Passwort muss mindestens 8 Zeichen lang sein",
+  "passwordNoSpaces": "Passwort darf keine Leerzeichen enthalten",
+  "passwordNeedsUppercase": "Passwort muss mindestens einen Großbuchstaben enthalten",
+  "passwordNeedsNumber": "Passwort muss mindestens eine Zahl enthalten",
+  "passwordNeedsSpecialChar": "Passwort muss mindestens ein Sonderzeichen enthalten",
+  "pleaseConfirmPassword": "Bitte bestätigen Sie das Passwort",
+  "passwordsDoNotMatch": "Passwörter stimmen nicht überein",
+  "emailMustBeNlenau": "E-Mail muss aus der Domäne nlenau.ro stammen",
+  "pleaseSelectSchoolType": "Bitte wählen Sie einen Schultyp",
+  "pleaseSelectClass": "Bitte wählen Sie eine Klasse",
+  "pleaseSelectProfile": "Bitte wählen Sie ein Profil",
+  "pleaseSelectClassLetter": "Bitte wählen Sie einen Klassenbuchstaben",
+  "pleaseEnterInvitationCode": "Bitte geben Sie den Einladungscode ein",
+  "registrationError": "Registrierungsfehler. Bitte versuchen Sie es erneut.",
+  "registrationSuccess": "Registrierung erfolgreich! Überprüfen Sie Ihren Posteingang, um Ihr Konto zu aktivieren.",
+  "searchBooksTitle": "Bücher suchen",
+  "manuals": "Handbücher",
+  "searchBooksShort": "Bücher und Handbücher suchen...",
+  "searchBooksLong": "Suche nach Titel, Autor, Kategorie oder Klasse (z.B. VIII oder 8)...",
+  "selectLoanDuration": "Ausleihdauer auswählen",
+  "oneWeek": "1 Woche",
+  "twoWeeks": "2 Wochen",
+  "oneMonth": "1 Monat",
+  "twoMonths": "2 Monate",
+  "loanRequestSuccess": "Ausleihantrag erfolgreich registriert!",
+  "bookRequestError": "Fehler beim Anfordern des Buches/Handbuchs: {error}",
+  "loadBooksError": "Fehler beim Laden der Bücher: {error}",
+  "noBooksAvailable": "Keine Bücher/Handbücher verfügbar.",
+  "displayError": "Anzeigefehler: {error}",
+  "invalidBook": "Ungültiges Buch",
+  "unknownBook": "Unbekanntes Buch",
+  "unknownAuthor": "Unbekannter Autor",
+  "noCategory": "Keine Kategorie",
+  "bookDisplayError": "Fehler bei der Buchanzeige",
+  "appSettings": "App-Einstellungen",
+  "aboutApp": "Über die App",
+  "logout": "Abmelden",
+  "appTheme": "App-Thema",
+  "lightThemeActive": "Helles Thema aktiviert",
+  "darkThemeActive": "Dunkles Thema aktiviert",
+  "appLanguage": "App-Sprache",
+  "languageChangedSuccess": "Sprache erfolgreich geändert",
+  "themeDescription": "Zwischen hellem und dunklem Thema wechseln",
+  "libraryManagementSystem": "Bibliotheksverwaltungssystem",
+  "welcomeLibrarian": "Willkommen, Frau Bibliothekarin!",
+  "searchBooks": "Bücher suchen",
+  "myRequests": "Meine Anfragen",
+  "viewManageRequests": "Ihre Anfragen anzeigen und verwalten",
+  "examModels": "Prüfungsmodelle",
+  "findExamModels": "Prüfungsmodelle zum Lernen finden",
+  "manageBooks": "Bücher verwalten",
+  "editDeleteBooks": "Bücher aus dem Katalog bearbeiten und löschen",
+  "pendingRequests": "Ausstehende Anfragen",
+  "manageLoanRequests": "Ausleiheanfragen verwalten",
+  "activeLoans": "Aktive Ausleihen",
+  "viewCurrentLoans": "Aktuelle Ausleihen anzeigen",
+  "loanHistory": "Ausleihverlauf",
+  "viewLoanHistory": "Ausleihverlauf anzeigen",
+  "manageExamModels": "Prüfungsmodelle verwalten",
+  "exploreCatalog": "Bibliothekskatalog erkunden",
+  "adminPanel": "Bibliotheksverwaltung",
+  "addBook": "Buch hinzufügen",
+  "addNewBook": "Ein neues Buch zum Katalog hinzufügen",
+  "generateTeacherCodes": "Registrierungscodes für Lehrer generieren",
+  "teacherCodes": "Lehrercodes",
+  "aboutTeacherCodes": "Über Lehrercodes",
+  "teacherCodeDescription": "Generierte Codes werden von Lehrern zur Registrierung im System verwendet. Jeder Code kann nur einmal verwendet werden und läuft nach 6 Stunden ab.",
+  "generateNewCode": "Neuen Code generieren",
+  "generating": "Generiert...",
+  "codeGeneratedSuccess": "Code erfolgreich generiert!",
+  "copyCode": "Code kopieren",
+  "existingCodes": "Vorhandene Codes",
+  "noCodesGenerated": "Keine Codes generiert",
+  "generateFirstCode": "Ersten Code für Lehrer generieren",
+  "codeAvailable": "Verfügbar",
+  "codeExpired": "Abgelaufen",
+  "createdAt": "Erstellt: {date}",
+  "expiresAt": "Läuft ab: {date}",
+  "deleteCode": "Code löschen",
+  "deleteConfirmation": "Löschbestätigung",
+  "deleteCodeConfirmText": "Sind Sie sicher, dass Sie diesen Code löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden.",
+  "loadCodesError": "Fehler beim Laden der Codes: {error}",
+  "generateCodeError": "Fehler beim Generieren des Codes: {error}",
+  "copyCodeSuccess": "Code in die Zwischenablage kopiert!",
+  "deleteCodeSuccess": "Code erfolgreich gelöscht!",
+  "deleteCodeError": "Fehler beim Löschen des Codes: {error}",
+  "language": "Sprache",
+  "theme": "Design",
+  "switchToLightMode": "Zum hellen Design wechseln",
+  "switchToDarkMode": "Zum dunklen Design wechseln",
+  "settingsMenu": "Einstellungsmenü"
+}

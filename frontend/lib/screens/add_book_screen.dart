@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../l10n/app_localizations.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:file_picker/file_picker.dart';
@@ -13,8 +14,11 @@ import 'dart:typed_data';
 enum BookType { carte, manual }
 
 extension BookTypeExtension on BookType {
-  String get label => this == BookType.carte ? 'Carte' : 'Manual';
   String get apiValue => this == BookType.carte ? 'carte' : 'manual';
+  
+  String getLabel(BuildContext context) => this == BookType.carte 
+    ? AppLocalizations.of(context)!.book 
+    : AppLocalizations.of(context)!.manual;
 }
 
 class AddBookScreen extends StatefulWidget {
@@ -182,7 +186,7 @@ class _AddBookScreenState extends State<AddBookScreen>
         if (!mounted) return;
         NotificationService.showSuccess(
           context: context,
-          message: 'Cartea/manualul a fost adăugat cu succes!',
+          message: AppLocalizations.of(context)!.bookAddedSuccessfully,
         );
         // Clear the form and pending files
         _formKey.currentState!.reset();
@@ -239,11 +243,11 @@ class _AddBookScreenState extends State<AddBookScreen>
                 ),
               ),
               const SizedBox(width: 12),
-              const Text('Adaugă copertă'),
+              Text(AppLocalizations.of(context)!.addCover),
             ],
           ),
-          content: const Text(
-            'Alegeți cum doriți să adăugați coperta cărții:',
+          content: Text(
+            AppLocalizations.of(context)!.chooseCoverMethod,
             style: TextStyle(fontSize: 16),
           ),
           actions: [
@@ -258,7 +262,7 @@ class _AddBookScreenState extends State<AddBookScreen>
                 },
                 icon: Icon(Icons.camera_alt_rounded, color: Theme.of(context).colorScheme.onPrimary),
                 label: Text(
-                  'Fă o poză',
+                  AppLocalizations.of(context)!.takePicture,
                   style: TextStyle(color: Theme.of(context).colorScheme.onPrimary, fontWeight: FontWeight.w600),
                 ),
                 style: ElevatedButton.styleFrom(
@@ -282,7 +286,7 @@ class _AddBookScreenState extends State<AddBookScreen>
                 },
                 icon: Icon(Icons.photo_library_rounded, color: Theme.of(context).colorScheme.onSecondary),
                 label: Text(
-                  'Adaugă din galerie',
+                  AppLocalizations.of(context)!.addFromGallery,
                   style: TextStyle(color: Theme.of(context).colorScheme.onSecondary, fontWeight: FontWeight.w600),
                 ),
                 style: ElevatedButton.styleFrom(
@@ -301,8 +305,8 @@ class _AddBookScreenState extends State<AddBookScreen>
               margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
               child: TextButton(
                 onPressed: () => Navigator.of(context).pop(),
-                child: const Text(
-                  'Anulează',
+                child: Text(
+                  AppLocalizations.of(context)!.cancel,
                   style: TextStyle(fontWeight: FontWeight.w600),
                 ),
               ),
@@ -330,7 +334,7 @@ class _AddBookScreenState extends State<AddBookScreen>
     } catch (e) {
       NotificationService.showError(
         context: context,
-        message: 'Eroare la accesarea camerei: ${e.toString()}',
+        message: '${AppLocalizations.of(context)!.errorCameraAccess}: ${e.toString()}',
       );
     }
   }
@@ -352,7 +356,7 @@ class _AddBookScreenState extends State<AddBookScreen>
     } catch (e) {
       NotificationService.showError(
         context: context,
-        message: 'Eroare la accesarea galeriei: ${e.toString()}',
+        message: '${AppLocalizations.of(context)!.errorGalleryAccess}: ${e.toString()}',
       );
     }
   }
@@ -381,11 +385,11 @@ class _AddBookScreenState extends State<AddBookScreen>
                 ),
               ),
               const SizedBox(width: 12),
-              const Text('Adaugă PDF'),
+              Text(AppLocalizations.of(context)!.addPdf),
             ],
           ),
-          content: const Text(
-            'Alegeți fișierul PDF pentru manual:',
+          content: Text(
+            AppLocalizations.of(context)!.choosePdfForManual,
             style: TextStyle(fontSize: 16),
           ),
           actions: [
@@ -400,7 +404,7 @@ class _AddBookScreenState extends State<AddBookScreen>
                 },
                 icon: Icon(Icons.file_upload_rounded, color: Theme.of(context).colorScheme.onPrimary),
                 label: Text(
-                  'Alege fișier PDF',
+                  AppLocalizations.of(context)!.choosePdfForManual,
                   style: TextStyle(color: Theme.of(context).colorScheme.onPrimary, fontWeight: FontWeight.w600),
                 ),
                 style: ElevatedButton.styleFrom(
@@ -419,8 +423,8 @@ class _AddBookScreenState extends State<AddBookScreen>
               margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
               child: TextButton(
                 onPressed: () => Navigator.of(context).pop(),
-                child: const Text(
-                  'Anulează',
+                child: Text(
+                  AppLocalizations.of(context)!.cancel,
                   style: TextStyle(fontWeight: FontWeight.w600),
                 ),
               ),
@@ -449,7 +453,7 @@ class _AddBookScreenState extends State<AddBookScreen>
           } else {
             NotificationService.showError(
               context: context,
-              message: 'Eroare la citirea fișierului PDF',
+              message: '${AppLocalizations.of(context)!.errorReadingPdf}: ${file.name}',
             );
           }
         } else {
@@ -461,7 +465,7 @@ class _AddBookScreenState extends State<AddBookScreen>
           } else {
             NotificationService.showError(
               context: context,
-              message: 'Eroare la accesarea fișierului PDF',
+              message: AppLocalizations.of(context)!.errorSelectingPdf,
             );
           }
         }
@@ -469,7 +473,7 @@ class _AddBookScreenState extends State<AddBookScreen>
     } catch (e) {
       NotificationService.showError(
         context: context,
-        message: 'Eroare la selectarea fișierului PDF: ${e.toString()}',
+        message: '${AppLocalizations.of(context)!.errorSelectingPdf}: ${e.toString()}',
       );
     }
   }
@@ -511,7 +515,7 @@ class _AddBookScreenState extends State<AddBookScreen>
             ),
             SizedBox(width: getResponsiveSpacing(12)),
             Text(
-              'Adaugă Carte Nouă',
+              AppLocalizations.of(context)!.addNewBook,
               style: ResponsiveTextStyles.getResponsiveTitleStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w700,
@@ -537,7 +541,7 @@ class _AddBookScreenState extends State<AddBookScreen>
             onPressed: () {
               Navigator.pop(context);
             },
-            tooltip: 'Înapoi',
+            tooltip: AppLocalizations.of(context)!.back,
           ),
         ),
       ),
@@ -681,7 +685,7 @@ class _AddBookScreenState extends State<AddBookScreen>
           ),
           SizedBox(height: getResponsiveSpacing(12)),
           Text(
-            'Completează detaliile pentru noua carte/manual',
+            AppLocalizations.of(context)!.fillBookDetails,
             textAlign: TextAlign.center,
             style: ResponsiveTextStyles.getResponsiveTextStyle(
               fontSize: 16,
@@ -691,7 +695,7 @@ class _AddBookScreenState extends State<AddBookScreen>
           ),
           SizedBox(height: getResponsiveSpacing(8)),
           Text(
-            'Câmpurile marcate cu * sunt obligatorii',
+            AppLocalizations.of(context)!.requiredFields,
             textAlign: TextAlign.center,
             style: ResponsiveTextStyles.getResponsiveTextStyle(
               fontSize: 14,
@@ -749,7 +753,7 @@ class _AddBookScreenState extends State<AddBookScreen>
                 ),
                 SizedBox(width: getResponsiveSpacing(12)),
                 Text(
-                  'Copertă (opțional)',
+                  '${AppLocalizations.of(context)!.cover} (${AppLocalizations.of(context)!.optional})',
                   style: ResponsiveTextStyles.getResponsiveTextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
@@ -812,7 +816,7 @@ class _AddBookScreenState extends State<AddBookScreen>
                 ),
                 SizedBox(width: getResponsiveSpacing(12)),
                 Text(
-                  'Informații de bază',
+                  AppLocalizations.of(context)!.basicInformation,
                   style: ResponsiveTextStyles.getResponsiveTextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
@@ -835,7 +839,7 @@ class _AddBookScreenState extends State<AddBookScreen>
               child: DropdownButtonFormField<BookType>(
                 value: _selectedType,
                 decoration: InputDecoration(
-                  labelText: 'Tip resursă *',
+                  labelText: AppLocalizations.of(context)!.resourceType,
                   labelStyle: ResponsiveTextStyles.getResponsiveTextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w500,
@@ -861,7 +865,7 @@ class _AddBookScreenState extends State<AddBookScreen>
                   return DropdownMenuItem<BookType>(
                     value: type,
                     child: Text(
-                      type.label,
+                      type.getLabel(context),
                       style: ResponsiveTextStyles.getResponsiveTextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w500,
@@ -894,7 +898,7 @@ class _AddBookScreenState extends State<AddBookScreen>
                 child: DropdownButtonFormField<String>(
                   value: _selectedClass,
                   decoration: InputDecoration(
-                    labelText: 'Clasă *',
+                    labelText: '${AppLocalizations.of(context)!.classLevel} *',
                     labelStyle: ResponsiveTextStyles.getResponsiveTextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w500,
@@ -934,7 +938,7 @@ class _AddBookScreenState extends State<AddBookScreen>
                     });
                   },
                   validator: (value) => _selectedType == BookType.manual && value == null
-                      ? 'Vă rugăm să selectați o clasă'
+                      ? AppLocalizations.of(context)!.pleaseSelectClass
                       : null,
                 ),
               ),
@@ -945,9 +949,9 @@ class _AddBookScreenState extends State<AddBookScreen>
             // Title Field
             _buildStyledTextField(
               controller: _nameController,
-              label: 'Titlu *',
+              label: AppLocalizations.of(context)!.title,
               icon: Icons.title_rounded,
-              validator: (value) => value?.isEmpty ?? true ? 'Vă rugăm să introduceți un titlu' : null,
+              validator: (value) => value?.isEmpty ?? true ? AppLocalizations.of(context)!.pleaseEnterTitle : null,
             ),
             
             SizedBox(height: getResponsiveSpacing(16)),
@@ -955,9 +959,9 @@ class _AddBookScreenState extends State<AddBookScreen>
             // Author Field
             _buildStyledTextField(
               controller: _authorController,
-              label: 'Autor *',
+              label: AppLocalizations.of(context)!.author,
               icon: Icons.person_rounded,
-              validator: (value) => value?.isEmpty ?? true ? 'Vă rugăm să introduceți un autor' : null,
+              validator: (value) => value?.isEmpty ?? true ? AppLocalizations.of(context)!.pleaseEnterAuthor : null,
             ),
           ],
         ),
@@ -1011,7 +1015,7 @@ class _AddBookScreenState extends State<AddBookScreen>
                 ),
                 SizedBox(width: getResponsiveSpacing(12)),
                 Text(
-                  'Detalii suplimentare',
+                  AppLocalizations.of(context)!.additionalDetails,
                   style: ResponsiveTextStyles.getResponsiveTextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
@@ -1025,9 +1029,9 @@ class _AddBookScreenState extends State<AddBookScreen>
             // Category Field
             _buildStyledTextField(
               controller: _categoryController,
-              label: 'Categorie',
+              label: AppLocalizations.of(context)!.category,
               icon: Icons.category_rounded,
-              validator: (value) => value?.isEmpty ?? true ? 'Vă rugăm să introduceți o categorie' : null,
+              validator: (value) => value?.isEmpty ?? true ? AppLocalizations.of(context)!.pleaseEnterCategory : null,
             ),
             
             SizedBox(height: getResponsiveSpacing(16)),
@@ -1035,10 +1039,10 @@ class _AddBookScreenState extends State<AddBookScreen>
             // Description Field
             _buildStyledTextField(
               controller: _descriptionController,
-              label: 'Descriere',
+              label: AppLocalizations.of(context)!.description,
               icon: Icons.notes_rounded,
               maxLines: 3,
-              validator: (value) => value?.isEmpty ?? true ? 'Vă rugăm să introduceți o descriere' : null,
+              validator: (value) => value?.isEmpty ?? true ? AppLocalizations.of(context)!.pleaseEnterDescription : null,
             ),
             
             SizedBox(height: getResponsiveSpacing(16)),
@@ -1046,14 +1050,14 @@ class _AddBookScreenState extends State<AddBookScreen>
             // Publication Year Field
             _buildStyledTextField(
               controller: _yearController,
-              label: 'Anul publicării (opțional)',
+              label: '${AppLocalizations.of(context)!.publicationYear} (${AppLocalizations.of(context)!.optional})',
               icon: Icons.calendar_today_rounded,
               keyboardType: TextInputType.number,
               validator: (value) {
                 if (value != null && value.isNotEmpty) {
                   final year = int.tryParse(value);
                   if (year == null || year < 1000 || year > DateTime.now().year) {
-                    return 'Vă rugăm să introduceți un an valid';
+                    return AppLocalizations.of(context)!.pleaseEnterValidYear;
                   }
                 }
                 return null;
@@ -1111,7 +1115,7 @@ class _AddBookScreenState extends State<AddBookScreen>
                 ),
                 SizedBox(width: getResponsiveSpacing(12)),
                 Text(
-                  'Informații stoc',
+                  AppLocalizations.of(context)!.stockInformation,
                   style: ResponsiveTextStyles.getResponsiveTextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
@@ -1127,33 +1131,33 @@ class _AddBookScreenState extends State<AddBookScreen>
               // Stack vertically on small phones
               _buildStyledTextField(
                 controller: _inventoryController,
-                label: 'Inventar total *',
+                label: AppLocalizations.of(context)!.inventory,
                 icon: Icons.library_books_rounded,
                 validator: (value) {
-                  if (value == null || value.isEmpty) return 'Vă rugăm să introduceți inventarul total';
-                  if (int.tryParse(value) == null) return 'Inventarul trebuie să fie un număr';
+                  if (value == null || value.isEmpty) return AppLocalizations.of(context)!.pleaseEnterTotalInventory;
+                  if (int.tryParse(value) == null) return AppLocalizations.of(context)!.inventoryMustBeNumber;
                   return null;
                 },
                 keyboardType: TextInputType.number,
-                helperText: 'Numărul total de exemplare',
+                helperText: AppLocalizations.of(context)!.totalCopies,
               ),
               SizedBox(height: getResponsiveSpacing(16)),
               _buildStyledTextField(
                 controller: _stockController,
-                label: 'Stoc disponibil *',
+                label: AppLocalizations.of(context)!.stock,
                 icon: Icons.inventory_rounded,
                 validator: (value) {
-                  if (value == null || value.isEmpty) return 'Vă rugăm să introduceți stocul disponibil';
+                  if (value == null || value.isEmpty) return AppLocalizations.of(context)!.pleaseEnterAvailableStock;
                   final stock = int.tryParse(value);
-                  if (stock == null) return 'Stocul trebuie să fie un număr';
+                  if (stock == null) return AppLocalizations.of(context)!.stockMustBeNumber;
                   final inventory = int.tryParse(_inventoryController.text);
                   if (inventory != null && stock > inventory) {
-                    return 'Stocul nu poate fi mai mare decât inventarul';
+                    return AppLocalizations.of(context)!.stockCannotExceedInventory;
                   }
                   return null;
                 },
                 keyboardType: TextInputType.number,
-                helperText: 'Numărul de exemplare disponibile pentru împrumut',
+                helperText: AppLocalizations.of(context)!.availableCopies,
               ),
             ] else ...[
               // Side by side on larger screens
@@ -1162,35 +1166,35 @@ class _AddBookScreenState extends State<AddBookScreen>
                   Expanded(
                     child: _buildStyledTextField(
                       controller: _inventoryController,
-                      label: 'Inventar total *',
+                      label: AppLocalizations.of(context)!.totalInventory,
                       icon: Icons.library_books_rounded,
                       validator: (value) {
-                        if (value == null || value.isEmpty) return 'Vă rugăm să introduceți inventarul total';
-                        if (int.tryParse(value) == null) return 'Inventarul trebuie să fie un număr';
+                        if (value == null || value.isEmpty) return AppLocalizations.of(context)!.pleaseEnterTotalInventory;
+                        if (int.tryParse(value) == null) return AppLocalizations.of(context)!.inventoryMustBeNumber;
                         return null;
                       },
                       keyboardType: TextInputType.number,
-                      helperText: 'Numărul total de exemplare',
+                      helperText: AppLocalizations.of(context)!.totalCopies,
                     ),
                   ),
                   SizedBox(width: getResponsiveSpacing(16)),
                   Expanded(
                     child: _buildStyledTextField(
                       controller: _stockController,
-                      label: 'Stoc disponibil *',
+                      label: AppLocalizations.of(context)!.availableStock,
                       icon: Icons.inventory_rounded,
                       validator: (value) {
-                        if (value == null || value.isEmpty) return 'Vă rugăm să introduceți stocul disponibil';
+                        if (value == null || value.isEmpty) return AppLocalizations.of(context)!.pleaseEnterAvailableStock;
                         final stock = int.tryParse(value);
-                        if (stock == null) return 'Stocul trebuie să fie un număr';
+                        if (stock == null) return AppLocalizations.of(context)!.stockMustBeNumber;
                         final inventory = int.tryParse(_inventoryController.text);
                         if (inventory != null && stock > inventory) {
-                          return 'Stocul nu poate fi mai mare decât inventarul';
+                          return AppLocalizations.of(context)!.stockCannotExceedInventory;
                         }
                         return null;
                       },
                       keyboardType: TextInputType.number,
-                      helperText: 'Numărul de exemplare disponibile pentru împrumut',
+                      helperText: AppLocalizations.of(context)!.availableCopies,
                     ),
                   ),
                 ],
@@ -1252,7 +1256,7 @@ class _AddBookScreenState extends State<AddBookScreen>
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Manual PDF (opțional)',
+                        '${AppLocalizations.of(context)!.manualPDF} (${AppLocalizations.of(context)!.optional})',
                         style: ResponsiveTextStyles.getResponsiveTextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
@@ -1318,7 +1322,7 @@ class _AddBookScreenState extends State<AddBookScreen>
                       size: getResponsiveIconSize(20),
                     ),
                     label: Text(
-                      'Anulează',
+                      AppLocalizations.of(context)!.cancel,
                       style: ResponsiveTextStyles.getResponsiveTextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
@@ -1356,8 +1360,8 @@ class _AddBookScreenState extends State<AddBookScreen>
                           ),
                     label: Text(
                       _isLoading 
-                          ? 'Se adaugă...' 
-                          : 'Adaugă ${_selectedType.label}',
+                          ? AppLocalizations.of(context)!.adding
+                          : AppLocalizations.of(context)!.addItem(_selectedType.getLabel(context)),
                       style: ResponsiveTextStyles.getResponsiveTextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
@@ -1388,7 +1392,7 @@ class _AddBookScreenState extends State<AddBookScreen>
                         size: getResponsiveIconSize(20),
                       ),
                       label: Text(
-                        'Anulează',
+                        AppLocalizations.of(context)!.cancel,
                         style: ResponsiveTextStyles.getResponsiveTextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
@@ -1429,8 +1433,8 @@ class _AddBookScreenState extends State<AddBookScreen>
                             ),
                       label: Text(
                         _isLoading 
-                            ? 'Se adaugă...' 
-                            : 'Adaugă ${_selectedType.label}',
+                            ? AppLocalizations.of(context)!.adding
+                            : AppLocalizations.of(context)!.addItem(_selectedType.getLabel(context)),
                         style: ResponsiveTextStyles.getResponsiveTextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
@@ -1649,7 +1653,7 @@ class _AddBookScreenState extends State<AddBookScreen>
                       ),
                       SizedBox(height: getResponsiveSpacing(12)),
                       Text(
-                        'Adaugă copertă',
+                        AppLocalizations.of(context)!.addCover,
                         textAlign: TextAlign.center,
                         style: ResponsiveTextStyles.getResponsiveTextStyle(
                           fontSize: 14,
@@ -1659,7 +1663,7 @@ class _AddBookScreenState extends State<AddBookScreen>
                       ),
                       SizedBox(height: getResponsiveSpacing(4)),
                       Text(
-                        'Apasă pentru a încărca',
+                        AppLocalizations.of(context)!.tapToUpload,
                         textAlign: TextAlign.center,
                         style: ResponsiveTextStyles.getResponsiveTextStyle(
                           fontSize: 12,
@@ -1730,7 +1734,7 @@ class _AddBookScreenState extends State<AddBookScreen>
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'PDF selectat cu succes',
+                              AppLocalizations.of(context)!.pdfSuccessfullyAdded,
                               style: ResponsiveTextStyles.getResponsiveTextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600,
@@ -1740,8 +1744,8 @@ class _AddBookScreenState extends State<AddBookScreen>
                             SizedBox(height: getResponsiveSpacing(4)),
                             Text(
                               kIsWeb && _pendingPdfBytes != null
-                                  ? 'Fișier PDF (${(_pendingPdfBytes!.length / 1024).toStringAsFixed(1)} KB)'
-                                  : 'Fișier PDF selectat',
+                                  ? AppLocalizations.of(context)!.pdfFileSize((_pendingPdfBytes!.length / 1024).toStringAsFixed(1))
+                                  : AppLocalizations.of(context)!.pdfFileSelected,
                               style: ResponsiveTextStyles.getResponsiveTextStyle(
                                 fontSize: 12,
                                 color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
@@ -1749,7 +1753,7 @@ class _AddBookScreenState extends State<AddBookScreen>
                             ),
                             SizedBox(height: getResponsiveSpacing(4)),
                             Text(
-                              'Apasă pentru a schimba',
+                              AppLocalizations.of(context)!.tapToChange,
                               style: ResponsiveTextStyles.getResponsiveTextStyle(
                                 fontSize: 12,
                                 color: Theme.of(context).colorScheme.secondary.withOpacity(0.8),
@@ -1797,7 +1801,7 @@ class _AddBookScreenState extends State<AddBookScreen>
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'Încarcă fișier PDF',
+                              AppLocalizations.of(context)!.uploadPdfFile,
                               style: ResponsiveTextStyles.getResponsiveTextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600,
@@ -1806,7 +1810,7 @@ class _AddBookScreenState extends State<AddBookScreen>
                             ),
                             SizedBox(height: getResponsiveSpacing(4)),
                             Text(
-                              'Selectează fișierul PDF al manualului',
+                              AppLocalizations.of(context)!.selectManualPdfFile,
                               style: ResponsiveTextStyles.getResponsiveTextStyle(
                                 fontSize: 12,
                                 color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
@@ -1814,7 +1818,7 @@ class _AddBookScreenState extends State<AddBookScreen>
                             ),
                             SizedBox(height: getResponsiveSpacing(4)),
                             Text(
-                              'Apasă pentru a încărca',
+                              AppLocalizations.of(context)!.tapToUpload,
                               style: ResponsiveTextStyles.getResponsiveTextStyle(
                                 fontSize: 12,
                                 color: Theme.of(context).colorScheme.secondary.withOpacity(0.8),

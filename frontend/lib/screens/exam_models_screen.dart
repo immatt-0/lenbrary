@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../l10n/app_localizations.dart';
 import '../services/api_service.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../services/notification_service.dart';
@@ -100,7 +101,7 @@ class _ExamModelsScreenState extends State<ExamModelsScreen>
       setState(() => _isLoading = false);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Eroare la încărcarea modelelor: $e'),
+          content: Text(AppLocalizations.of(context)!.errorLoadingModels(e.toString())),
           backgroundColor: Theme.of(context).colorScheme.error,
         ),
       );
@@ -122,7 +123,7 @@ class _ExamModelsScreenState extends State<ExamModelsScreen>
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: const Text('Nu s-a putut deschide PDF-ul.'),
+          content: Text(AppLocalizations.of(context)!.couldNotOpenPdf),
           backgroundColor: Theme.of(context).colorScheme.error,
         ),
       );
@@ -243,7 +244,7 @@ class _ExamModelsScreenState extends State<ExamModelsScreen>
               ),
               SizedBox(width: getResponsiveSpacing(12)),
               Text(
-                'Modele de Teste',
+                AppLocalizations.of(context)!.examModelsTitle,
                 style: ResponsiveTextStyles.getResponsiveTitleStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.w700,
@@ -268,7 +269,7 @@ class _ExamModelsScreenState extends State<ExamModelsScreen>
             onPressed: () {
               Navigator.pop(context);
             },
-            tooltip: 'Înapoi',
+            tooltip: AppLocalizations.of(context)!.back,
           ),
         ),
       ),
@@ -321,7 +322,7 @@ class _ExamModelsScreenState extends State<ExamModelsScreen>
                         child: TextField(
                           controller: _searchController,
                           decoration: InputDecoration(
-                            hintText: 'Caută modele de teste...',
+                            hintText: AppLocalizations.of(context)!.searchExamModelsHint,
                             hintStyle: ResponsiveTextStyles.getResponsiveTextStyle(
                               fontSize: 16,
                               color: Theme.of(context).colorScheme.primary.withOpacity(0.6),
@@ -423,7 +424,7 @@ class _ExamModelsScreenState extends State<ExamModelsScreen>
                                 value: _selectedType,
                                 isExpanded: true,
                                 decoration: InputDecoration(
-                                  labelText: 'Tip test',
+                                  labelText: AppLocalizations.of(context)!.testType,
                                   labelStyle: TextStyle(
                                     color: Theme.of(context).colorScheme.primary,
                                     fontWeight: FontWeight.w600,
@@ -459,11 +460,11 @@ class _ExamModelsScreenState extends State<ExamModelsScreen>
                                   ),
                                 ),
                                 items: [
-                                  const DropdownMenuItem(value: null, child: Text('Toate tipurile', style: TextStyle(fontSize: 14))),
+                                  DropdownMenuItem(value: null, child: Text(AppLocalizations.of(context)!.allTestTypes, style: const TextStyle(fontSize: 14))),
                                   DropdownMenuItem(
                                     value: 'EN',
                                     child: Tooltip(
-                                      message: 'Evaluare Națională',
+                                      message: AppLocalizations.of(context)!.nationalEvaluation,
                                       child: Row(
                                         children: [
                                           Icon(Icons.school_rounded, color: _getTypeColor('EN'), size: 16),
@@ -476,7 +477,7 @@ class _ExamModelsScreenState extends State<ExamModelsScreen>
                                   DropdownMenuItem(
                                     value: 'BAC',
                                     child: Tooltip(
-                                      message: 'Bacalaureat',
+                                      message: AppLocalizations.of(context)!.baccalaureate,
                                       child: Row(
                                         children: [
                                           Icon(Icons.workspace_premium_rounded, color: _getTypeColor('BAC'), size: 16),
@@ -518,7 +519,7 @@ class _ExamModelsScreenState extends State<ExamModelsScreen>
                                 value: _selectedCategory,
                                 isExpanded: true,
                                 decoration: InputDecoration(
-                                  labelText: 'Materia',
+                                  labelText: AppLocalizations.of(context)!.subject,
                                   labelStyle: TextStyle(
                                     color: Theme.of(context).colorScheme.primary,
                                     fontWeight: FontWeight.w600,
@@ -554,14 +555,14 @@ class _ExamModelsScreenState extends State<ExamModelsScreen>
                                   ),
                                 ),
                                 items: [
-                                  const DropdownMenuItem(value: null, child: Text('Toate materiile', style: TextStyle(fontSize: 14))),
+                                  DropdownMenuItem(value: null, child: Text(AppLocalizations.of(context)!.allSubjects, style: const TextStyle(fontSize: 14))),
                                   DropdownMenuItem(
                                     value: 'Matematica',
                                     child: Row(
                                       children: [
                                         Icon(Icons.functions_rounded, color: _getCategoryColor('Matematica'), size: 16),
                                         const SizedBox(width: 6),
-                                        const Text('Mate', style: TextStyle(fontSize: 14)),
+                                        Text(AppLocalizations.of(context)!.mate, style: const TextStyle(fontSize: 14)),
                                       ],
                                     ),
                                   ),
@@ -571,7 +572,7 @@ class _ExamModelsScreenState extends State<ExamModelsScreen>
                                       children: [
                                         Icon(Icons.menu_book_rounded, color: _getCategoryColor('Romana'), size: 16),
                                         const SizedBox(width: 6),
-                                        const Text('Română', style: TextStyle(fontSize: 14)),
+                                        Text(AppLocalizations.of(context)!.romanian, style: const TextStyle(fontSize: 14)),
                                       ],
                                     ),
                                   ),
@@ -618,7 +619,7 @@ class _ExamModelsScreenState extends State<ExamModelsScreen>
                           ),
                           const SizedBox(height: 24),
                           Text(
-                            'Se încarcă modelele...',
+                            AppLocalizations.of(context)!.loadingModels,
                             style: Theme.of(context).textTheme.titleMedium?.copyWith(
                               color: Theme.of(context).colorScheme.primary,
                             ),
@@ -662,10 +663,10 @@ class _ExamModelsScreenState extends State<ExamModelsScreen>
                               const SizedBox(height: 24),
                               Text(
                                 _searchController.text.isNotEmpty && _isSpecialSubject(_searchController.text)
-                                    ? 'Vom adăuga testele de ${_getSpecialSubject(_searchController.text)} în viitor'
+                                    ? AppLocalizations.of(context)!.futureSubject(_getSpecialSubject(_searchController.text) ?? '')
                                     : (_searchController.text.isNotEmpty || _selectedType != null || _selectedCategory != null
-                                        ? 'Nu s-au găsit teste pentru căutarea ta'
-                                        : 'Nu există teste disponibile'),
+                                        ? AppLocalizations.of(context)!.noTestsForSearch
+                                        : AppLocalizations.of(context)!.noTestsAvailable),
                                 style: Theme.of(context).textTheme.titleLarge?.copyWith(
                                   color: Theme.of(context).colorScheme.primary.withOpacity(0.7),
                                   fontWeight: FontWeight.w600,
@@ -675,10 +676,10 @@ class _ExamModelsScreenState extends State<ExamModelsScreen>
                               const SizedBox(height: 16),
                               Text(
                                 _searchController.text.isNotEmpty && _isSpecialSubject(_searchController.text)
-                                    ? 'Momentan ne concentrăm pe matematica și română'
+                                    ? AppLocalizations.of(context)!.focusOnMainSubjects
                                     : (_searchController.text.isNotEmpty || _selectedType != null || _selectedCategory != null
-                                        ? 'Încearcă să modifici termenii de căutare'
-                                        : 'Modelele vor apărea aici după ce vor fi adăugate'),
+                                        ? AppLocalizations.of(context)!.modifySearchTerms
+                                        : AppLocalizations.of(context)!.modelsWillAppear),
                                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                                   color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
                                 ),
@@ -792,7 +793,7 @@ class _ExamModelsScreenState extends State<ExamModelsScreen>
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           Text(
-                            model['name'] ?? 'Model fără nume',
+                            model['name'] ?? AppLocalizations.of(context)!.modelWithoutName,
                             style: ResponsiveTextStyles.getResponsiveTitleStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
@@ -807,7 +808,7 @@ class _ExamModelsScreenState extends State<ExamModelsScreen>
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Tooltip(
-                                message: model['type'] == 'EN' ? 'Evaluare Națională' : 'Bacalaureat',
+                                message: model['type'] == 'EN' ? AppLocalizations.of(context)!.nationalEvaluation : AppLocalizations.of(context)!.baccalaureate,
                                 child: Container(
                                   padding: EdgeInsets.symmetric(
                                     horizontal: getResponsiveSpacing(8), 
@@ -844,7 +845,7 @@ class _ExamModelsScreenState extends State<ExamModelsScreen>
                                   ),
                                 ),
                                 child: Text(
-                                  model['category'] == 'Matematica' ? 'Mate' : 'Română',
+                                  model['category'] == 'Matematica' ? AppLocalizations.of(context)!.mate : AppLocalizations.of(context)!.romanian,
                                   style: ResponsiveTextStyles.getResponsiveTextStyle(
                                     fontSize: 12,
                                     color: categoryColor,
@@ -884,7 +885,7 @@ class _ExamModelsScreenState extends State<ExamModelsScreen>
                             size: getResponsiveIconSize(24),
                           ),
                           onPressed: () => _openPdf(pdfUrl),
-                          tooltip: 'Deschide PDF',
+                          tooltip: AppLocalizations.of(context)!.openPdf,
                         ),
                       ),
                   ],

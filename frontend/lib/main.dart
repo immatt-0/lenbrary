@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
 import 'providers/theme_provider.dart';
 import 'services/responsive_service.dart';
+import 'services/language_service.dart';
 import 'screens/login_screen.dart';
 import 'screens/register_screen.dart';
 import 'screens/success_screen.dart';
@@ -18,27 +20,46 @@ import 'screens/exam_models_admin_screen.dart';
 import 'screens/add_exam_model_screen.dart';
 import 'screens/teacher_code_generation_screen.dart';
 import 'screens/settings_screen.dart';
+import 'l10n/app_localizations.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  runApp(const MyApp());
+  
+  // Initialize language service
+  final languageService = LanguageService();
+  await languageService.initializeLanguage();
+  
+  runApp(MyApp(languageService: languageService));
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+  final LanguageService languageService;
+  
+  const MyApp({Key? key, required this.languageService}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) => ThemeProvider(),
-      child: Consumer<ThemeProvider>(
-        builder: (context, themeProvider, child) {
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => ThemeProvider()),
+        ChangeNotifierProvider.value(value: languageService),
+      ],
+      child: Consumer2<ThemeProvider, LanguageService>(
+        builder: (context, themeProvider, languageService, child) {
           // Initialize responsive service
           ResponsiveService.init(context);
           
           return MaterialApp(
-            title: 'Lenbrary App',
+            title: 'Lenbrary',
             theme: themeProvider.currentTheme,
+            locale: languageService.locale,
+            localizationsDelegates: const [
+              AppLocalizations.delegate,
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
+            ],
+            supportedLocales: LanguageService.supportedLocales,
             initialRoute: '/login',
             routes: {
               '/login': (context) => const LoginScreen(),

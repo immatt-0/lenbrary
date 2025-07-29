@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import '../l10n/app_localizations.dart';
 import '../services/api_service.dart';
 import '../services/notification_service.dart';
+import '../l10n/app_localizations.dart';
 import '../services/responsive_service.dart' show getResponsiveSpacing, getResponsiveBorderRadius, getResponsiveIconSize, ResponsiveWidget, ResponsiveTextStyles;
 import 'extension_requests_screen.dart'; // Added import for ExtensionRequestsScreen
 
@@ -182,7 +184,7 @@ class _PickupAndLoansScreenState extends State<PickupAndLoansScreen>
               ),
               SizedBox(width: getResponsiveSpacing(12)),
               Text(
-                'Ridicare & Împrumuturi',
+                AppLocalizations.of(context)!.pickupAndLoans,
                 style: ResponsiveTextStyles.getResponsiveTitleStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.w700,
@@ -210,7 +212,7 @@ class _PickupAndLoansScreenState extends State<PickupAndLoansScreen>
                 padding: EdgeInsets.zero,
                 constraints: const BoxConstraints(),
                 onPressed: () => Navigator.pop(context),
-                tooltip: 'Înapoi',
+                tooltip: AppLocalizations.of(context)!.backTooltip,
               ),
             ),
           ),
@@ -271,7 +273,7 @@ class _PickupAndLoansScreenState extends State<PickupAndLoansScreen>
                         size: getResponsiveIconSize(24),
                       ),
                     ),
-                    text: 'De ridicat',
+                    text: AppLocalizations.of(context)!.toPickup,
                   ),
                   Tab(
                     icon: Container(
@@ -281,7 +283,7 @@ class _PickupAndLoansScreenState extends State<PickupAndLoansScreen>
                         size: getResponsiveIconSize(24),
                       ),
                     ),
-                    text: 'Împrumuturi active',
+                    text: AppLocalizations.of(context)!.activeLoans,
                   ),
                 ],
               ),
@@ -329,7 +331,7 @@ class _PickupAndLoansScreenState extends State<PickupAndLoansScreen>
                   child: TextField(
                     controller: _searchController,
                     decoration: InputDecoration(
-                      hintText: 'Caută după numele cărții sau studentului...',
+                      hintText: AppLocalizations.of(context)!.searchBookStudentPlaceholder,
                       hintStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(
                         fontSize: 16,
                         fontWeight: FontWeight.w500,
@@ -412,12 +414,12 @@ class _PickupAndLoansScreenState extends State<PickupAndLoansScreen>
                         _buildRequestsList(
                           _filteredToPickupRequests,
                           isPickup: true,
-                          emptyMessage: 'Nu există cereri de ridicat',
+                          emptyMessage: AppLocalizations.of(context)!.noPickupRequests,
                         ),
                         _buildRequestsList(
                           _filteredActiveLoans,
                           isPickup: false,
-                          emptyMessage: 'Nu există împrumuturi active',
+                          emptyMessage: AppLocalizations.of(context)!.noActiveLoans,
                         ),
                       ],
                     ),
@@ -504,14 +506,14 @@ class _PickupAndLoansScreenState extends State<PickupAndLoansScreen>
           // De ridicat: show approved_date and due_date
           date1 = request['approved_date'];
           date2 = request['due_date'];
-          label1 = 'Aprobat la';
-          label2 = 'Scadentă la';
+          label1 = AppLocalizations.of(context)!.approvedAt;
+          label2 = AppLocalizations.of(context)!.dueAt;
         } else {
           // Împrumuturi active: show borrow_date and due_date
           date1 = request['borrow_date'];
           date2 = request['due_date'];
-          label1 = 'Împrumutat la';
-          label2 = 'Scadentă la';
+          label1 = AppLocalizations.of(context)!.borrowedAt;
+          label2 = AppLocalizations.of(context)!.dueAt;
         }
         String formatDate(String? date) {
           if (date == null) return 'N/A';
@@ -582,7 +584,7 @@ class _PickupAndLoansScreenState extends State<PickupAndLoansScreen>
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            toTitleCase(user['display_name'] ?? user['first_name'] + ' ' + user['last_name'] ?? 'Utilizator necunoscut'),
+                            toTitleCase(user['display_name'] ?? user['first_name'] + ' ' + user['last_name'] ?? AppLocalizations.of(context)!.unknownUser),
                             style: Theme.of(context).textTheme.titleLarge?.copyWith(
                               fontWeight: FontWeight.w700,
                               color: Theme.of(context).colorScheme.onSurface,
@@ -614,7 +616,7 @@ class _PickupAndLoansScreenState extends State<PickupAndLoansScreen>
                                     ),
                                   ),
                                   child: Text(
-                                    'Profesor',
+                                    AppLocalizations.of(context)!.teacher,
                                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
                                       color: Colors.blue[700],
                                       fontWeight: FontWeight.w600,
@@ -677,7 +679,7 @@ class _PickupAndLoansScreenState extends State<PickupAndLoansScreen>
                           ),
                           const SizedBox(width: 6),
                           Text(
-                            isPickup ? 'De ridicat' : 'Împrumut',
+                            isPickup ? AppLocalizations.of(context)!.toPickup : AppLocalizations.of(context)!.loan,
                             style: const TextStyle(
                               color: Colors.white,
                               fontWeight: FontWeight.w700,
@@ -771,7 +773,7 @@ class _PickupAndLoansScreenState extends State<PickupAndLoansScreen>
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              book['name'] ?? 'Carte necunoscută',
+                              book['name'] ?? AppLocalizations.of(context)!.unknownBook,
                               style: Theme.of(context).textTheme.titleMedium?.copyWith(
                                 fontWeight: FontWeight.w700,
                                 color: Theme.of(context).colorScheme.onSurface,
@@ -807,7 +809,7 @@ class _PickupAndLoansScreenState extends State<PickupAndLoansScreen>
                                     ),
                                     const SizedBox(width: 4),
                                     Text(
-                                      'Clasa ${book['book_class']}',
+                                      AppLocalizations.of(context)!.classLabel(book['book_class']),
                                       style: TextStyle(
                                         color: Theme.of(context).colorScheme.secondary,
                                         fontWeight: FontWeight.w600,
@@ -831,8 +833,8 @@ class _PickupAndLoansScreenState extends State<PickupAndLoansScreen>
                                 const SizedBox(height: 8),
                                 _buildInfoChip(
                                   icon: Icons.timer_rounded,
-                                  label: 'Durată',
-                                  value: '${request['loan_duration_days'] ?? 14} zile',
+                                  label: AppLocalizations.of(context)!.duration,
+                                  value: '${request['loan_duration_days'] ?? 14} ${AppLocalizations.of(context)!.days}',
                                 ),
                                
                               ],

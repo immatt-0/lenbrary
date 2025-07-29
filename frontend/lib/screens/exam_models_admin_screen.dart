@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../l10n/app_localizations.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../services/api_service.dart';
@@ -122,7 +123,7 @@ class _ExamModelsAdminScreenState extends State<ExamModelsAdminScreen>
       print('Error fetching models: ' + e.toString());
       NotificationService.showError(
         context: context,
-        message: 'Eroare la încărcarea modelelor: $e',
+        message: AppLocalizations.of(context)!.errorLoadingModels(e.toString()),
       );
     }
   }
@@ -146,7 +147,7 @@ class _ExamModelsAdminScreenState extends State<ExamModelsAdminScreen>
     } catch (e) {
       NotificationService.showError(
         context: context,
-        message: 'Eroare la ștergere: $e',
+        message: AppLocalizations.of(context)!.errorDeleting(e.toString()),
       );
     }
   }
@@ -221,7 +222,7 @@ class _ExamModelsAdminScreenState extends State<ExamModelsAdminScreen>
               ),
               SizedBox(width: getResponsiveSpacing(12)),
               Text(
-                'Modele de teste',
+                AppLocalizations.of(context)!.examModels,
                 style: ResponsiveTextStyles.getResponsiveTitleStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.w700,
@@ -246,7 +247,7 @@ class _ExamModelsAdminScreenState extends State<ExamModelsAdminScreen>
                 size: getResponsiveIconSize(24),
               ),
               onPressed: () => Navigator.pop(context),
-              tooltip: 'Înapoi',
+              tooltip: AppLocalizations.of(context)!.back,
             ),
           ),
         ),
@@ -266,7 +267,7 @@ class _ExamModelsAdminScreenState extends State<ExamModelsAdminScreen>
                   size: getResponsiveIconSize(24),
                 ),
                 onPressed: _fetchExamModels,
-                tooltip: 'Reîmprospătează',
+                tooltip: AppLocalizations.of(context)!.refresh,
               ),
             ),
           ),
@@ -320,7 +321,7 @@ class _ExamModelsAdminScreenState extends State<ExamModelsAdminScreen>
                         child: TextField(
                           controller: _searchController,
                           decoration: InputDecoration(
-                            hintText: '🔍 Caută modele de teste...',
+                            hintText: AppLocalizations.of(context)!.searchExamModels,
                             hintStyle: ResponsiveTextStyles.getResponsiveTextStyle(
                               fontSize: 16,
                               color: Theme.of(context).colorScheme.primary.withOpacity(0.6),
@@ -419,7 +420,7 @@ class _ExamModelsAdminScreenState extends State<ExamModelsAdminScreen>
                                 value: _selectedType,
                                 isExpanded: true,
                                 decoration: InputDecoration(
-                                  labelText: 'Tip examen',
+                                  labelText: AppLocalizations.of(context)!.examType,
                                   labelStyle: ResponsiveTextStyles.getResponsiveTextStyle(
                                     fontSize: 13,
                                     color: Theme.of(context).colorScheme.primary,
@@ -455,11 +456,11 @@ class _ExamModelsAdminScreenState extends State<ExamModelsAdminScreen>
                                   ),
                                 ),
                                 items: [
-                                  DropdownMenuItem(value: null, child: Text('Toate tipurile', style: ResponsiveTextStyles.getResponsiveTextStyle(fontSize: 14))),
+                                  DropdownMenuItem(value: null, child: Text(AppLocalizations.of(context)!.allTypes, style: ResponsiveTextStyles.getResponsiveTextStyle(fontSize: 14))),
                                   DropdownMenuItem(
                                     value: 'EN',
                                     child: Tooltip(
-                                      message: 'Evaluare Națională',
+                                      message: AppLocalizations.of(context)!.nationalEvaluation,
                                       child: Row(
                                         children: [
                                           Icon(Icons.school_rounded, color: _getTypeColor('EN'), size: getResponsiveIconSize(16)),
@@ -472,7 +473,7 @@ class _ExamModelsAdminScreenState extends State<ExamModelsAdminScreen>
                                   DropdownMenuItem(
                                     value: 'BAC',
                                     child: Tooltip(
-                                      message: 'Bacalaureat',
+                                      message: AppLocalizations.of(context)!.baccalaureate,
                                       child: Row(
                                         children: [
                                           Icon(Icons.workspace_premium_rounded, color: _getTypeColor('BAC'), size: getResponsiveIconSize(16)),
@@ -514,7 +515,7 @@ class _ExamModelsAdminScreenState extends State<ExamModelsAdminScreen>
                                 value: _selectedCategory,
                                 isExpanded: true,
                                 decoration: InputDecoration(
-                                  labelText: 'Materia',
+                                  labelText: AppLocalizations.of(context)!.subject,
                                   labelStyle: ResponsiveTextStyles.getResponsiveTextStyle(
                                     fontSize: 13,
                                     color: Theme.of(context).colorScheme.primary,
@@ -550,14 +551,14 @@ class _ExamModelsAdminScreenState extends State<ExamModelsAdminScreen>
                                   ),
                                 ),
                                 items: [
-                                  DropdownMenuItem(value: null, child: Text('Toate materiile', style: ResponsiveTextStyles.getResponsiveTextStyle(fontSize: 14))),
+                                  DropdownMenuItem(value: null, child: Text(AppLocalizations.of(context)!.allSubjects, style: ResponsiveTextStyles.getResponsiveTextStyle(fontSize: 14))),
                                   DropdownMenuItem(
                                     value: 'Matematica',
                                     child: Row(
                                       children: [
                                         Icon(Icons.functions_rounded, color: _getCategoryColor('Matematica'), size: getResponsiveIconSize(16)),
                                         SizedBox(width: getResponsiveSpacing(6)),
-                                        Text('Mate', style: ResponsiveTextStyles.getResponsiveTextStyle(fontSize: 14)),
+                                        Text(AppLocalizations.of(context)!.math, style: ResponsiveTextStyles.getResponsiveTextStyle(fontSize: 14)),
                                       ],
                                     ),
                                   ),
@@ -567,7 +568,7 @@ class _ExamModelsAdminScreenState extends State<ExamModelsAdminScreen>
                                       children: [
                                         Icon(Icons.menu_book_rounded, color: _getCategoryColor('Romana'), size: getResponsiveIconSize(16)),
                                         SizedBox(width: getResponsiveSpacing(6)),
-                                        Text('Română', style: ResponsiveTextStyles.getResponsiveTextStyle(fontSize: 14)),
+                                        Text(AppLocalizations.of(context)!.romanian, style: ResponsiveTextStyles.getResponsiveTextStyle(fontSize: 14)),
                                       ],
                                     ),
                                   ),
@@ -601,7 +602,7 @@ class _ExamModelsAdminScreenState extends State<ExamModelsAdminScreen>
                           onPressed: _addExamModel,
                           icon: Icon(Icons.add_rounded, color: Theme.of(context).colorScheme.onPrimary),
                           label: Text(
-                            'Adaugă model de examen',
+                            AppLocalizations.of(context)!.addExamModelButton,
                             style: TextStyle(color: Theme.of(context).colorScheme.onPrimary, fontWeight: FontWeight.w600),
                           ),
                           style: ElevatedButton.styleFrom(
@@ -654,7 +655,7 @@ class _ExamModelsAdminScreenState extends State<ExamModelsAdminScreen>
                           ),
                           SizedBox(height: getResponsiveSpacing(24)),
                           Text(
-                            'Se încarcă modelele...',
+                            AppLocalizations.of(context)!.loadingModels,
                             style: Theme.of(context).textTheme.titleMedium?.copyWith(
                               color: Theme.of(context).colorScheme.primary,
                             ),
@@ -698,10 +699,10 @@ class _ExamModelsAdminScreenState extends State<ExamModelsAdminScreen>
                               SizedBox(height: getResponsiveSpacing(24)),
                               Text(
                                 _searchController.text.isNotEmpty && _isSpecialSubject(_searchController.text)
-                                    ? 'Vom adăuga testele de ${_getSpecialSubject(_searchController.text)} în viitor'
+                                    ? AppLocalizations.of(context)!.futureSubject(_getSpecialSubject(_searchController.text)!)
                                     : (_searchController.text.isNotEmpty || _selectedType != null || _selectedCategory != null
-                                        ? 'Nu s-au găsit modele pentru căutarea ta'
-                                        : 'Nu există modele de teste'),
+                                        ? AppLocalizations.of(context)!.noModelsFound
+                                        : AppLocalizations.of(context)!.noModelsExist),
                                 style: Theme.of(context).textTheme.titleLarge?.copyWith(
                                   color: Theme.of(context).colorScheme.primary.withOpacity(0.7),
                                   fontWeight: FontWeight.w600,
@@ -711,10 +712,10 @@ class _ExamModelsAdminScreenState extends State<ExamModelsAdminScreen>
                               SizedBox(height: getResponsiveSpacing(16)),
                               Text(
                                 _searchController.text.isNotEmpty && _isSpecialSubject(_searchController.text)
-                                    ? 'Momentan ne concentrăm pe matematica și română'
+                                    ? AppLocalizations.of(context)!.focusOnMainSubjects
                                     : (_searchController.text.isNotEmpty || _selectedType != null || _selectedCategory != null
-                                        ? 'Încearcă să modifici termenii de căutare'
-                                        : 'Adaugă primul model de examen'),
+                                        ? AppLocalizations.of(context)!.tryModifyingSearch
+                                        : AppLocalizations.of(context)!.addFirstModel),
                                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                                   color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
                                 ),
@@ -834,7 +835,7 @@ class _ExamModelsAdminScreenState extends State<ExamModelsAdminScreen>
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           Text(
-                            model['name'] ?? 'Model fără nume',
+                            model['name'] ?? AppLocalizations.of(context)!.modelWithoutName,
                             style: ResponsiveTextStyles.getResponsiveTitleStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
@@ -849,7 +850,7 @@ class _ExamModelsAdminScreenState extends State<ExamModelsAdminScreen>
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Tooltip(
-                                message: model['type'] == 'EN' ? 'Evaluare Națională' : 'Bacalaureat',
+                                message: model['type'] == 'EN' ? AppLocalizations.of(context)!.nationalEvaluation : AppLocalizations.of(context)!.baccalaureate,
                                 child: Container(
                                   padding: EdgeInsets.symmetric(horizontal: getResponsiveSpacing(8), vertical: getResponsiveSpacing(4)),
                                   decoration: BoxDecoration(
@@ -880,7 +881,7 @@ class _ExamModelsAdminScreenState extends State<ExamModelsAdminScreen>
                                   ),
                                 ),
                                 child: Text(
-                                  model['category'] == 'Matematica' ? 'Mate' : 'Română',
+                                  model['category'] == 'Matematica' ? AppLocalizations.of(context)!.mate : AppLocalizations.of(context)!.romanian,
                                   style: ResponsiveTextStyles.getResponsiveTextStyle(
                                     fontSize: 12,
                                     color: categoryColor,
@@ -925,7 +926,7 @@ class _ExamModelsAdminScreenState extends State<ExamModelsAdminScreen>
                                 size: getResponsiveIconSize(24),
                               ),
                               onPressed: () => _openPdf(pdfUrl),
-                              tooltip: 'Deschide PDF',
+                              tooltip: AppLocalizations.of(context)!.openPdf,
                             ),
                           ),
                         // Delete Button
@@ -953,7 +954,7 @@ class _ExamModelsAdminScreenState extends State<ExamModelsAdminScreen>
                               size: getResponsiveIconSize(24),
                             ),
                             onPressed: () => _deleteModel(model['id']),
-                            tooltip: 'Șterge model',
+                            tooltip: AppLocalizations.of(context)!.deleteModel,
                           ),
                         ),
                       ],

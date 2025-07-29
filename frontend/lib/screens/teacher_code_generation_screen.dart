@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import '../l10n/app_localizations.dart';
 import 'package:flutter/services.dart';
 import '../services/api_service.dart';
 import '../services/notification_service.dart';
@@ -80,7 +81,7 @@ class _TeacherCodeGenerationScreenState extends State<TeacherCodeGenerationScree
       setState(() => _isLoading = false);
       NotificationService.showError(
         context: context,
-        message: 'Eroare la încărcarea codurilor: $e',
+        message: AppLocalizations.of(context)!.loadCodesError(e.toString()),
       );
     }
   }
@@ -96,7 +97,7 @@ class _TeacherCodeGenerationScreenState extends State<TeacherCodeGenerationScree
       await _loadExistingCodes(); // Refresh the list
       NotificationService.showSuccess(
         context: context,
-        message: 'Cod generat cu succes!',
+        message: AppLocalizations.of(context)!.codeGeneratedSuccess,
       );
       
       // Auto-hide the generated code display after 5 seconds
@@ -111,7 +112,7 @@ class _TeacherCodeGenerationScreenState extends State<TeacherCodeGenerationScree
       setState(() => _isGenerating = false);
       NotificationService.showError(
         context: context,
-        message: 'Eroare la generarea codului: $e',
+        message: AppLocalizations.of(context)!.generateCodeError(e.toString()),
       );
     }
   }
@@ -120,7 +121,7 @@ class _TeacherCodeGenerationScreenState extends State<TeacherCodeGenerationScree
     await Clipboard.setData(ClipboardData(text: code));
     NotificationService.showSuccess(
       context: context,
-      message: 'Cod copiat în clipboard!',
+      message: AppLocalizations.of(context)!.copyCodeSuccess,
     );
   }
 
@@ -141,12 +142,12 @@ class _TeacherCodeGenerationScreenState extends State<TeacherCodeGenerationScree
       
       NotificationService.showSuccess(
         context: context,
-        message: 'Cod șters cu succes!',
+        message: AppLocalizations.of(context)!.deleteCodeSuccess,
       );
     } catch (e) {
       NotificationService.showError(
         context: context,
-        message: 'Eroare la ștergerea codului: $e',
+        message: AppLocalizations.of(context)!.deleteCodeError(e.toString()),
       );
     }
   }
@@ -192,7 +193,7 @@ class _TeacherCodeGenerationScreenState extends State<TeacherCodeGenerationScree
               ),
               SizedBox(width: getResponsiveSpacing(12)),
               Text(
-                'Coduri pentru profesori',
+                AppLocalizations.of(context)!.teacherCodes,
                 style: ResponsiveTextStyles.getResponsiveTitleStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.w700,
@@ -217,7 +218,7 @@ class _TeacherCodeGenerationScreenState extends State<TeacherCodeGenerationScree
                 size: getResponsiveIconSize(24),
               ),
               onPressed: () => Navigator.pop(context),
-              tooltip: 'Înapoi',
+              tooltip: AppLocalizations.of(context)!.back,
             ),
           ),
         ),
@@ -281,7 +282,7 @@ class _TeacherCodeGenerationScreenState extends State<TeacherCodeGenerationScree
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    'Despre codurile pentru profesori',
+                                    AppLocalizations.of(context)!.aboutTeacherCodes,
                                     style: ResponsiveTextStyles.getResponsiveTextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.bold,
@@ -290,7 +291,7 @@ class _TeacherCodeGenerationScreenState extends State<TeacherCodeGenerationScree
                                   ),
                                   SizedBox(height: getResponsiveSpacing(4)),
                                   Text(
-                                    'Codurile generate sunt folosite de profesori pentru a se înregistra în sistem. Fiecare cod poate fi folosit o singură dată și expiră după 6 ore.',
+                                    AppLocalizations.of(context)!.teacherCodeDescription,
                                     style: ResponsiveTextStyles.getResponsiveTextStyle(
                                       fontSize: 14,
                                       color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
@@ -340,7 +341,7 @@ class _TeacherCodeGenerationScreenState extends State<TeacherCodeGenerationScree
                                   size: getResponsiveIconSize(24),
                                 ),
                           label: Text(
-                            _isGenerating ? 'Se generează...' : 'Generează cod nou',
+                            _isGenerating ? AppLocalizations.of(context)!.generating : AppLocalizations.of(context)!.generateNewCode,
                             style: ResponsiveTextStyles.getResponsiveTextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w600,
@@ -395,7 +396,7 @@ class _TeacherCodeGenerationScreenState extends State<TeacherCodeGenerationScree
                                   ),
                                   SizedBox(width: getResponsiveSpacing(12)),
                                   Text(
-                                    'Cod generat cu succes!',
+                                    AppLocalizations.of(context)!.codeGeneratedSuccess,
                                     style: ResponsiveTextStyles.getResponsiveTextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.bold,
@@ -436,7 +437,7 @@ class _TeacherCodeGenerationScreenState extends State<TeacherCodeGenerationScree
                                         color: Theme.of(context).colorScheme.primary,
                                         size: getResponsiveIconSize(20),
                                       ),
-                                      tooltip: 'Copiază codul',
+                                      tooltip: AppLocalizations.of(context)!.copyCode,
                                     ),
                                   ],
                                 ),
@@ -469,7 +470,7 @@ class _TeacherCodeGenerationScreenState extends State<TeacherCodeGenerationScree
                           ),
                           SizedBox(width: getResponsiveSpacing(8)),
                           Text(
-                            'Coduri existente',
+                            AppLocalizations.of(context)!.existingCodes,
                             style: ResponsiveTextStyles.getResponsiveTitleStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
@@ -524,7 +525,7 @@ class _TeacherCodeGenerationScreenState extends State<TeacherCodeGenerationScree
                                         ),
                                         SizedBox(height: getResponsiveSpacing(16)),
                                         Text(
-                                          'Nu există coduri generate',
+                                          AppLocalizations.of(context)!.noCodesGenerated,
                                           style: ResponsiveTextStyles.getResponsiveTextStyle(
                                             fontSize: 16,
                                             fontWeight: FontWeight.w600,
@@ -533,7 +534,7 @@ class _TeacherCodeGenerationScreenState extends State<TeacherCodeGenerationScree
                                         ),
                                         SizedBox(height: getResponsiveSpacing(8)),
                                         Text(
-                                          'Generează primul cod pentru profesori',
+                                          AppLocalizations.of(context)!.generateFirstCode,
                                           style: ResponsiveTextStyles.getResponsiveTextStyle(
                                             fontSize: 14,
                                             color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
@@ -633,7 +634,7 @@ class _TeacherCodeGenerationScreenState extends State<TeacherCodeGenerationScree
                                   borderRadius: getResponsiveBorderRadius(8),
                                 ),
                                 child: Text(
-                                  isExpired ? 'Expirat' : 'Disponibil',
+                                  isExpired ? AppLocalizations.of(context)!.codeExpired : AppLocalizations.of(context)!.codeAvailable,
                                   style: ResponsiveTextStyles.getResponsiveTextStyle(
                                     fontSize: 10,
                                     fontWeight: FontWeight.bold,
@@ -645,14 +646,14 @@ class _TeacherCodeGenerationScreenState extends State<TeacherCodeGenerationScree
                           ),
                           SizedBox(height: getResponsiveSpacing(4)),
                           Text(
-                            'Creat: ${_formatDate(createdAt)}',
+                            AppLocalizations.of(context)!.createdAt(_formatDate(createdAt)),
                             style: ResponsiveTextStyles.getResponsiveTextStyle(
                               fontSize: 12,
                               color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
                             ),
                           ),
                           Text(
-                            'Expiră: ${_formatDate(expiresAt)}',
+                            AppLocalizations.of(context)!.expiresAt(_formatDate(expiresAt)),
                             style: ResponsiveTextStyles.getResponsiveTextStyle(
                               fontSize: 12,
                               color: isExpired 
@@ -675,7 +676,7 @@ class _TeacherCodeGenerationScreenState extends State<TeacherCodeGenerationScree
                               color: Theme.of(context).colorScheme.primary,
                               size: getResponsiveIconSize(20),
                             ),
-                            tooltip: 'Copiază codul',
+                            tooltip: AppLocalizations.of(context)!.copyCode,
                           ),
                         IconButton(
                           onPressed: () => _showDeleteConfirmation(code['id']),
@@ -684,7 +685,7 @@ class _TeacherCodeGenerationScreenState extends State<TeacherCodeGenerationScree
                             color: Colors.red,
                             size: getResponsiveIconSize(20),
                           ),
-                          tooltip: 'Șterge codul',
+                          tooltip: AppLocalizations.of(context)!.deleteCode,
                         ),
                       ],
                     ),
@@ -707,12 +708,12 @@ class _TeacherCodeGenerationScreenState extends State<TeacherCodeGenerationScree
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Confirmare ștergere'),
-          content: Text('Ești sigur că vrei să ștergi acest cod? Această acțiune nu poate fi anulată.'),
+          title: Text(AppLocalizations.of(context)!.deleteConfirmation),
+          content: Text(AppLocalizations.of(context)!.deleteCodeConfirmText),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
-              child: Text('Anulează'),
+              child: Text(AppLocalizations.of(context)!.cancel),
             ),
             ElevatedButton(
               onPressed: () {
@@ -722,7 +723,7 @@ class _TeacherCodeGenerationScreenState extends State<TeacherCodeGenerationScree
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.red,
               ),
-              child: Text('Șterge', style: TextStyle(color: Colors.white)),
+              child: Text(AppLocalizations.of(context)!.delete, style: TextStyle(color: Colors.white)),
             ),
           ],
         );

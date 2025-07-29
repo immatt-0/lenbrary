@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../l10n/app_localizations.dart';
 import '../services/api_service.dart';
 
 class LoanHistoryScreen extends StatefulWidget {
@@ -348,7 +349,7 @@ class _LoanHistoryScreenState extends State<LoanHistoryScreen>
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Istoric împrumuturi',
+                  AppLocalizations.of(context)!.loanHistoryTitle,
                   style: Theme.of(context).textTheme.titleLarge?.copyWith(
                     fontWeight: FontWeight.w700,
                     letterSpacing: -0.5,
@@ -356,7 +357,7 @@ class _LoanHistoryScreenState extends State<LoanHistoryScreen>
                 ),
                 if (_filteredLoanHistory.isNotEmpty)
                   Text(
-                    '${_filteredLoanHistory.length} înregistrări',
+                    AppLocalizations.of(context)!.recordsCount(_filteredLoanHistory.length.toString()),
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
                       color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
                     ),
@@ -382,7 +383,7 @@ class _LoanHistoryScreenState extends State<LoanHistoryScreen>
             padding: EdgeInsets.zero,
             constraints: const BoxConstraints(),
             onPressed: () => Navigator.pop(context),
-            tooltip: 'Înapoi',
+            tooltip: AppLocalizations.of(context)!.backTooltip,
           ),
         ),
       ),
@@ -432,7 +433,7 @@ class _LoanHistoryScreenState extends State<LoanHistoryScreen>
                     child: TextField(
                       controller: _searchController,
                       decoration: InputDecoration(
-                        hintText: '🔍 Caută după nume, autor sau titlu...',
+                        hintText: AppLocalizations.of(context)!.searchBooksPlaceholder,
                         hintStyle: TextStyle(
                           color: Theme.of(context).colorScheme.primary.withOpacity(0.6),
                           fontSize: 16,
@@ -534,7 +535,7 @@ class _LoanHistoryScreenState extends State<LoanHistoryScreen>
                           FadeTransition(
                             opacity: _fadeAnimation,
                             child: Text(
-                              'Se încarcă istoricul...',
+                              AppLocalizations.of(context)!.loadingHistory,
                               style: Theme.of(context).textTheme.titleLarge?.copyWith(
                                 color: Theme.of(context).colorScheme.primary,
                                 fontWeight: FontWeight.w600,
@@ -590,7 +591,7 @@ class _LoanHistoryScreenState extends State<LoanHistoryScreen>
                                   onPressed: _fetchLoanHistory,
                                   icon: Icon(Icons.refresh_rounded, color: Theme.of(context).colorScheme.onPrimary),
                                   label: Text(
-                                    'Reîncearcă',
+                                    AppLocalizations.of(context)!.retry,
                                     style: TextStyle(color: Theme.of(context).colorScheme.onPrimary, fontWeight: FontWeight.w600),
                                   ),
                                   style: ElevatedButton.styleFrom(
@@ -641,8 +642,8 @@ class _LoanHistoryScreenState extends State<LoanHistoryScreen>
                                     opacity: _fadeAnimation,
                                     child: Text(
                                       _searchController.text.isNotEmpty
-                                          ? 'Nu s-au găsit rezultate pentru "${_searchController.text}"'
-                                          : 'Nu există istoric de împrumuturi',
+                                          ? AppLocalizations.of(context)!.noSearchResults(_searchController.text)
+                                          : AppLocalizations.of(context)!.noLoanHistory,
                                       style: Theme.of(context).textTheme.titleLarge?.copyWith(
                                         color: Theme.of(context).colorScheme.primary.withOpacity(0.7),
                                         fontWeight: FontWeight.w600,
@@ -655,8 +656,8 @@ class _LoanHistoryScreenState extends State<LoanHistoryScreen>
                                     opacity: _fadeAnimation,
                                     child: Text(
                                       _searchController.text.isNotEmpty
-                                          ? 'Încearcă să modifici termenii de căutare'
-                                          : 'Istoricul va apărea aici după ce se vor face împrumuturi',
+                                          ? AppLocalizations.of(context)!.tryModifyingSearchTerms
+                                          : AppLocalizations.of(context)!.historyWillAppear,
                                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                                         color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
                                       ),
@@ -718,15 +719,15 @@ class _LoanHistoryScreenState extends State<LoanHistoryScreen>
     String formatDate(DateTime? date, {bool isReturnDate = false}) {
       if (date == null) {
         if (isReturnDate && status != 'RETURNAT') {
-          return 'Nu s-a returnat încă';
+          return AppLocalizations.of(context)!.notReturnedYet;
         }
         return 'N/A';
       }
       return '${date.day.toString().padLeft(2, '0')}/${date.month.toString().padLeft(2, '0')}/${date.year}';
     }
 
-    final String statusText = status == 'RESPINS' ? 'Respins' : 
-                          status == 'ANULATA' || status == 'ANULATĂ' ? 'Anulat' : 'Returnat';
+    final String statusText = status == 'RESPINS' ? AppLocalizations.of(context)!.rejected : 
+                          status == 'ANULATA' || status == 'ANULATĂ' ? AppLocalizations.of(context)!.cancelled : AppLocalizations.of(context)!.returned;
     final Color statusColor = status == 'RESPINS' ? Colors.orange : 
                           status == 'ANULATA' || status == 'ANULATĂ' ? Colors.red : Colors.green;
 
@@ -812,7 +813,7 @@ class _LoanHistoryScreenState extends State<LoanHistoryScreen>
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            book['name'] ?? 'Carte necunoscută',
+                            book['name'] ?? AppLocalizations.of(context)!.unknownBook,
                             style: Theme.of(context).textTheme.titleLarge?.copyWith(
                               fontWeight: FontWeight.bold,
                               color: Theme.of(context).colorScheme.onSurface,
@@ -822,7 +823,7 @@ class _LoanHistoryScreenState extends State<LoanHistoryScreen>
                           ),
                           const SizedBox(height: 8),
                           Text(
-                            book['author'] ?? 'Autor necunoscut',
+                            book['author'] ?? AppLocalizations.of(context)!.unknownAuthor,
                             style: Theme.of(context).textTheme.titleMedium?.copyWith(
                               color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
                               fontWeight: FontWeight.w500,
@@ -853,7 +854,7 @@ class _LoanHistoryScreenState extends State<LoanHistoryScreen>
                                   ),
                                   const SizedBox(width: 4),
                                   Text(
-                                    'Clasa ${book['book_class']}',
+                                    AppLocalizations.of(context)!.classLabel(book['book_class']),
                                     style: TextStyle(
                                       color: Theme.of(context).colorScheme.secondary,
                                       fontWeight: FontWeight.w600,
@@ -953,7 +954,7 @@ class _LoanHistoryScreenState extends State<LoanHistoryScreen>
                             if (isTeacher) ...[
                               const SizedBox(height: 4),
                               Text(
-                                'Profesor',
+                                AppLocalizations.of(context)!.teacher,
                                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
                                   color: Theme.of(context).colorScheme.primary,
                                   fontWeight: FontWeight.w600,
@@ -1022,7 +1023,7 @@ class _LoanHistoryScreenState extends State<LoanHistoryScreen>
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'Data cererii',
+                              AppLocalizations.of(context)!.requestDate,
                               style: Theme.of(context).textTheme.bodySmall?.copyWith(
                                 color: Colors.red,
                                 fontWeight: FontWeight.bold,
@@ -1077,7 +1078,7 @@ class _LoanHistoryScreenState extends State<LoanHistoryScreen>
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      'Împrumutat',
+                                      AppLocalizations.of(context)!.borrowed,
                                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
                                         color: Colors.blue,
                                         fontWeight: FontWeight.bold,
@@ -1122,7 +1123,7 @@ class _LoanHistoryScreenState extends State<LoanHistoryScreen>
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      'Returnat',
+                                      AppLocalizations.of(context)!.returned,
                                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
                                         color: Colors.green,
                                         fontWeight: FontWeight.bold,

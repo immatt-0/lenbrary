@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
+import '../l10n/app_localizations.dart';
 import '../services/api_service.dart';
-import '../providers/theme_provider.dart';
-import 'package:provider/provider.dart';
-import '../services/notification_service.dart';
 import '../services/responsive_service.dart';
 import '../widgets/responsive_button.dart';
 import '../widgets/responsive_text_field.dart';
+import '../widgets/settings_menu_button.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -66,25 +65,12 @@ class _LoginScreenState extends State<LoginScreen> with ResponsiveWidget {
     ResponsiveService.init(context);
     
     return Scaffold(
-      floatingActionButton: Consumer<ThemeProvider>(
-        builder: (context, themeProvider, child) {
-          return Padding(
-            padding: EdgeInsets.only(
-              top: getResponsiveSpacing(16.0), 
-              right: getResponsiveSpacing(8.0)
-            ),
-            child: FloatingActionButton(
-              onPressed: () => themeProvider.toggleTheme(),
-              backgroundColor: Theme.of(context).colorScheme.primary,
-              foregroundColor: Theme.of(context).colorScheme.onPrimary,
-              elevation: 8,
-              child: Icon(
-                themeProvider.isDarkMode ? Icons.light_mode : Icons.dark_mode,
-                size: getResponsiveIconSize(24),
-              ),
-            ),
-          );
-        },
+      floatingActionButton: Padding(
+        padding: EdgeInsets.only(
+          top: getResponsiveSpacing(16.0), 
+          right: getResponsiveSpacing(8.0)
+        ),
+        child: const SettingsMenuButton(),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endTop,
       body: Container(
@@ -124,7 +110,7 @@ class _LoginScreenState extends State<LoginScreen> with ResponsiveWidget {
 
                             // App title
                             Text(
-                              'Lenbrary',
+                              AppLocalizations.of(context)!.appTitle,
                               style: ResponsiveTextStyles.getResponsiveTitleStyle(
                                 fontSize: 32.0,
                                 fontWeight: FontWeight.w700,
@@ -136,15 +122,15 @@ class _LoginScreenState extends State<LoginScreen> with ResponsiveWidget {
                             // Username or Email field
                             ResponsiveTextField(
                               controller: _loginInputController,
-                              labelText: 'Username sau Email',
+                              labelText: AppLocalizations.of(context)!.usernameOrEmail,
                               hintText: ResponsiveService.isSmallPhone 
-                                  ? 'nume.prenume'
-                                  : 'nume.prenume sau nume.prenume@nlenau.ro',
+                                  ? AppLocalizations.of(context)!.loginHintShort
+                                  : AppLocalizations.of(context)!.loginHintLong,
                               prefixIcon: Icon(Icons.person_outline),
                               keyboardType: TextInputType.text,
                               validator: (value) {
                                 if (value == null || value.isEmpty) {
-                                  return 'Vă rugăm să introduceți username-ul sau adresa de email';
+                                  return AppLocalizations.of(context)!.enterUsernameOrEmail;
                                 }
                                 return null;
                               },
@@ -154,7 +140,7 @@ class _LoginScreenState extends State<LoginScreen> with ResponsiveWidget {
                             // Password field
                             ResponsiveTextField(
                               controller: _passwordController,
-                              labelText: 'Parolă',
+                              labelText: AppLocalizations.of(context)!.password,
                               prefixIcon: Icon(Icons.lock_outline),
                               suffixIcon: IconButton(
                                 icon: Icon(
@@ -171,7 +157,7 @@ class _LoginScreenState extends State<LoginScreen> with ResponsiveWidget {
                               obscureText: _obscurePassword,
                               validator: (value) {
                                 if (value == null || value.isEmpty) {
-                                  return 'Vă rugăm să introduceți parola';
+                                  return AppLocalizations.of(context)!.enterPassword;
                                 }
                                 return null;
                               },
@@ -204,7 +190,7 @@ class _LoginScreenState extends State<LoginScreen> with ResponsiveWidget {
 
                             // Login button
                             ResponsiveButton(
-                              text: 'Autentificare',
+                              text: AppLocalizations.of(context)!.authentication,
                               onPressed: _isLoading ? null : _login,
                               isLoading: _isLoading,
                             ),
@@ -216,7 +202,7 @@ class _LoginScreenState extends State<LoginScreen> with ResponsiveWidget {
                                 Navigator.pushNamed(context, '/register');
                               },
                               child: Text(
-                                'Nu ai cont? Înregistrează-te',
+                                AppLocalizations.of(context)!.noAccountRegister,
                                 style: ResponsiveTextStyles.getResponsiveTextStyle(
                                   fontSize: 14,
                                   color: Theme.of(context).colorScheme.primary,

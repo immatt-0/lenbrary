@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../l10n/app_localizations.dart';
 import '../services/api_service.dart';
 import '../services/notification_service.dart';
 import '../services/responsive_service.dart';
@@ -147,14 +148,14 @@ class _PendingRequestsScreenState extends State<PendingRequestsScreen>
         if (!mounted) return;
         NotificationService.showSuccess(
           context: context,
-          message: 'Cerere aprobată cu succes!',
+          message: AppLocalizations.of(context)!.requestApprovedSuccess,
         );
       } else {
         await ApiService.rejectRequest(borrowingId: int.parse(requestId));
         if (!mounted) return;
         NotificationService.showSuccess(
           context: context,
-          message: 'Cerere respinsă cu succes!',
+          message: AppLocalizations.of(context)!.requestRejectedSuccess,
         );
       }
       await _loadRequests();
@@ -187,7 +188,7 @@ class _PendingRequestsScreenState extends State<PendingRequestsScreen>
       if (!mounted) return;
       NotificationService.showSuccess(
         context: context,
-        message: 'Cartea/manualul a fost marcat ca ridicat!',
+        message: AppLocalizations.of(context)!.bookMarkedAsPickedUp,
       );
       await _loadRequests();
     } catch (e) {
@@ -251,7 +252,7 @@ class _PendingRequestsScreenState extends State<PendingRequestsScreen>
               SizedBox(width: ResponsiveService.isSmallPhone ? 8 : 12),
               Flexible(
                 child: Text(
-                  ResponsiveService.isSmallPhone ? 'Cereri Cărți' : 'Cereri de Cărți și Manuale',
+                  ResponsiveService.isSmallPhone ? AppLocalizations.of(context)!.bookRequestsTitle : AppLocalizations.of(context)!.bookManualsRequestsTitle,
                   style: Theme.of(context).textTheme.titleLarge?.copyWith(
                     fontWeight: FontWeight.w700,
                     letterSpacing: -0.5,
@@ -281,7 +282,7 @@ class _PendingRequestsScreenState extends State<PendingRequestsScreen>
               padding: EdgeInsets.zero,
               constraints: BoxConstraints(),
               onPressed: () => Navigator.pop(context),
-              tooltip: 'Înapoi',
+              tooltip: AppLocalizations.of(context)!.back,
             ),
           ),
         ),
@@ -355,7 +356,7 @@ class _PendingRequestsScreenState extends State<PendingRequestsScreen>
                         size: ResponsiveService.isSmallPhone ? 20 : 24,
                       ),
                     ),
-                    text: ResponsiveService.isSmallPhone ? 'În așteptare' : 'În așteptare',
+                    text: ResponsiveService.isSmallPhone ? AppLocalizations.of(context)!.pending : AppLocalizations.of(context)!.pending,
                   ),
                   Tab(
                     icon: Container(
@@ -365,7 +366,7 @@ class _PendingRequestsScreenState extends State<PendingRequestsScreen>
                         size: ResponsiveService.isSmallPhone ? 20 : 24,
                       ),
                     ),
-                    text: 'Aprobate',
+                    text: AppLocalizations.of(context)!.approved,
                   ),
                 ],
               ),
@@ -419,7 +420,7 @@ class _PendingRequestsScreenState extends State<PendingRequestsScreen>
                       FadeTransition(
                         opacity: _fadeAnimation,
                         child: Text(
-                          'Se încarcă cererile...',
+                          AppLocalizations.of(context)!.loadingRequests,
                           style: Theme.of(context).textTheme.titleMedium?.copyWith(
                             color: Theme.of(context).colorScheme.primary,
                           ),
@@ -471,7 +472,7 @@ class _PendingRequestsScreenState extends State<PendingRequestsScreen>
                             child: ElevatedButton.icon(
                               onPressed: _loadRequests,
                               icon: const Icon(Icons.refresh_rounded),
-                              label: const Text('Reîncearcă'),
+                              label: Text(AppLocalizations.of(context)!.retry),
                               style: ElevatedButton.styleFrom(
                                 padding: const EdgeInsets.symmetric(
                                   horizontal: 24,
@@ -523,8 +524,8 @@ class _PendingRequestsScreenState extends State<PendingRequestsScreen>
                                   controller: _searchController,
                                   decoration: InputDecoration(
                                     hintText: ResponsiveService.isSmallPhone 
-                                        ? '🔍 Caută...' 
-                                        : '🔍 Caută după numele cărții sau studentului...',
+                                        ? AppLocalizations.of(context)!.searchPlaceholder 
+                                        : AppLocalizations.of(context)!.searchDetailedPlaceholder,
                                     hintStyle: TextStyle(
                                       color: Theme.of(context).colorScheme.primary.withOpacity(0.6),
                                       fontSize: ResponsiveService.isSmallPhone ? 14 : 16,
@@ -602,12 +603,12 @@ class _PendingRequestsScreenState extends State<PendingRequestsScreen>
                                   _buildRequestsList(
                                     _filteredPendingRequests,
                                     showActions: true,
-                                    emptyMessage: 'Nu există cereri în așteptare',
+                                    emptyMessage: AppLocalizations.of(context)!.noPendingRequests,
                                   ),
                                   _buildRequestsList(
                                     _filteredApprovedRequests,
                                     showActions: false,
-                                    emptyMessage: 'Nu există cereri aprobate',
+                                    emptyMessage: AppLocalizations.of(context)!.noApprovedRequests,
                                   ),
                                 ],
                               ),
@@ -669,7 +670,7 @@ class _PendingRequestsScreenState extends State<PendingRequestsScreen>
               SizedBox(height: ResponsiveService.isSmallPhone ? 16 : 24),
               Text(
                 _searchQuery.isNotEmpty 
-                    ? 'Nu s-au găsit rezultate pentru "$_searchQuery"'
+                    ? AppLocalizations.of(context)!.noSearchResults(_searchQuery)
                     : emptyMessage,
                 style: Theme.of(context).textTheme.titleLarge?.copyWith(
                   fontWeight: FontWeight.w700,
@@ -682,10 +683,10 @@ class _PendingRequestsScreenState extends State<PendingRequestsScreen>
               SizedBox(height: ResponsiveService.isSmallPhone ? 6 : 8),
               Text(
                 _searchQuery.isNotEmpty
-                    ? 'Încearcă să modifici termenii de căutare'
+                    ? AppLocalizations.of(context)!.modifySearchTerms
                     : (showActions 
-                        ? 'Nu există cereri care necesită aprobare'
-                        : 'Nu există cereri aprobate în acest moment'),
+                        ? AppLocalizations.of(context)!.noRequestsNeedApproval
+                        : AppLocalizations.of(context)!.noApprovedRequestsCurrently),
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                   color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
                   fontWeight: FontWeight.w500,
@@ -840,7 +841,7 @@ class _PendingRequestsScreenState extends State<PendingRequestsScreen>
                                                       ),
                                                     ),
                                                     child: Text(
-                                                      'Profesor',
+                                                      AppLocalizations.of(context)!.teacher,
                                                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                                                         color: Colors.blue[700],
                                                         fontWeight: FontWeight.w700,
@@ -907,7 +908,7 @@ class _PendingRequestsScreenState extends State<PendingRequestsScreen>
                                                   ),
                                                   SizedBox(width: ResponsiveService.isSmallPhone ? 3 : 5),
                                                   Text(
-                                                    showActions ? 'În așteptare' : 'Aprobat',
+                                                    showActions ? AppLocalizations.of(context)!.pending : AppLocalizations.of(context)!.approved,
                                                     style: TextStyle(
                                                       color: Colors.white,
                                                       fontWeight: FontWeight.w700,
@@ -1001,7 +1002,7 @@ class _PendingRequestsScreenState extends State<PendingRequestsScreen>
                                             // Book Title
                                             Center(
                                               child: Text(
-                                                request['book']['name'] ?? 'Carte necunoscută',
+                                                request['book']['name'] ?? AppLocalizations.of(context)!.unknownBook,
                                                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
                                                   fontWeight: FontWeight.w600,
                                                   fontSize: ResponsiveService.isSmallPhone ? 14 : 16,
@@ -1079,7 +1080,7 @@ class _PendingRequestsScreenState extends State<PendingRequestsScreen>
                                       Expanded(
                                         child: RichText(
                                           text: TextSpan(
-                                            text: 'Data cererii: ',
+                                            text: AppLocalizations.of(context)!.requestDate,
                                             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                                               color: Colors.blue[700],
                                               fontWeight: FontWeight.w700,
@@ -1089,7 +1090,7 @@ class _PendingRequestsScreenState extends State<PendingRequestsScreen>
                                               TextSpan(
                                                 text: request['request_date'] != null
                                                     ? DateTime.parse(request['request_date']).toLocal().toString().split(' ')[0]
-                                                    : 'Nu este disponibilă',
+                                                    : AppLocalizations.of(context)!.notAvailable,
                                                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                                                   color: Colors.blue[600],
                                                   fontWeight: FontWeight.w600,
@@ -1144,7 +1145,7 @@ class _PendingRequestsScreenState extends State<PendingRequestsScreen>
                                       Expanded(
                                         child: RichText(
                                           text: TextSpan(
-                                            text: 'Data scadenței: ',
+                                            text: AppLocalizations.of(context)!.dueDate,
                                             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                                               color: Colors.orange[700],
                                               fontWeight: FontWeight.w700,
@@ -1154,7 +1155,7 @@ class _PendingRequestsScreenState extends State<PendingRequestsScreen>
                                               TextSpan(
                                                 text: request['due_date'] != null
                                                     ? DateTime.parse(request['due_date']).toLocal().toString().split(' ')[0]
-                                                    : 'Nu este disponibilă',
+                                                    : AppLocalizations.of(context)!.notAvailable,
                                                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                                                   color: Colors.orange[600],
                                                   fontWeight: FontWeight.w600,
@@ -1209,7 +1210,7 @@ class _PendingRequestsScreenState extends State<PendingRequestsScreen>
                                       Expanded(
                                         child: RichText(
                                           text: TextSpan(
-                                            text: 'Durată împrumut: ',
+                                            text: AppLocalizations.of(context)!.loanDuration,
                                             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                                               color: Colors.purple[700],
                                               fontWeight: FontWeight.w700,
@@ -1217,7 +1218,7 @@ class _PendingRequestsScreenState extends State<PendingRequestsScreen>
                                             ),
                                             children: [
                                               TextSpan(
-                                                text: '${request['loan_duration_days'] ?? 14} zile',
+                                                text: '${request['loan_duration_days'] ?? 14} ${AppLocalizations.of(context)!.days}',
                                                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                                                   color: Colors.purple[600],
                                                   fontWeight: FontWeight.w600,
@@ -1270,7 +1271,7 @@ class _PendingRequestsScreenState extends State<PendingRequestsScreen>
                                                     size: 18,
                                                   ),
                                                   label: Text(
-                                                    'Respinge',
+                                                    AppLocalizations.of(context)!.reject,
                                                     style: TextStyle(
                                                       fontSize: 12,
                                                       fontWeight: FontWeight.w600,
@@ -1316,7 +1317,7 @@ class _PendingRequestsScreenState extends State<PendingRequestsScreen>
                                                     size: 18,
                                                   ),
                                                   label: Text(
-                                                    'Aprobă',
+                                                    AppLocalizations.of(context)!.approve,
                                                     style: TextStyle(
                                                       fontSize: 12,
                                                       fontWeight: FontWeight.w600,
@@ -1366,7 +1367,7 @@ class _PendingRequestsScreenState extends State<PendingRequestsScreen>
                                               size: 20,
                                             ),
                                             label: Text(
-                                              'Respinge',
+                                              AppLocalizations.of(context)!.reject,
                                               style: TextStyle(
                                                 fontSize: 14,
                                                 fontWeight: FontWeight.w600,
@@ -1411,7 +1412,7 @@ class _PendingRequestsScreenState extends State<PendingRequestsScreen>
                                               size: 20,
                                             ),
                                             label: Text(
-                                              'Aprobă',
+                                              AppLocalizations.of(context)!.approve,
                                               style: TextStyle(
                                                 fontSize: 14,
                                                 fontWeight: FontWeight.w600,
@@ -1461,7 +1462,7 @@ class _PendingRequestsScreenState extends State<PendingRequestsScreen>
                                         size: ResponsiveService.isSmallPhone ? 18 : 20,
                                       ),
                                       label: Text(
-                                        'Marcare Ridicată',
+                                        AppLocalizations.of(context)!.markingPickedUp,
                                         style: TextStyle(
                                           fontSize: ResponsiveService.isSmallPhone ? 12 : 14,
                                           fontWeight: FontWeight.w600,

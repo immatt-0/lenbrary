@@ -119,36 +119,7 @@ DEFAULT_FROM_EMAIL=noreply@yourdomain.com
 - **Expired token usage**
 - **Invalid invitation code attempts**
 - **Unauthorized access attempts**
-
-## 🚨 Security Checklist for Deployment
-
-### Before Going Live
-- [ ] Generate new Django secret key
-- [ ] Set `DJANGO_DEBUG=False`
-- [ ] Configure `DJANGO_ALLOWED_HOSTS`
-- [ ] Set up HTTPS/SSL certificates
-- [ ] Configure secure email settings
-- [ ] Remove or change test accounts
-- [ ] Set `CORS_ALLOW_ALL_ORIGINS=False`
-- [ ] Configure production database
-- [ ] Set up backup strategy
-- [ ] Enable security headers
-
-### Regular Maintenance
-- [ ] Keep Django and dependencies updated
-- [ ] Monitor security advisories
-- [ ] Review access logs regularly
-- [ ] Rotate secrets periodically
-- [ ] Test backup and recovery procedures
-
-## 📞 Security Contact
-
-For security issues or vulnerabilities:
-1. **Do not** create public issues for security problems
-2. **Contact** the development team privately
-3. **Provide** detailed information about the vulnerability
-4. **Allow** reasonable time for response and fix
-
+- 
 ## 📋 Security Testing
 
 ### Automated Tests
